@@ -1,0 +1,393 @@
+"use client";
+
+import { useState } from "react";
+import Image from "next/image";
+import { useCart } from "../context/CartContext";
+import { useTheme } from "../context/ThemeContext";
+import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
+
+interface ProductDetailProps {
+  product: {
+    id: number;
+    name: string;
+    category: string;
+    image: string;
+    price: number;
+    oldPrice?: number;
+    description: string;
+    specs: { label: string; value: string }[];
+    inStock: boolean;
+    rating: number;
+    reviews: number;
+    isPromo?: boolean;
+    isTopSeller?: boolean;
+  };
+}
+
+const ProductDetail = ({ product }: ProductDetailProps) => {
+  const { theme } = useTheme();
+  const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(
+      {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+      },
+      quantity
+    );
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 3000);
+  };
+
+  const incrementQuantity = () => setQuantity(prev => prev + 1);
+  const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
+
+  // Mock images for gallery (in real app, product would have multiple images)
+  const images = [product.image, product.image, product.image];
+
+  return (
+    <section className={`py-12 px-4 min-h-screen relative overflow-hidden transition-all duration-300 ${
+      theme === 'light'
+        ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
+        : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
+    }`}>
+      {/* Background Pattern */}
+      <div className={`absolute inset-0 ${theme === 'light' ? 'opacity-[0.03]' : 'opacity-[0.02]'}`}>
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, #fe8002 1px, transparent 0)',
+          backgroundSize: '40px 40px'
+        }} />
+      </div>
+      
+      {/* Subtle orange accent gradients */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
+
+      <div className="container mx-auto relative z-10">
+        {/* Breadcrumb */}
+        <div className="mb-8 flex items-center gap-2 text-sm">
+          <a href="/" className={`hover:text-[#fe8002] transition-colors font-semibold ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>Accueil</a>
+          <span className={theme === 'light' ? 'text-gray-400' : 'text-gray-600'}>/</span>
+          <a href="/products" className={`hover:text-[#fe8002] transition-colors font-semibold ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>Produits</a>
+          <span className={theme === 'light' ? 'text-gray-400' : 'text-gray-600'}>/</span>
+          <span className="text-[#fe8002] font-bold">{product.category}</span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {/* Left Column - Images */}
+          <div className="space-y-4">
+            {/* Main Image */}
+            <div className={`relative h-[500px] w-full rounded-3xl overflow-hidden border-4 shadow-2xl ring-4 ${
+              theme === 'light'
+                ? 'bg-gradient-to-br from-gray-100 to-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
+                : 'bg-gradient-to-br from-[#181818] to-[#000000] border-white/20 shadow-white/30 ring-white/10'
+            }`}>
+              <Image
+                src={images[selectedImage]}
+                alt={product.name}
+                fill
+                className="object-cover"
+                priority
+              />
+              
+              {/* Badges */}
+              <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+                {product.isPromo && (
+                  <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold px-4 py-2 rounded-full shadow-2xl shadow-[#fe8002]/60 backdrop-blur-md border border-white/20 animate-pulse">
+                    PROMO
+                  </span>
+                )}
+                {product.isTopSeller && (
+                  <span className="bg-gradient-to-r from-[#ff4500] via-[#fe8002] to-[#ff6b35] text-white text-xs font-extrabold px-4 py-2 rounded-full shadow-2xl shadow-[#ff4500]/60 backdrop-blur-md border border-white/20">
+                    TOP VENTE
+                  </span>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="absolute top-4 right-4 flex flex-col gap-3 z-10">
+                <button
+                  onClick={() => setIsFavorite(!isFavorite)}
+                  className={`p-3 rounded-full backdrop-blur-md border-2 transition-all duration-300 ${
+                    isFavorite
+                      ? "bg-[#fe8002] border-white/20 text-white"
+                      : theme === 'light'
+                        ? "bg-white/90 border-gray-300 text-[#fe8002] hover:bg-[#fe8002] hover:text-white hover:scale-110"
+                        : "bg-black/50 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110"
+                  }`}
+                >
+                  <FaHeart className="text-lg" />
+                </button>
+                <button className="p-3 rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110 transition-all duration-300">
+                  <FaShare className="text-lg" />
+                </button>
+              </div>
+            </div>
+
+            {/* Thumbnail Gallery */}
+            <div className="grid grid-cols-3 gap-4">
+              {images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative h-32 rounded-xl overflow-hidden transition-all duration-300 ${
+                    selectedImage === index
+                      ? "border-4 border-[#fe8002] shadow-lg shadow-[#fe8002]/50"
+                      : "border-2 border-[#2a2a2a] hover:border-[#fe8002]/50"
+                  }`}
+                >
+                  <Image src={img} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Column - Details */}
+          <div className={`space-y-6 rounded-3xl p-8 border-2 border-[#fe8002]/30 shadow-2xl ${
+            theme === 'light'
+              ? 'bg-white shadow-[#fe8002]/20'
+              : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+          }`}>
+            {/* Category Badge */}
+            <div className="inline-block">
+              <span className={`text-xs font-bold text-[#fe8002] px-4 py-2 rounded-full border border-[#fe8002]/40 shadow-md shadow-[#fe8002]/20 uppercase tracking-wider ${
+                theme === 'light'
+                  ? 'bg-gradient-to-r from-gray-50 to-gray-100'
+                  : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
+              }`}>
+                {product.category}
+              </span>
+            </div>
+
+            {/* Product Name */}
+            <h1 className={`text-4xl md:text-5xl font-extrabold leading-tight ${
+              theme === 'light' ? 'text-gray-900' : 'text-white'
+            }`}>
+              {product.name}
+            </h1>
+
+            {/* Rating */}
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <FaStar
+                    key={i}
+                    className={`text-lg ${
+                      i < Math.floor(product.rating) ? "text-[#fe8002]" : "text-gray-600"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-[#fe8002] font-bold">
+                {product.rating}
+              </span>
+              <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                ({product.reviews} avis)
+              </span>
+            </div>
+
+            {/* Price */}
+            <div className={`rounded-2xl p-6 border-4 shadow-2xl ring-4 ${
+              theme === 'light'
+                ? 'bg-gradient-to-br from-gray-50 to-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
+                : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
+            }`}>
+              <div className="flex items-baseline gap-4">
+                <p className="text-5xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                  {product.price.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}
+                </p>
+                <span className="text-2xl text-gray-400 font-bold">DZD</span>
+              </div>
+              {product.oldPrice && (
+                <div className="flex items-center gap-2 mt-2">
+                  <span className="text-gray-500 line-through text-xl">
+                    {product.oldPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD
+                  </span>
+                  <span className="bg-[#fe8002] text-white text-xs font-bold px-3 py-1 rounded-full">
+                    -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Stock Status */}
+            <div className="flex items-center gap-2">
+              {product.inStock ? (
+                <>
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                  <span className="text-green-400 font-bold">En stock</span>
+                </>
+              ) : (
+                <>
+                  <div className="w-3 h-3 bg-red-500 rounded-full" />
+                  <span className="text-red-400 font-bold">Rupture de stock</span>
+                </>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className={`rounded-xl p-6 border backdrop-blur-sm ${
+              theme === 'light'
+                ? 'bg-gradient-to-br from-gray-50/80 to-white/80 border-gray-300/40'
+                : 'bg-gradient-to-br from-[#1a1a1a]/50 to-[#0f0f0f]/50 border-[#fe8002]/20'
+            }`}>
+              <h3 className={`font-bold text-lg mb-3 flex items-center gap-2 ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
+              }`}>
+                <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
+                Description
+              </h3>
+              <p className={`leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{product.description}</p>
+            </div>
+
+            {/* Quantity Selector */}
+            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/30 shadow-xl ${
+              theme === 'light'
+                ? 'bg-gradient-to-br from-white to-gray-50'
+                : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="w-1 h-8 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
+                  <span className={`font-extrabold text-lg ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Quantité</span>
+                </div>
+                <div className={`flex items-center gap-4 rounded-xl border-2 border-[#fe8002]/40 p-2 shadow-lg ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-gray-50 to-gray-100'
+                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
+                }`}>
+                  <button
+                    onClick={decrementQuantity}
+                    className="w-12 h-12 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-xl rounded-xl hover:shadow-xl hover:shadow-[#fe8002]/50 transition-all duration-300 hover:scale-110 border border-white/20"
+                  >
+                    −
+                  </button>
+                  <span className="text-white font-extrabold text-2xl w-16 text-center bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">{quantity}</span>
+                  <button
+                    onClick={incrementQuantity}
+                    className="w-12 h-12 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-xl rounded-xl hover:shadow-xl hover:shadow-[#fe8002]/50 transition-all duration-300 hover:scale-110 border border-white/20"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Add to Cart Button */}
+            <button
+              onClick={handleAddToCart}
+              disabled={!product.inStock}
+              className={`w-full py-6 rounded-2xl font-extrabold text-xl uppercase tracking-wider transition-all duration-300 transform flex items-center justify-center gap-4 relative overflow-hidden ${
+                addedToCart
+                  ? "bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white border-2 border-white/30 shadow-2xl shadow-green-500/50"
+                  : product.inStock
+                  ? "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:from-white hover:to-gray-200 hover:scale-105 shadow-2xl shadow-[#fe8002]/60 hover:shadow-[#fe8002]/80 border-2 border-white/30 backdrop-blur-sm"
+                  : "bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 cursor-not-allowed border-2 border-gray-600"
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              {addedToCart ? (
+                <>
+                  <FaCheckCircle className="text-3xl animate-bounce" />
+                  <span>✓ Ajouté au panier</span>
+                </>
+              ) : (
+                <>
+                  <FaShoppingCart className="text-3xl animate-pulse" />
+                  <span>🛒 Ajouter au panier</span>
+                </>
+              )}
+            </button>
+
+            {/* Features */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
+              <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
+                theme === 'light'
+                  ? 'bg-gradient-to-br from-white to-gray-50'
+                  : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+              }`}>
+                <FaTruck className="text-[#fe8002] text-2xl" />
+                <div>
+                  <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Livraison</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Rapide</p>
+                </div>
+              </div>
+              <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
+                theme === 'light'
+                  ? 'bg-gradient-to-br from-white to-gray-50'
+                  : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+              }`}>
+                <FaShieldAlt className="text-[#fe8002] text-2xl" />
+                <div>
+                  <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Garantie</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>1 an</p>
+                </div>
+              </div>
+              <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
+                theme === 'light'
+                  ? 'bg-gradient-to-br from-white to-gray-50'
+                  : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+              }`}>
+                <FaUndo className="text-[#fe8002] text-2xl" />
+                <div>
+                  <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Retour</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>30 jours</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Specifications */}
+        <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
+          theme === 'light'
+            ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
+            : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
+        }`}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className={`w-1.5 h-10 rounded-full shadow-lg ${
+              theme === 'light'
+                ? 'bg-gradient-to-b from-gray-800 via-[#fe8002] to-[#ff4500] shadow-gray-800/50'
+                : 'bg-gradient-to-b from-white via-[#fe8002] to-[#ff4500] shadow-white/50'
+            }`} />
+            <h2 className={`text-3xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${
+              theme === 'light'
+                ? 'from-gray-900 via-[#fe8002] to-gray-900'
+                : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+            }`}>
+              Caractéristiques Techniques
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {product.specs.map((spec, index) => (
+              <div
+                key={index}
+                className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
+                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
+                }`}
+              >
+                <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
+                <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProductDetail;
