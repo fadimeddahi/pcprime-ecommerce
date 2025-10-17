@@ -345,7 +345,7 @@ const Products = () => {
   });
 
   return (
-    <section id="products" className={`py-20 px-4 relative overflow-hidden transition-all duration-300 ${
+    <section id="products" className={`py-12 md:py-20 px-4 relative overflow-hidden transition-all duration-300 ${
       theme === 'light'
         ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
         : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
@@ -362,77 +362,202 @@ const Products = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
       
       <div className="container mx-auto relative z-10">
-        {/* Filters Section */}
-        <div className={`rounded-xl p-3 md:p-8 mb-4 md:mb-12 border shadow-lg md:shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+        <div className="text-center mb-6 md:mb-16">
+          <h2 className={`text-3xl md:text-6xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent mb-2 md:mb-4 tracking-tight ${
+            theme === 'light' ? 'drop-shadow-sm' : 'drop-shadow-lg drop-shadow-[#fe8002]/50'
+          }`}>
+            Nos Produits
+          </h2>
+          <div className="w-16 md:w-24 h-0.5 md:h-1 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent mx-auto mb-2 md:mb-4 shadow-lg shadow-[#fe8002]/50" />
+          <p className={`text-sm md:text-lg font-semibold ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>Découvrez notre sélection premium</p>
+        </div>
+
+        {/* Mobile Compact Filters */}
+        <div className={`md:hidden rounded-xl p-3 mb-4 border shadow-lg backdrop-blur-xl transition-all duration-300 ${
           theme === 'light'
             ? 'bg-white border-gray-200 shadow-gray-200/50'
             : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#fe8002]/30 shadow-[#fe8002]/10'
         }`}>
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={`border rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-[#fe8002] transition-all ${
+                theme === 'light'
+                  ? 'bg-white text-gray-800 border-gray-300'
+                  : 'bg-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40'
+              }`}
+            >
+              <option value="all">Toutes</option>
+              <option value="PC Bureau">PC Bureau</option>
+              <option value="PC Portable">PC Portable</option>
+              <option value="Composants">Composants</option>
+            </select>
+
+            <select
+              value={selectedCondition}
+              onChange={(e) => setSelectedCondition(e.target.value)}
+              className={`border rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-[#fe8002] transition-all ${
+                theme === 'light'
+                  ? 'bg-white text-gray-800 border-gray-300'
+                  : 'bg-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40'
+              }`}
+            >
+              <option value="all">Tous états</option>
+              <option value="Neuf">Neuf</option>
+              <option value="Excellent">Excellent</option>
+              <option value="Très bon">Très bon</option>
+              <option value="Bon">Bon</option>
+              <option value="Acceptable">Acceptable</option>
+            </select>
+          </div>
+
+          <div className="flex gap-1">
+            <button
+              onClick={() => setShowPromoOnly(!showPromoOnly)}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                showPromoOnly
+                  ? "bg-[#fe8002] text-white"
+                  : theme === 'light'
+                    ? "bg-gray-100 text-[#fe8002] border border-gray-300"
+                    : "bg-[#0f0f0f] text-[#fe8002] border border-[#fe8002]/40"
+              }`}
+            >
+              Promo
+            </button>
+            <button
+              onClick={() => setShowTopSellersOnly(!showTopSellersOnly)}
+              className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                showTopSellersOnly
+                  ? "bg-[#ff4500] text-white"
+                  : theme === 'light'
+                    ? "bg-gray-100 text-[#ff4500] border border-gray-300"
+                    : "bg-[#0f0f0f] text-[#ff4500] border border-[#fe8002]/40"
+              }`}
+            >
+              Top
+            </button>
+            {(selectedCategory !== "all" || selectedCondition !== "all" || showPromoOnly || showTopSellersOnly) && (
+              <button
+                onClick={() => {
+                  setSelectedCategory("all");
+                  setSelectedCondition("all");
+                  setShowPromoOnly(false);
+                  setShowTopSellersOnly(false);
+                }}
+                className="px-2 py-1.5 rounded-lg text-xs font-bold bg-[#fe8002] text-white"
+              >
+                ↺
+              </button>
+            )}
+          </div>
+
+          <div className={`mt-2 pt-2 border-t text-center ${
+            theme === 'light' ? 'border-gray-200' : 'border-[#fe8002]/20'
+          }`}>
+            <span className="text-[#fe8002] font-bold text-sm">{filteredProducts.length} produits</span>
+          </div>
+        </div>
+
+        {/* Desktop Filters - Hidden on mobile */}
+        <div className={`hidden md:block rounded-2xl p-8 mb-12 border shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+          theme === 'light'
+            ? 'bg-white border-gray-200 shadow-gray-200/50'
+            : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#fe8002]/30 shadow-[#fe8002]/10'
+        }`}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-8 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
+            <h3 className={`font-bold text-xl uppercase tracking-wide ${
+              theme === 'light' ? 'text-[#fe8002]' : 'text-[#fe8002]'
+            }`}>Filtres</h3>
+          </div>
           
-          {/* Mobile Compact Layout */}
-          <div className="md:hidden">
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              {/* Category & Condition in compact selects */}
+          <div className="flex flex-row gap-6 flex-wrap items-end">
+            {/* Category Filter */}
+            <div className="flex-1 min-w-[240px]">
+              <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                theme === 'light' ? 'text-gray-700' : 'text-white'
+              }`}>
+                <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">Catégorie</span>
+              </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className={`border rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-[#fe8002] transition-all ${
+                className={`w-full border-2 rounded-xl px-5 py-3.5 shadow-lg focus:outline-none focus:border-[#fe8002] focus:shadow-[#fe8002]/30 focus:ring-2 focus:ring-[#fe8002]/20 transition-all cursor-pointer font-bold hover:border-[#fe8002] hover:shadow-xl hover:shadow-[#fe8002]/20 backdrop-blur-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA3LjVMMTAgMTIuNUwxNSA3LjUiIHN0cm9rZT0iI2ZlODAwMiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:20px] bg-[right_0.75rem_center] bg-no-repeat pr-12 ${
                   theme === 'light'
-                    ? 'bg-white text-gray-800 border-gray-300'
-                    : 'bg-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40'
+                    ? 'bg-white text-gray-800 border-[#fe8002]/40 shadow-[#fe8002]/20'
+                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-[#fe8002]/40 shadow-[#fe8002]/10'
                 }`}
               >
-                <option value="all">Toutes</option>
-                <option value="PC Bureau">PC Bureau</option>
-                <option value="PC Portable">PC Portable</option>
-                <option value="Composants">Composants</option>
-              </select>
-
-              <select
-                value={selectedCondition}
-                onChange={(e) => setSelectedCondition(e.target.value)}
-                className={`border rounded-lg px-2 py-1.5 text-xs font-bold focus:outline-none focus:border-[#fe8002] transition-all ${
-                  theme === 'light'
-                    ? 'bg-white text-gray-800 border-gray-300'
-                    : 'bg-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40'
-                }`}
-              >
-                <option value="all">Tous états</option>
-                <option value="Neuf">Neuf</option>
-                <option value="Excellent">Excellent</option>
-                <option value="Très bon">Très bon</option>
-                <option value="Bon">Bon</option>
-                <option value="Acceptable">Acceptable</option>
+                <option value="all">TOUTES LES CATÉGORIES</option>
+                <option value="PC Bureau">PC BUREAU</option>
+                <option value="PC Portable">PC PORTABLE</option>
+                <option value="Composants">COMPOSANTS</option>
               </select>
             </div>
 
-            {/* Toggle buttons in single row */}
-            <div className="flex gap-1">
+            {/* Condition Filter */}
+            <div className="flex-1 min-w-[240px]">
+              <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                theme === 'light' ? 'text-gray-700' : 'text-white'
+              }`}>
+                <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">État</span>
+              </label>
+              <select
+                value={selectedCondition}
+                onChange={(e) => setSelectedCondition(e.target.value)}
+                className={`w-full border-2 rounded-xl px-5 py-3.5 shadow-lg focus:outline-none focus:border-[#fe8002] focus:shadow-[#fe8002]/30 focus:ring-2 focus:ring-[#fe8002]/20 transition-all cursor-pointer font-bold hover:border-[#fe8002] hover:shadow-xl hover:shadow-[#fe8002]/20 backdrop-blur-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA3LjVMMTAgMTIuNUwxNSA3LjUiIHN0cm9rZT0iI2ZlODAwMiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:20px] bg-[right_0.75rem_center] bg-no-repeat pr-12 ${
+                  theme === 'light'
+                    ? 'bg-white text-gray-800 border-[#fe8002]/40 shadow-[#fe8002]/20'
+                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-[#fe8002]/40 shadow-[#fe8002]/10'
+                }`}
+              >
+                <option value="all">TOUS LES ÉTATS</option>
+                <option value="Neuf">NEUF</option>
+                <option value="Excellent">EXCELLENT</option>
+                <option value="Très bon">TRÈS BON</option>
+                <option value="Bon">BON</option>
+                <option value="Acceptable">ACCEPTABLE</option>
+              </select>
+            </div>
+
+            {/* Promo Filter */}
+            <div className="flex items-end">
               <button
                 onClick={() => setShowPromoOnly(!showPromoOnly)}
-                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                className={`px-8 py-3.5 rounded-xl font-extrabold transition-all duration-300 transform hover:scale-105 shadow-lg uppercase tracking-wide text-sm ${
                   showPromoOnly
-                    ? "bg-[#fe8002] text-white"
+                    ? "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-2 border-white/20 shadow-[#fe8002]/50 animate-pulse"
                     : theme === 'light'
-                      ? "bg-gray-100 text-[#fe8002] border border-gray-300"
-                      : "bg-[#0f0f0f] text-[#fe8002] border border-[#fe8002]/40"
+                      ? "bg-white text-[#fe8002] border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-[#fe8002]/30"
+                      : "bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-[#fe8002]/30 backdrop-blur-sm"
                 }`}
               >
-                Promo
+                PROMOTIONS
               </button>
+            </div>
+
+            {/* Top Sellers Filter */}
+            <div className="flex items-end">
               <button
                 onClick={() => setShowTopSellersOnly(!showTopSellersOnly)}
-                className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
+                className={`px-8 py-3.5 rounded-xl font-extrabold transition-all duration-300 transform hover:scale-105 shadow-lg uppercase tracking-wide text-sm ${
                   showTopSellersOnly
-                    ? "bg-[#ff4500] text-white"
+                    ? "bg-gradient-to-r from-[#ff4500] via-[#fe8002] to-[#ff6b35] text-white border-2 border-white/20 shadow-[#ff4500]/50"
                     : theme === 'light'
-                      ? "bg-gray-100 text-[#ff4500] border border-gray-300"
-                      : "bg-[#0f0f0f] text-[#ff4500] border border-[#fe8002]/40"
+                      ? "bg-white text-[#ff4500] border-2 border-[#ff4500]/40 hover:border-[#ff4500] hover:shadow-[#ff4500]/30"
+                      : "bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#ff4500] border-2 border-[#ff4500]/40 hover:border-[#ff4500] hover:shadow-[#ff4500]/30 backdrop-blur-sm"
                 }`}
               >
-                Top
+                TOP VENTES
               </button>
-              {(selectedCategory !== "all" || selectedCondition !== "all" || showPromoOnly || showTopSellersOnly) && (
+            </div>
+
+            {/* Reset Filters */}
+            {(selectedCategory !== "all" || selectedCondition !== "all" || showPromoOnly || showTopSellersOnly) && (
+              <div className="flex items-end">
                 <button
                   onClick={() => {
                     setSelectedCategory("all");
@@ -440,150 +565,28 @@ const Products = () => {
                     setShowPromoOnly(false);
                     setShowTopSellersOnly(false);
                   }}
-                  className="px-2 py-1.5 rounded-lg text-xs font-bold bg-[#fe8002] text-white"
+                  className={`px-8 py-3.5 rounded-xl font-extrabold hover:scale-105 transition-all duration-300 shadow-lg uppercase tracking-wide text-sm border-2 ${
+                    theme === 'light'
+                      ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-white/20 shadow-[#fe8002]/40'
+                      : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black border-white/20 shadow-[#fe8002]/40 backdrop-blur-sm'
+                  }`}
                 >
-                  ↺
+                  ↺ Reset
                 </button>
-              )}
-            </div>
-
-            {/* Compact results */}
-            <div className={`mt-2 pt-2 border-t text-center ${
-              theme === 'light' ? 'border-gray-200' : 'border-[#fe8002]/20'
-            }`}>
-              <span className="text-[#fe8002] font-bold text-sm">{filteredProducts.length} produits</span>
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* Desktop Layout - Hidden on mobile */}
-          <div className="hidden md:block">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-8 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
-              <h3 className={`font-bold text-xl uppercase tracking-wide ${
-                theme === 'light' ? 'text-[#fe8002]' : 'text-[#fe8002]'
-              }`}>Filtres</h3>
-            </div>
-            
-            <div className="flex flex-row gap-6 flex-wrap items-end">
-              {/* Category Filter */}
-              <div className="flex-1 min-w-[240px]">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
-                  theme === 'light' ? 'text-gray-700' : 'text-white'
-                }`}>
-                  <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">Catégorie</span>
-                </label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className={`w-full border-2 rounded-xl px-5 py-3.5 shadow-lg focus:outline-none focus:border-[#fe8002] focus:shadow-[#fe8002]/30 focus:ring-2 focus:ring-[#fe8002]/20 transition-all cursor-pointer font-bold hover:border-[#fe8002] hover:shadow-xl hover:shadow-[#fe8002]/20 backdrop-blur-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA3LjVMMTAgMTIuNUwxNSA3LjUiIHN0cm9rZT0iI2ZlODAwMiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:20px] bg-[right_0.75rem_center] bg-no-repeat pr-12 ${
-                    theme === 'light'
-                      ? 'bg-white text-gray-800 border-[#fe8002]/40 shadow-[#fe8002]/20'
-                      : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-[#fe8002]/40 shadow-[#fe8002]/10'
-                  }`}
-                  style={{
-                    colorScheme: theme === 'light' ? 'light' : 'dark'
-                  }}
-                >
-                  <option value="all" className={theme === 'light' ? 'bg-white text-[#fe8002]' : 'bg-[#1a1a1a] text-[#fe8002]'} style={{ fontWeight: 'bold', padding: '12px' }}>TOUTES LES CATÉGORIES</option>
-                  <option value="PC Bureau" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>PC BUREAU</option>
-                  <option value="PC Portable" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>PC PORTABLE</option>
-                  <option value="Composants" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>COMPOSANTS</option>
-                </select>
-              </div>
-
-              {/* Condition Filter */}
-              <div className="flex-1 min-w-[240px]">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
-                  theme === 'light' ? 'text-gray-700' : 'text-white'
-                }`}>
-                  <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">État</span>
-                </label>
-                <select
-                  value={selectedCondition}
-                  onChange={(e) => setSelectedCondition(e.target.value)}
-                  className={`w-full border-2 rounded-xl px-5 py-3.5 shadow-lg focus:outline-none focus:border-[#fe8002] focus:shadow-[#fe8002]/30 focus:ring-2 focus:ring-[#fe8002]/20 transition-all cursor-pointer font-bold hover:border-[#fe8002] hover:shadow-xl hover:shadow-[#fe8002]/20 backdrop-blur-sm appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA3LjVMMTAgMTIuNUwxNSA3LjUiIHN0cm9rZT0iI2ZlODAwMiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:20px] bg-[right_0.75rem_center] bg-no-repeat pr-12 ${
-                    theme === 'light'
-                      ? 'bg-white text-gray-800 border-[#fe8002]/40 shadow-[#fe8002]/20'
-                      : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-[#fe8002]/40 shadow-[#fe8002]/10'
-                  }`}
-                  style={{
-                    colorScheme: theme === 'light' ? 'light' : 'dark'
-                  }}
-                >
-                  <option value="all" className={theme === 'light' ? 'bg-white text-[#fe8002]' : 'bg-[#1a1a1a] text-[#fe8002]'} style={{ fontWeight: 'bold', padding: '12px' }}>TOUS LES ÉTATS</option>
-                  <option value="Neuf" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>NEUF</option>
-                  <option value="Excellent" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>EXCELLENT</option>
-                  <option value="Très bon" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>TRÈS BON</option>
-                  <option value="Bon" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>BON</option>
-                  <option value="Acceptable" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>ACCEPTABLE</option>
-                </select>
-              </div>
-
-              {/* Promo Filter */}
-              <div className="flex items-end">
-                <button
-                  onClick={() => setShowPromoOnly(!showPromoOnly)}
-                  className={`px-8 py-3.5 rounded-xl font-extrabold transition-all duration-300 transform hover:scale-105 shadow-lg uppercase tracking-wide text-sm ${
-                    showPromoOnly
-                      ? "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-2 border-white/20 shadow-[#fe8002]/50 animate-pulse"
-                      : theme === 'light'
-                        ? "bg-white text-[#fe8002] border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-[#fe8002]/30"
-                        : "bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-[#fe8002]/30 backdrop-blur-sm"
-                  }`}
-                >
-                  PROMOTIONS
-                </button>
-              </div>
-
-              {/* Top Sellers Filter */}
-              <div className="flex items-end">
-                <button
-                  onClick={() => setShowTopSellersOnly(!showTopSellersOnly)}
-                  className={`px-8 py-3.5 rounded-xl font-extrabold transition-all duration-300 transform hover:scale-105 shadow-lg uppercase tracking-wide text-sm ${
-                    showTopSellersOnly
-                      ? "bg-gradient-to-r from-[#ff4500] via-[#fe8002] to-[#ff6b35] text-white border-2 border-white/20 shadow-[#ff4500]/50"
-                      : theme === 'light'
-                        ? "bg-white text-[#ff4500] border-2 border-[#ff4500]/40 hover:border-[#ff4500] hover:shadow-[#ff4500]/30"
-                        : "bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#ff4500] border-2 border-[#ff4500]/40 hover:border-[#ff4500] hover:shadow-[#ff4500]/30 backdrop-blur-sm"
-                  }`}
-                >
-                  TOP VENTES
-                </button>
-              </div>
-
-              {/* Reset Filters */}
-              {(selectedCategory !== "all" || selectedCondition !== "all" || showPromoOnly || showTopSellersOnly) && (
-                <div className="flex items-end">
-                  <button
-                    onClick={() => {
-                      setSelectedCategory("all");
-                      setSelectedCondition("all");
-                      setShowPromoOnly(false);
-                      setShowTopSellersOnly(false);
-                    }}
-                    className={`px-8 py-3.5 rounded-xl font-extrabold hover:scale-105 transition-all duration-300 shadow-lg uppercase tracking-wide text-sm border-2 ${
-                      theme === 'light'
-                        ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-white/20 shadow-[#fe8002]/40'
-                        : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black border-white/20 shadow-[#fe8002]/40 backdrop-blur-sm'
-                    }`}
-                  >
-                    ↺ Reset
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Results count */}
-            <div className={`mt-6 pt-6 border-t ${
-              theme === 'light' ? 'border-gray-200' : 'border-[#fe8002]/20'
+          {/* Results count */}
+          <div className={`mt-6 pt-6 border-t ${
+            theme === 'light' ? 'border-gray-200' : 'border-[#fe8002]/20'
+          }`}>
+            <div className={`flex items-center gap-3 text-sm ${
+              theme === 'light' ? 'text-gray-700' : 'text-gray-300'
             }`}>
-              <div className={`flex items-center gap-3 text-sm ${
-                theme === 'light' ? 'text-gray-700' : 'text-gray-300'
-              }`}>
-                <div className="w-2 h-2 bg-[#fe8002] rounded-full animate-pulse" />
-                <span className="text-[#fe8002] font-extrabold text-xl">{filteredProducts.length}</span>
-                <span className="font-semibold">produit(s) trouvé(s)</span>
-              </div>
+              <div className="w-2 h-2 bg-[#fe8002] rounded-full animate-pulse" />
+              <span className="text-[#fe8002] font-extrabold text-xl">{filteredProducts.length}</span>
+              <span className="font-semibold">produit(s) trouvé(s)</span>
             </div>
           </div>
         </div>

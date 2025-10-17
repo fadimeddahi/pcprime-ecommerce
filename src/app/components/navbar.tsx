@@ -38,15 +38,17 @@ const Navbar = () => {
       <nav className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <img
-            src={theme === 'light' ? '/logo_white.png' : '/logo.png'}
-            alt="Prime Computer Logo"
-            className={`w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
-              theme === 'light'
-                ? 'border-2 border-[#fe8002]/60 shadow-[#fe8002]/40 hover:border-[#fe8002]'
-                : 'border-2 border-[#fe8002]/50 shadow-[#fe8002]/30 hover:border-[#fe8002]'
-            }`}
-          />
+          <a href="/">
+            <img
+              src={theme === 'light' ? '/logo_white.png' : '/logo.png'}
+              alt="Prime Computer Logo"
+              className={`w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
+                theme === 'light'
+                  ? 'border-2 border-[#fe8002]/60 shadow-[#fe8002]/40 hover:border-[#fe8002]'
+                  : 'border-2 border-[#fe8002]/50 shadow-[#fe8002]/30 hover:border-[#fe8002]'
+              }`}
+            />
+          </a>
 
           {/* Desktop Links */}
           <div className="hidden lg:flex items-center gap-6">
@@ -131,13 +133,13 @@ const Navbar = () => {
                 }`} />
               </a>
             </div>
-            <div className="relative group">
-              <a href="/wishlist" className="relative">
+            <div className="relative">
+              <a href="/wishlist" className="relative inline-block">
                 <FaRegHeart className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
                   theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002]'
                 }`} />
                 {getWishlistItemsCount() > 0 && (
-                  <span className={`absolute -top-2 -right-2 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center animate-pulse ${
+                  <span className={`absolute -top-1 -right-1 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center animate-pulse ${
                     theme === 'light' ? 'border-2 border-white' : 'border-2 border-black'
                   }`}>
                     {getWishlistItemsCount()}
@@ -145,13 +147,13 @@ const Navbar = () => {
                 )}
               </a>
             </div>
-            <div className="relative group">
-              <button onClick={toggleCart} className="relative">
+            <div className="relative">
+              <button onClick={toggleCart} className="relative inline-block">
                 <FaShoppingCart className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
                   theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002]'
                 }`} />
                 {getCartItemsCount() > 0 && (
-                  <span className={`absolute -top-2 -right-2 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-5 h-5 rounded-full flex items-center justify-center animate-pulse ${
+                  <span className={`absolute -top-1 -right-1 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center animate-pulse ${
                     theme === 'light' ? 'border-2 border-white' : 'border-2 border-black'
                   }`}>
                     {getCartItemsCount()}

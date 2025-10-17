@@ -37,6 +37,28 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
 
   return (
     <>
+      {/* Inline Theme Detection Script for Cart */}
+      {isOpen && (
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {
+                  document.documentElement.classList.remove('dark');
+                }
+              })();
+            `,
+          }}
+        />
+      )}
+      
       {/* Full-Screen Cart Overlay */}
       <div
         className={`fixed inset-0 z-[10000] flex transition-all duration-300 ${
@@ -142,79 +164,158 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                   {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className={`rounded-xl p-3 border-2 hover:border-[#fe8002] transition-all duration-300 shadow-xl hover:shadow-[#fe8002]/40 backdrop-blur-sm flex gap-3 items-center ${
+                    className={`rounded-xl p-4 border-2 hover:border-[#fe8002] transition-all duration-300 shadow-xl hover:shadow-[#fe8002]/40 backdrop-blur-sm ${
                       theme === 'light'
                         ? 'bg-white border-gray-300'
                         : 'bg-gradient-to-br from-[#1f1f1f] via-[#1a1a1a] to-[#0f0f0f] border-[#2a2a2a]'
                     }`}
                   >
-                    {/* Product Image */}
-                    <div className={`relative w-20 h-20 md:w-24 md:h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg group ${
-                      theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-black'
-                    }`}>
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        sizes="100px"
-                        className="object-contain group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                    
-                    {/* Product Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className={`font-bold text-sm md:text-base leading-tight hover:text-[#fe8002] transition-colors line-clamp-1 mb-1 ${
-                        theme === 'light' ? 'text-gray-800' : 'text-white'
-                      }`}>
-                        {item.name}
-                      </h3>
-                      <div className="flex items-baseline gap-1 mb-2">
-                        <p className="text-base md:text-lg font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
-                          {item.price.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })}
-                        </p>
-                        <span className={`text-xs font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
+                    {/* Mobile Layout */}
+                    <div className="md:hidden">
+                      <div className="flex gap-3 mb-3">
+                        {/* Product Image */}
+                        <div className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg ${
+                          theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-black'
+                        }`}>
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            sizes="64px"
+                            className="object-contain"
+                          />
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="flex-1 min-w-0">
+                          <h3 className={`font-bold text-sm leading-tight hover:text-[#fe8002] transition-colors mb-2 ${
+                            theme === 'light' ? 'text-gray-800' : 'text-white'
+                          }`}>
+                            {item.name}
+                          </h3>
+                          <div className="flex items-baseline gap-1">
+                            <p className="text-lg font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                              {item.price.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })}
+                            </p>
+                            <span className={`text-xs font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
+                          </div>
+                        </div>
+                        
+                        {/* Remove Button */}
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="w-8 h-8 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
+                          title="Supprimer"
+                        >
+                          <FaTrash className="text-xs" />
+                        </button>
+                      </div>
+                      
+                      {/* Bottom Row: Quantity and Total */}
+                      <div className="flex items-center justify-between">
+                        {/* Quantity Controls */}
+                        <div className={`flex items-center gap-2 rounded-lg border border-[#fe8002]/40 p-1.5 shadow-lg ${
+                          theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
+                        }`}>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="w-8 h-8 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                          >
+                            −
+                          </button>
+                          <span className={`font-extrabold text-base w-10 text-center ${
+                            theme === 'light' ? 'text-gray-800' : 'text-white'
+                          }`}>
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="w-8 h-8 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                          >
+                            +
+                          </button>
+                        </div>
+                        
+                        {/* Total Price */}
+                        <div className="text-right">
+                          <p className={`text-xs font-semibold mb-1 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total:</p>
+                          <p className="text-lg font-extrabold text-[#fe8002]">
+                            {(item.price * item.quantity).toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
+                          </p>
+                        </div>
                       </div>
                     </div>
-                    
-                    {/* Quantity Controls */}
-                    <div className={`flex items-center gap-2 rounded-lg border border-[#fe8002]/40 p-1.5 shadow-lg flex-shrink-0 ${
-                      theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-                    }`}>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
-                      >
-                        −
-                      </button>
-                      <span className={`font-extrabold text-sm w-8 text-center ${
-                        theme === 'light' ? 'text-gray-800' : 'text-white'
+
+                    {/* Desktop Layout */}
+                    <div className="hidden md:flex gap-3 items-center">
+                      {/* Product Image */}
+                      <div className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg group ${
+                        theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-black'
                       }`}>
-                        {item.quantity}
-                      </span>
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          fill
+                          sizes="100px"
+                          className="object-contain group-hover:scale-105 transition-transform duration-500"
+                        />
+                      </div>
+                      
+                      {/* Product Info */}
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-bold text-base leading-tight hover:text-[#fe8002] transition-colors line-clamp-1 mb-1 ${
+                          theme === 'light' ? 'text-gray-800' : 'text-white'
+                        }`}>
+                          {item.name}
+                        </h3>
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <p className="text-lg font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                            {item.price.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })}
+                          </p>
+                          <span className={`text-xs font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
+                        </div>
+                      </div>
+                      
+                      {/* Quantity Controls */}
+                      <div className={`flex items-center gap-2 rounded-lg border border-[#fe8002]/40 p-1.5 shadow-lg flex-shrink-0 ${
+                        theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
+                      }`}>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                        >
+                          −
+                        </button>
+                        <span className={`font-extrabold text-sm w-8 text-center ${
+                          theme === 'light' ? 'text-gray-800' : 'text-white'
+                        }`}>
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                        >
+                          +
+                        </button>
+                      </div>
+                      
+                      {/* Total Price */}
+                      <div className="text-right flex-shrink-0 min-w-[100px]">
+                        <p className={`text-xs font-semibold mb-0.5 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total:</p>
+                        <p className="text-base font-extrabold text-[#fe8002]">
+                          {(item.price * item.quantity).toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
+                        </p>
+                      </div>
+                      
+                      {/* Remove Button */}
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                        onClick={() => removeFromCart(item.id)}
+                        className="w-10 h-10 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
+                        title="Supprimer"
                       >
-                        +
+                        <FaTrash className="text-sm" />
                       </button>
                     </div>
-                    
-                    {/* Total Price */}
-                    <div className="text-right flex-shrink-0 min-w-[80px] md:min-w-[100px]">
-                      <p className={`text-xs font-semibold mb-0.5 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total:</p>
-                      <p className="text-sm md:text-base font-extrabold text-[#fe8002]">
-                        {(item.price * item.quantity).toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
-                      </p>
-                    </div>
-                    
-                    {/* Remove Button */}
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
-                      title="Supprimer"
-                    >
-                      <FaTrash className="text-xs md:text-sm" />
-                    </button>
                   </div>
                 ))}
                 </div>

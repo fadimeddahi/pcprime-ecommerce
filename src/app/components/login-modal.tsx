@@ -48,7 +48,28 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200]  padding-auto">
+    <>
+      {/* Inline Theme Detection Script for Login Modal */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              try {
+                const theme = localStorage.getItem('theme');
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                } else {
+                  document.documentElement.classList.remove('dark');
+                }
+              } catch (e) {
+                document.documentElement.classList.remove('dark');
+              }
+            })();
+          `,
+        }}
+      />
+      
+      <div className="fixed inset-0 z-[200]  padding-auto">
       {/* Background Overlay */}
       <div 
         className={`absolute inset-0 backdrop-blur-lg ${
@@ -248,6 +269,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         </form>
       </div>
     </div>
+    </>
   );
 };
 

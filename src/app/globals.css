@@ -4,7 +4,18 @@
   scroll-behavior: smooth;
 }
 
+/* Default light theme variables */
 :root {
+  --background: #ffffff;
+  --foreground: #1a1a1a;
+  --primary: #fe8002;
+  --secondary: #ff4500;
+  --card-bg: #f8f9fa;
+  --border: rgba(254, 128, 2, 0.3);
+}
+
+/* Dark theme variables */
+.dark {
   --background: #0a0a0a;
   --foreground: #ededed;
   --primary: #fe8002;
