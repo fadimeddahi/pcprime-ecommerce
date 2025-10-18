@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
@@ -18,6 +19,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
   const { theme } = useTheme();
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart();
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCheckoutClick = () => {
     setShowLoginModal(true);
@@ -395,13 +401,16 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
         </div>
       </div>
 
-      {/* Login Modal */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onContinueAsGuest={handleContinueAsGuest}
-        onLoginSuccess={handleLoginSuccess}
-      />
+      {/* Login Modal - Rendered via Portal to bypass stacking context */}
+      {mounted && createPortal(
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onContinueAsGuest={handleContinueAsGuest}
+          onLoginSuccess={handleLoginSuccess}
+        />,
+        document.body
+      )}
     </>
   );
 };

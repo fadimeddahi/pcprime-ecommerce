@@ -69,7 +69,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         }}
       />
       
-      <div className="fixed inset-0 z-[200]  padding-auto">
+      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
       {/* Background Overlay */}
       <div 
         className={`absolute inset-0 backdrop-blur-lg ${
@@ -79,7 +79,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
       />
       
       {/* Modal Content */}
-      <div className={`relative z-[201] w-full max-w-md rounded-3xl border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 overflow-hidden transform transition-all duration-300 scale-100 ${
+      <div className={`relative z-10 w-full max-w-md rounded-3xl border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 overflow-hidden transform transition-all duration-300 scale-100 ${
         theme === 'light'
           ? 'bg-white' 
           : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f]'

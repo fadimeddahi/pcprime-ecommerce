@@ -7,6 +7,7 @@ import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import ThemeWrapper from "./components/theme-wrapper";
+import ReactQueryProvider from "./providers/ReactQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,17 +55,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <ThemeWrapper>
-            <CartProvider>
-              <WishlistProvider>
-                <Navbar />
-                {children}
-                <Footer />
-              </WishlistProvider>
-            </CartProvider>
-          </ThemeWrapper>
-        </ThemeProvider>
+        <ReactQueryProvider>
+          <ThemeProvider>
+            <ThemeWrapper>
+              <CartProvider>
+                <WishlistProvider>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                </WishlistProvider>
+              </CartProvider>
+            </ThemeWrapper>
+          </ThemeProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   );

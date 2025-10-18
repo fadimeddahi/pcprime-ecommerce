@@ -6,20 +6,8 @@ import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
-
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  image: string;
-  price: number;
-  originalPrice?: number;
-  condition?: "Neuf" | "Excellent" | "Très bon" | "Bon" | "Acceptable";
-  discount?: number;
-  isPromo?: boolean;
-  isTopSeller?: boolean;
-  warrantyMonths?: number;
-}
+import { useAllProducts } from "../hooks/useProducts";
+import type { Product } from "../types/product";
 
 const ProductCard = ({ product }: { product: Product }) => {
   const { addToCart } = useCart();
@@ -31,7 +19,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   const handleAddToCart = () => {
     addToCart(
       {
-        id: product.id,
+        id: Number(product.id),
         name: product.name,
         price: product.price,
         image: product.image,
@@ -44,12 +32,13 @@ const ProductCard = ({ product }: { product: Product }) => {
   };
 
   const handleWishlistToggle = () => {
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
+    const productId = Number(product.id);
+    if (isInWishlist(productId)) {
+      removeFromWishlist(productId);
       setIsWishlisted(false);
     } else {
       addToWishlist({
-        id: product.id,
+        id: productId,
         name: product.name,
         price: product.price,
         image: product.image,
@@ -87,13 +76,13 @@ const ProductCard = ({ product }: { product: Product }) => {
         <button
           onClick={handleWishlistToggle}
           className={`absolute top-3 right-3 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-2xl z-10 ${
-            isInWishlist(product.id)
+            isInWishlist(Number(product.id))
               ? "bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white border-2 border-white/30"
               : theme === 'light'
                 ? "bg-white/90 text-[#fe8002] hover:bg-[#fe8002] hover:text-white border-2 border-gray-200"
                 : "bg-black/60 text-[#fe8002] hover:bg-[#fe8002] hover:text-white border-2 border-white/30"
           }`}
-          title={isInWishlist(product.id) ? "Retirer de la liste" : "Ajouter à la liste"}
+          title={isInWishlist(Number(product.id)) ? "Retirer de la liste" : "Ajouter à la liste"}
         >
           <FaHeart className="text-sm" />
         </button>
@@ -201,134 +190,14 @@ const Products = () => {
   const [showPromoOnly, setShowPromoOnly] = useState(false);
   const [showTopSellersOnly, setShowTopSellersOnly] = useState(false);
   const { theme } = useTheme();
-
-  const allProducts: Product[] = [
-    // New Products
-    {
-      id: 1,
-      name: "PC Gamer RTX 4090",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 8999.99,
-      condition: "Neuf",
-      isTopSeller: true,
-    },
-    {
-      id: 2,
-      name: "Laptop Dell XPS",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 4599.99,
-      condition: "Neuf",
-      isPromo: true,
-    },
-    {
-      id: 3,
-      name: "Carte Graphique RTX 4070",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 2499.99,
-      condition: "Neuf",
-      isTopSeller: true,
-      isPromo: true,
-    },
-    {
-      id: 4,
-      name: "PC Gaming RGB",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 6999.99,
-      condition: "Neuf",
-    },
-    {
-      id: 5,
-      name: "Laptop Gaming",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 5299.99,
-      condition: "Neuf",
-      isTopSeller: true,
-    },
-    {
-      id: 6,
-      name: "RTX 3060 Ti",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 1799.99,
-      condition: "Neuf",
-      isPromo: true,
-    },
-    // Used Products
-    {
-      id: 101,
-      name: "PC Gamer RTX 3070 - Occasion",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 5999.99,
-      originalPrice: 9999.99,
-      condition: "Excellent",
-      discount: 40,
-      warrantyMonths: 6,
-    },
-    {
-      id: 102,
-      name: "Laptop Dell XPS 15 - Occasion",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 3299.99,
-      originalPrice: 5999.99,
-      condition: "Très bon",
-      discount: 45,
-      warrantyMonths: 3,
-    },
-    {
-      id: 103,
-      name: "RTX 3060 Ti - Occasion",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 1399.99,
-      originalPrice: 2499.99,
-      condition: "Excellent",
-      discount: 44,
-      warrantyMonths: 6,
-    },
-    {
-      id: 104,
-      name: "PC Gaming RGB - Occasion",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 4599.99,
-      originalPrice: 7999.99,
-      condition: "Bon",
-      discount: 42,
-      warrantyMonths: 3,
-    },
-    {
-      id: 105,
-      name: "MacBook Pro 2020 - Occasion",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 4999.99,
-      originalPrice: 8999.99,
-      condition: "Très bon",
-      discount: 44,
-      warrantyMonths: 6,
-    },
-    {
-      id: 106,
-      name: "RTX 2080 Super - Occasion",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 999.99,
-      originalPrice: 2199.99,
-      condition: "Bon",
-      discount: 55,
-      warrantyMonths: 3,
-    },
-  ];
+  
+  // Fetch all products from API
+  const { data: productsData, isLoading, isError, error } = useAllProducts();
+  
+  const allProducts = productsData || [];
 
   // Filter products
-  const filteredProducts = allProducts.filter((product) => {
+  const filteredProducts = allProducts.filter((product: Product) => {
     if (selectedCategory !== "all" && product.category !== selectedCategory) {
       return false;
     }
@@ -589,42 +458,100 @@ const Products = () => {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-20">
-              <div className={`inline-block p-10 rounded-3xl border-2 shadow-2xl backdrop-blur-xl transition-all duration-300 ${
-                theme === 'light'
-                  ? 'bg-white border-gray-200 shadow-gray-200/50'
-                  : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] border-[#fe8002]/40 shadow-[#fe8002]/20'
-              }`}>
-                <div className="text-7xl mb-6 animate-bounce">🔍</div>
-                <p className={`text-3xl font-extrabold mb-3 bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent`}>Aucun produit trouvé</p>
-                <p className={`mb-8 text-lg ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>Essayez de modifier vos critères de recherche</p>
-                <button
-                  onClick={() => {
-                    setSelectedCategory("all");
-                    setSelectedCondition("all");
-                    setShowPromoOnly(false);
-                    setShowTopSellersOnly(false);
-                  }}
-                  className={`px-10 py-4 rounded-xl font-extrabold hover:scale-105 transition-all duration-300 shadow-xl uppercase tracking-wide text-sm border-2 ${
-                    theme === 'light'
-                      ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-white/20 shadow-[#fe8002]/40'
-                      : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black border-white/20 shadow-[#fe8002]/40'
-                  }`}
-                >
-                  ↺ Réinitialiser les filtres
-                </button>
+        {isLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div
+                key={i}
+                className={`rounded-2xl overflow-hidden shadow-xl border backdrop-blur-sm animate-pulse ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+                    : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a]'
+                }`}
+              >
+                <div className={`h-72 w-full ${
+                  theme === 'light' ? 'bg-gray-200' : 'bg-[#181818]'
+                }`} />
+                <div className="p-6 space-y-4">
+                  <div className={`h-6 rounded ${
+                    theme === 'light' ? 'bg-gray-200' : 'bg-[#181818]'
+                  }`} />
+                  <div className={`h-4 rounded w-3/4 ${
+                    theme === 'light' ? 'bg-gray-200' : 'bg-[#181818]'
+                  }`} />
+                  <div className={`h-8 rounded w-1/2 ${
+                    theme === 'light' ? 'bg-gray-200' : 'bg-[#181818]'
+                  }`} />
+                </div>
               </div>
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="col-span-full text-center py-20">
+            <div className={`inline-block p-10 rounded-3xl border-2 shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+              theme === 'light'
+                ? 'bg-white border-red-200 shadow-red-200/50'
+                : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] border-red-500/40 shadow-red-500/20'
+            }`}>
+              <div className="text-7xl mb-6">⚠️</div>
+              <p className={`text-3xl font-extrabold mb-3 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent`}>
+                Erreur de chargement
+              </p>
+              <p className={`mb-8 text-lg ${
+                theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+              }`}>
+                {error instanceof Error ? error.message : 'Impossible de charger les produits'}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className={`px-10 py-4 rounded-xl font-extrabold hover:scale-105 transition-all duration-300 shadow-xl uppercase tracking-wide text-sm border-2 ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-white/20 shadow-[#fe8002]/40'
+                    : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black border-white/20 shadow-[#fe8002]/40'
+                }`}
+              >
+                ↻ Réessayer
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product: Product) => (
+                <ProductCard key={product.id} product={product} />
+              ))
+            ) : (
+              <div className="col-span-full text-center py-20">
+                <div className={`inline-block p-10 rounded-3xl border-2 shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+                  theme === 'light'
+                    ? 'bg-white border-gray-200 shadow-gray-200/50'
+                    : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] border-[#fe8002]/40 shadow-[#fe8002]/20'
+                }`}>
+                  <div className="text-7xl mb-6 animate-bounce">🔍</div>
+                  <p className={`text-3xl font-extrabold mb-3 bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent`}>Aucun produit trouvé</p>
+                  <p className={`mb-8 text-lg ${
+                    theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                  }`}>Essayez de modifier vos critères de recherche</p>
+                  <button
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      setSelectedCondition("all");
+                      setShowPromoOnly(false);
+                      setShowTopSellersOnly(false);
+                    }}
+                    className={`px-10 py-4 rounded-xl font-extrabold hover:scale-105 transition-all duration-300 shadow-xl uppercase tracking-wide text-sm border-2 ${
+                      theme === 'light'
+                        ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white border-white/20 shadow-[#fe8002]/40'
+                        : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black border-white/20 shadow-[#fe8002]/40'
+                    }`}
+                  >
+                    ↺ Réinitialiser les filtres
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
