@@ -6,7 +6,7 @@ import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
-import { useAllProducts } from "../hooks/useProducts";
+import { useAllProducts, useAllCategories } from "../hooks/useProducts";
 import type { Product } from "../types/product";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -60,12 +60,20 @@ const ProductCard = ({ product }: { product: Product }) => {
           ? 'bg-gradient-to-br from-gray-100 to-gray-50'
           : 'bg-gradient-to-br from-[#181818] to-[#000000]'
       }`}>
-        <Image
-          src={product.image}
-          alt={product.name}
-          fill
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
-        />
+        {product.image ? (
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className={`text-6xl ${theme === 'light' ? 'text-gray-300' : 'text-gray-700'}`}>
+              📦
+            </div>
+          </div>
+        )}
         <div className={`absolute inset-0 bg-gradient-to-t via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300 ${
           theme === 'light'
             ? 'from-white/80'
@@ -191,10 +199,12 @@ const Products = () => {
   const [showTopSellersOnly, setShowTopSellersOnly] = useState(false);
   const { theme } = useTheme();
   
-  // Fetch all products from API
+  // Fetch all products and categories from API
   const { data: productsData, isLoading, isError, error } = useAllProducts();
+  const { data: categoriesData = [] } = useAllCategories();
   
   const allProducts = productsData || [];
+  const categories = categoriesData || [];
 
   // Filter products
   const filteredProducts = allProducts.filter((product: Product) => {
@@ -252,9 +262,11 @@ const Products = () => {
                 }`}
               >
                 <option value="all">Toutes</option>
-                <option value="PC Bureau">PC Bureau</option>
-                <option value="PC Portable">PC Portable</option>
-                <option value="Composants">Composants</option>
+                {categoriesData.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
+                  </option>
+                ))}
               </select>
 
               <select
@@ -354,9 +366,16 @@ const Products = () => {
                   }}
                 >
                   <option value="all" className={theme === 'light' ? 'bg-white text-[#fe8002]' : 'bg-[#1a1a1a] text-[#fe8002]'} style={{ fontWeight: 'bold', padding: '12px' }}>TOUTES LES CATÉGORIES</option>
-                  <option value="PC Bureau" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>PC BUREAU</option>
-                  <option value="PC Portable" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>PC PORTABLE</option>
-                  <option value="Composants" className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} style={{ fontWeight: '500', padding: '12px' }}>COMPOSANTS</option>
+                  {categories.map((category) => (
+                    <option 
+                      key={category.id} 
+                      value={category.name} 
+                      className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'} 
+                      style={{ fontWeight: '500', padding: '12px' }}
+                    >
+                      {category.name.toUpperCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
 

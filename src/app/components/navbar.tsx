@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
+import { useAllCategories } from "../hooks/useProducts";
 import Cart from "./cart";
 import Wishlist from "./wishlist";
 
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { getCartItemsCount } = useCart();
   const { getWishlistItemsCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
+  const { data: categories = [] } = useAllCategories();
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -101,16 +103,14 @@ const Navbar = () => {
                 ? 'bg-white text-gray-800 border-[#fe8002]/40 hover:border-[#fe8002] focus:border-[#fe8002] shadow-[#fe8002]/20'
                 : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40 hover:border-[#fe8002] focus:border-[#fe8002] shadow-[#fe8002]/10'
             }`}
+            defaultValue=""
           >
-            <option value="">CATÉGORIES</option>
-            <option value="pc-gaming">PC GAMING</option>
-            <option value="pc-portable">PORTABLES</option>
-            <option value="cartes-graphiques">GPU</option>
-            <option value="processeurs">CPU</option>
-            <option value="stockage">STOCKAGE</option>
-            <option value="peripheriques">PÉRIPHÉRIQUES</option>
-            <option value="moniteurs">MONITEURS</option>
-            <option value="accessoires">ACCESSOIRES</option>
+            <option value="" disabled hidden>CATÉGORIES</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name.toUpperCase()}
+              </option>
+            ))}
           </select>
 
           {/* Icons */}
@@ -250,20 +250,24 @@ const Navbar = () => {
           </a>
 
           <div className="pt-5 border-t-2 border-[#fe8002]/30">
-            <select className={`border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 shadow-lg focus:border-[#fe8002] focus:outline-none transition-all text-sm w-full font-semibold cursor-pointer ${
-              theme === 'light'
-                ? 'bg-white text-gray-800 shadow-[#fe8002]/20'
-                : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] text-[#fe8002] shadow-[#fe8002]/20'
-            }`}>
-              <option value="" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-[#fe8002]'}>CATÉGORIES</option>
-              <option value="pc-gaming" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>PC GAMING</option>
-              <option value="pc-portable" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>ORDINATEURS PORTABLES</option>
-              <option value="cartes-graphiques" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>CARTES GRAPHIQUES</option>
-              <option value="processeurs" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>PROCESSEURS</option>
-              <option value="stockage" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>STOCKAGE SSD/HDD</option>
-              <option value="peripheriques" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>PÉRIPHÉRIQUES</option>
-              <option value="moniteurs" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>MONITEURS</option>
-              <option value="accessoires" className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}>ACCESSOIRES</option>
+            <select 
+              className={`border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 shadow-lg focus:border-[#fe8002] focus:outline-none transition-all text-sm w-full font-semibold cursor-pointer ${
+                theme === 'light'
+                  ? 'bg-white text-gray-800 shadow-[#fe8002]/20'
+                  : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] text-[#fe8002] shadow-[#fe8002]/20'
+              }`}
+              defaultValue=""
+            >
+              <option value="" disabled hidden className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-[#fe8002]'}>CATÉGORIES</option>
+              {categories.map((category) => (
+                <option 
+                  key={category.id} 
+                  value={category.id} 
+                  className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-white'}
+                >
+                  {category.name.toUpperCase()}
+                </option>
+              ))}
             </select>
           </div>
         </nav>

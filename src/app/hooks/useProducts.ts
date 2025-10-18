@@ -16,6 +16,8 @@ export const productKeys = {
     [...productKeys.all, 'search', { q, limit, offset }] as const,
 };
 
+
+
 // Hook: Get single product by ID
 // GET /products/:id
 export const useProduct = (
@@ -60,4 +62,7 @@ export const useSearchProducts = (
     ...options,
   });
 };
+
+// Re-export category hooks from useCategories.ts
+export { useAllCategories, useCategory } from './useCategories';
 

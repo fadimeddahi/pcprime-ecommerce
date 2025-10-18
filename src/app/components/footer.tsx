@@ -2,9 +2,11 @@
 
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
+import { useAllCategories } from "../hooks/useProducts";
 
 const Footer = () => {
   const { theme } = useTheme();
+  const { data: categories = [] } = useAllCategories();
   
   return (
     <footer className={`border-t-2 shadow-2xl transition-all duration-300 ${
@@ -81,46 +83,19 @@ const Footer = () => {
               <h4 className="text-[#fe8002] font-bold text-lg">Catégories</h4>
             </div>
             <ul className="space-y-3">
-              <li>
-                <a href="/category/pc-portable" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
-                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  PC Portable
-                </a>
-              </li>
-              <li>
-                <a href="/category/pc-bureau" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
-                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  PC Bureau
-                </a>
-              </li>
-              <li>
-                <a href="/category/composants" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
-                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  Composants
-                </a>
-              </li>
-              <li>
-                <a href="/category/accessoires" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
-                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  Accessoires
-                </a>
-              </li>
-              <li>
-                <a href="/category/ecrans" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
-                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-                }`}>
-                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  Écrans
-                </a>
-              </li>
+              {categories.slice(0, 5).map((category) => (
+                <li key={category.id}>
+                  <a 
+                    href={`/category/${category.id}`} 
+                    className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                      theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                    }`}
+                  >
+                    <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
+                    {category.name}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
 
