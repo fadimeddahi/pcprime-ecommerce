@@ -4,24 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
-import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
+import { FaShoppingCart, FaHeart, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaShare } from "react-icons/fa";
+import { Product } from "../types/product";
 
 interface ProductDetailProps {
-  product: {
-    id: number;
-    name: string;
-    category: string;
-    image: string;
-    price: number;
-    oldPrice?: number;
-    description: string;
-    specs: { label: string; value: string }[];
-    inStock: boolean;
-    rating: number;
-    reviews: number;
-    isPromo?: boolean;
-    isTopSeller?: boolean;
-  };
+  product: Product;
 }
 
 const ProductDetail = ({ product }: ProductDetailProps) => {
@@ -35,7 +22,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const handleAddToCart = () => {
     addToCart(
       {
-        id: product.id,
+        id: typeof product.id === 'string' ? parseInt(product.id, 10) : product.id,
         name: product.name,
         price: product.price,
         image: product.image,
@@ -50,8 +37,15 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  // Mock images for gallery (in real app, product would have multiple images)
-  const images = [product.image, product.image, product.image];
+  // Use images array from product (fallback to single image)
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : [product.image];
+
+  // Get warranty, delivery, and return policy info from backend or use defaults
+  const warrantyInfo = product.warranty_info || (product.warrantyMonths ? `${product.warrantyMonths} mois` : '1 an');
+  const deliveryInfo = product.delivery_info || 'Rapide';
+  const returnPolicy = product.return_policy || '30 jours';
 
   return (
     <section className={`py-12 px-4 min-h-screen relative overflow-hidden transition-all duration-300 ${
@@ -177,26 +171,6 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               {product.name}
             </h1>
 
-            {/* Rating */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar
-                    key={i}
-                    className={`text-lg ${
-                      i < Math.floor(product.rating) ? "text-[#fe8002]" : "text-gray-600"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-[#fe8002] font-bold">
-                {product.rating}
-              </span>
-              <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                ({product.reviews} avis)
-              </span>
-            </div>
-
             {/* Price */}
             <div className={`rounded-2xl p-6 border-4 shadow-2xl ring-4 ${
               theme === 'light'
@@ -320,7 +294,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaTruck className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Livraison</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Rapide</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{deliveryInfo}</p>
                 </div>
               </div>
               <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
@@ -331,7 +305,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaShieldAlt className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Garantie</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>1 an</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{warrantyInfo}</p>
                 </div>
               </div>
               <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
@@ -342,7 +316,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaUndo className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Retour</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>30 jours</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{returnPolicy}</p>
                 </div>
               </div>
             </div>
@@ -350,41 +324,43 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
         </div>
 
         {/* Specifications */}
-        <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
-          theme === 'light'
-            ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
-            : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
-        }`}>
-          <div className="flex items-center gap-3 mb-6">
-            <div className={`w-1.5 h-10 rounded-full shadow-lg ${
-              theme === 'light'
-                ? 'bg-gradient-to-b from-gray-800 via-[#fe8002] to-[#ff4500] shadow-gray-800/50'
-                : 'bg-gradient-to-b from-white via-[#fe8002] to-[#ff4500] shadow-white/50'
-            }`} />
-            <h2 className={`text-3xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${
-              theme === 'light'
-                ? 'from-gray-900 via-[#fe8002] to-gray-900'
-                : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-            }`}>
-              Caractéristiques Techniques
-            </h2>
+        {product.specs && product.specs.length > 0 && (
+          <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
+            theme === 'light'
+              ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
+              : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
+          }`}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`w-1.5 h-10 rounded-full shadow-lg ${
+                theme === 'light'
+                  ? 'bg-gradient-to-b from-gray-800 via-[#fe8002] to-[#ff4500] shadow-gray-800/50'
+                  : 'bg-gradient-to-b from-white via-[#fe8002] to-[#ff4500] shadow-white/50'
+              }`} />
+              <h2 className={`text-3xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${
+                theme === 'light'
+                  ? 'from-gray-900 via-[#fe8002] to-gray-900'
+                  : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+              }`}>
+                Caractéristiques Techniques
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {product.specs.map((spec, index) => (
+                <div
+                  key={index}
+                  className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
+                    theme === 'light'
+                      ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
+                      : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
+                  }`}
+                >
+                  <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
+                  <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {product.specs.map((spec, index) => (
-              <div
-                key={index}
-                className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
-                  theme === 'light'
-                    ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
-                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
-                }`}
-              >
-                <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
-                <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

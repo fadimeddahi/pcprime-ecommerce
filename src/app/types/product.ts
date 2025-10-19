@@ -36,12 +36,36 @@ export interface BackendProduct {
   original_price?: number;
   description?: string;
   quantity?: number;
-  rating?: number;
-  reviews?: number;
   barcode?: string;
   brand?: string;
   created_at?: string;
   updated_at?: string;
+  // Hardware specs from backend (English field names)
+  processor?: string;
+  graphics_card?: string;
+  ram?: string;
+  storage?: string;
+  power_supply?: string;
+  case_type?: string;
+  cooling?: string;
+  operating_system?: string;
+  motherboard?: string;
+  // Hardware specs from backend (French field names)
+  cpu?: string;
+  gpu?: string;
+  screen?: string;
+  battery?: string;
+  camera?: string;
+  refroidissement?: string;
+  système?: string;
+  alimentation?: string;
+  boîtier?: string;
+  // Policy info from backend
+  delivery_info?: string;
+  warranty_info?: string;
+  return_policy?: string;
+  garantie?: string;
+  retour?: string;
 }
 
 // Normalized product type for frontend use
@@ -51,23 +75,27 @@ export interface Product {
   category: string; // Always a string after normalization
   category_id?: number;
   image: string;
+  images?: string[]; // Multiple product images
   price: number;
   oldPrice?: number;
   condition?: string;
-  isTopSeller?: boolean;
+  isTopSeller?: boolean; // Keep for future backend support
   isPromo?: boolean;
   discount?: number;
   warrantyMonths?: number;
   originalPrice?: number;
   description?: string;
+  specs?: { label: string; value: string }[]; // Hardware specifications
   inStock?: boolean;
   quantity?: number;
-  rating?: number;
-  reviews?: number;
   barcode?: string;
   brand?: string;
   created_at?: string;
   updated_at?: string;
+  // Policy info from backend
+  delivery_info?: string;
+  warranty_info?: string;
+  return_policy?: string;
 }
 
 export interface SearchProductsParams {
