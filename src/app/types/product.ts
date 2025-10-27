@@ -53,12 +53,16 @@ export interface Product {
   image: string;
   price: number;
   oldPrice?: number;
+  old_price?: number;
   condition?: string;
   isTopSeller?: boolean;
   isPromo?: boolean;
+  is_promo?: boolean;
   discount?: number;
   warrantyMonths?: number;
+  warranty_months?: number;
   originalPrice?: number;
+  original_price?: number;
   description?: string;
   inStock?: boolean;
   quantity?: number;
@@ -68,6 +72,22 @@ export interface Product {
   brand?: string;
   created_at?: string;
   updated_at?: string;
+  etat?: string;
+  garantie?: string;
+  retour?: string;
+  // Technical specs
+  cpu?: string;
+  ram?: string;
+  storage?: string;
+  screen?: string;
+  battery?: string;
+  camera?: string;
+  refroidissement?: string;
+  système?: string;
+  gpu?: string;
+  alimentation?: string;
+  boîtier?: string;
+  number_sold?: number;
 }
 
 export interface SearchProductsParams {

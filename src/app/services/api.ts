@@ -238,4 +238,118 @@ export const authApi = {
   },
 };
 
+// Order API Types
+export interface OrderItem {
+  product_id: number;
+  quantity: number;
+}
+
+export interface CreateOrderRequest {
+  phone_number: string;
+  email: string;
+  willaya: string;
+  commune: string;
+  full_name: string;
+  notes: string;
+  cart_items: OrderItem[];
+}
+
+export interface OrderResponse {
+  id: number;
+  user_id?: number;
+  phone_number: string;
+  email: string;
+  willaya: string;
+  commune: string;
+  full_name: string;
+  total_price: number;
+  shipping_cost: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Order API Service
+export const orderApi = {
+  // POST /orders/direct
+  // Create order with optional authentication
+  // If authenticated (with token): Free shipping (0 DZD)
+  // If anonymous (no token): Shipping cost 500 DZD
+  createOrder: async (orderData: CreateOrderRequest): Promise<OrderResponse> => {
+    const token = authApi.getToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add Authorization header if user is logged in
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const data = await fetchApi<OrderResponse>('/orders/direct', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(orderData),
+    });
+    
+    return data;
+  },
+};
+
+// PC Builder API Types
+import { 
+  CPU, 
+  Motherboard, 
+  RAM, 
+  Storage, 
+  Monitor, 
+  BuildRequest, 
+  BuildResponse 
+} from '../types/pc-builder';
+
+// PC Builder API Service
+export const pcBuilderApi = {
+  // GET /components/cpu
+  getAllCPUs: async (): Promise<CPU[]> => {
+    const data = await fetchApi<CPU[]>('/components/cpu');
+    return data;
+  },
+
+  // GET /components/motherboard
+  getAllMotherboards: async (): Promise<Motherboard[]> => {
+    const data = await fetchApi<Motherboard[]>('/components/motherboard');
+    return data;
+  },
+
+  // GET /components/ram
+  getAllRAM: async (): Promise<RAM[]> => {
+    const data = await fetchApi<RAM[]>('/components/ram');
+    return data;
+  },
+
+  // GET /components/storage
+  getAllStorage: async (): Promise<Storage[]> => {
+    const data = await fetchApi<Storage[]>('/components/storage');
+    return data;
+  },
+
+  // GET /components/monitor
+  getAllMonitors: async (): Promise<Monitor[]> => {
+    const data = await fetchApi<Monitor[]>('/components/monitor');
+    return data;
+  },
+
+  // POST /build/check
+  checkBuildCompatibility: async (buildData: BuildRequest): Promise<BuildResponse> => {
+    const data = await fetchApi<BuildResponse>('/build/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(buildData),
+    });
+    return data;
+  },
+};
+
 export default productApi;

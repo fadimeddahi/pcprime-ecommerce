@@ -43,17 +43,32 @@ const ProfilePage = () => {
         return;
       }
 
-      // Get user data from localStorage (stored during login)
-      const token = authApi.getToken();
-      const userData = localStorage.getItem('user_data');
-      
-      if (userData) {
-        const user = JSON.parse(userData);
-        setProfileData(user);
-        setEditData({
-          username: user.username,
-          email: user.email,
-        });
+      try {
+        // Get user data from localStorage (stored during login)
+        const token = authApi.getToken();
+        const userData = localStorage.getItem('user_data');
+        
+        if (userData) {
+          const user = JSON.parse(userData);
+          setProfileData(user);
+          setEditData({
+            username: user.username || "",
+            email: user.email || "",
+          });
+        } else {
+          // No user data found, redirect to home
+          console.warn('No user data found in localStorage');
+          authApi.logout();
+          router.push('/');
+          return;
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+        // Clear invalid data and redirect
+        authApi.logout();
+        localStorage.removeItem('user_data');
+        router.push('/');
+        return;
       }
       
       setIsLoading(false);

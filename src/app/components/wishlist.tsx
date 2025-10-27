@@ -35,28 +35,6 @@ const Wishlist = ({ isOpen, onClose }: WishlistProps) => {
 
   return (
     <>
-      {/* Inline Theme Detection Script for Wishlist */}
-      {isOpen && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme');
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch (e) {
-                  document.documentElement.classList.remove('dark');
-                }
-              })();
-            `,
-          }}
-        />
-      )}
-      
       {/* Full-Screen Wishlist Overlay */}
       <div
         className={`fixed inset-0 z-[100] flex items-center justify-center transition-all duration-300 ${

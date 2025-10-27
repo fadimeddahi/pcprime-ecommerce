@@ -3,25 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
+import { Product } from "../types/product";
 import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
 
 interface ProductDetailProps {
-  product: {
-    id: number;
-    name: string;
-    category: string;
-    image: string;
-    price: number;
-    oldPrice?: number;
-    description: string;
-    specs: { label: string; value: string }[];
-    inStock: boolean;
-    rating: number;
-    reviews: number;
-    isPromo?: boolean;
-    isTopSeller?: boolean;
-  };
+  product: Product;
 }
 
 const ProductDetail = ({ product }: ProductDetailProps) => {
@@ -29,13 +17,15 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const productIdNum = Number(product.id);
+  const [isFavorite, setIsFavorite] = useState(isInWishlist(productIdNum));
 
   const handleAddToCart = () => {
     addToCart(
       {
-        id: product.id,
+        id: productIdNum,
         name: product.name,
         price: product.price,
         image: product.image,
@@ -47,11 +37,60 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
     setTimeout(() => setAddedToCart(false), 3000);
   };
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
+  const toggleFavorite = () => {
+    const wishlistItem = {
+      id: productIdNum,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category,
+    };
+    
+    if (isFavorite) {
+      removeFromWishlist(productIdNum);
+    } else {
+      addToWishlist(wishlistItem);
+    }
+    setIsFavorite(!isFavorite);
+  };
+
+  const incrementQuantity = () => {
+    const maxQty = product.quantity || 999;
+    setQuantity(prev => (prev < maxQty ? prev + 1 : prev));
+  };
+  
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  // Mock images for gallery (in real app, product would have multiple images)
-  const images = [product.image, product.image, product.image];
+  // Use product image
+  const images = [product.image];
+  
+  // Calculate discount percentage
+  const discountPercentage = product.oldPrice || product.old_price
+    ? Math.round(((product.oldPrice || product.old_price || 0) - product.price) / (product.oldPrice || product.old_price || 1) * 100)
+    : product.discount || 0;
+
+  // Build technical specifications from product data
+  const buildSpecs = () => {
+    const specs: { label: string; value: string }[] = [];
+    
+    if (product.cpu) specs.push({ label: "Processeur", value: product.cpu });
+    if (product.gpu) specs.push({ label: "Carte Graphique", value: product.gpu });
+    if (product.ram) specs.push({ label: "Mémoire RAM", value: product.ram });
+    if (product.storage) specs.push({ label: "Stockage", value: product.storage });
+    if (product.screen) specs.push({ label: "Écran", value: product.screen });
+    if (product.battery) specs.push({ label: "Batterie", value: product.battery });
+    if (product.camera) specs.push({ label: "Caméra", value: product.camera });
+    if (product.alimentation) specs.push({ label: "Alimentation", value: product.alimentation });
+    if (product.boîtier) specs.push({ label: "Boîtier", value: product.boîtier });
+    if (product.refroidissement) specs.push({ label: "Refroidissement", value: product.refroidissement });
+    if (product.système) specs.push({ label: "Système", value: product.système });
+    if (product.brand) specs.push({ label: "Marque", value: product.brand });
+    if (product.etat) specs.push({ label: "État", value: product.etat });
+    
+    return specs;
+  };
+
+  const specs = buildSpecs();
 
   return (
     <section className={`py-12 px-4 min-h-screen relative overflow-hidden transition-all duration-300 ${
@@ -178,24 +217,37 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
             </h1>
 
             {/* Rating */}
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar
-                    key={i}
-                    className={`text-lg ${
-                      i < Math.floor(product.rating) ? "text-[#fe8002]" : "text-gray-600"
-                    }`}
-                  />
-                ))}
+            {(product.rating || product.number_sold) && (
+              <div className="flex items-center gap-4">
+                {product.rating && (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <FaStar
+                          key={i}
+                          className={`text-lg ${
+                            i < Math.floor(product.rating || 0) ? "text-[#fe8002]" : "text-gray-600"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-[#fe8002] font-bold">
+                      {product.rating.toFixed(1)}
+                    </span>
+                    <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                      ({product.reviews || 0} avis)
+                    </span>
+                  </>
+                )}
+                {product.number_sold && product.number_sold > 0 && (
+                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
+                    theme === 'light' ? 'bg-green-100 text-green-700' : 'bg-green-900/30 text-green-400'
+                  }`}>
+                    {product.number_sold} vendus
+                  </span>
+                )}
               </div>
-              <span className="text-[#fe8002] font-bold">
-                {product.rating}
-              </span>
-              <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                ({product.reviews} avis)
-              </span>
-            </div>
+            )}
 
             {/* Price */}
             <div className={`rounded-2xl p-6 border-4 shadow-2xl ring-4 ${
@@ -350,41 +402,43 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
         </div>
 
         {/* Specifications */}
-        <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
-          theme === 'light'
-            ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
-            : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
-        }`}>
-          <div className="flex items-center gap-3 mb-6">
-            <div className={`w-1.5 h-10 rounded-full shadow-lg ${
-              theme === 'light'
-                ? 'bg-gradient-to-b from-gray-800 via-[#fe8002] to-[#ff4500] shadow-gray-800/50'
-                : 'bg-gradient-to-b from-white via-[#fe8002] to-[#ff4500] shadow-white/50'
-            }`} />
-            <h2 className={`text-3xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${
-              theme === 'light'
-                ? 'from-gray-900 via-[#fe8002] to-gray-900'
-                : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-            }`}>
-              Caractéristiques Techniques
-            </h2>
+        {specs.length > 0 && (
+          <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
+            theme === 'light'
+              ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
+              : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
+          }`}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`w-1.5 h-10 rounded-full shadow-lg ${
+                theme === 'light'
+                  ? 'bg-gradient-to-b from-gray-800 via-[#fe8002] to-[#ff4500] shadow-gray-800/50'
+                  : 'bg-gradient-to-b from-white via-[#fe8002] to-[#ff4500] shadow-white/50'
+              }`} />
+              <h2 className={`text-3xl font-extrabold bg-gradient-to-r bg-clip-text text-transparent ${
+                theme === 'light'
+                  ? 'from-gray-900 via-[#fe8002] to-gray-900'
+                  : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+              }`}>
+                Caractéristiques Techniques
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {specs.map((spec, index) => (
+                <div
+                  key={index}
+                  className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
+                    theme === 'light'
+                      ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
+                      : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
+                  }`}
+                >
+                  <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
+                  <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {product.specs.map((spec, index) => (
-              <div
-                key={index}
-                className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
-                  theme === 'light'
-                    ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
-                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
-                }`}
-              >
-                <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
-                <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

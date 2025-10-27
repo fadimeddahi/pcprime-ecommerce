@@ -1,17 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import Image from "next/image";
-import { FaShoppingCart, FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCreditCard, FaCheckCircle } from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCheckCircle, FaTruck } from "react-icons/fa";
+import { orderApi, authApi } from "../services/api";
 
 const CheckoutPage = () => {
   const router = useRouter();
   const { cartItems, getCartTotal, clearCart } = useCart();
   const { theme } = useTheme();
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    setIsAuthenticated(authApi.isAuthenticated());
+  }, []);
   
   const [formData, setFormData] = useState({
     // Personal Info
@@ -21,14 +29,8 @@ const CheckoutPage = () => {
     phone: "",
     
     // Shipping Address
-    address: "",
-    city: "",
+    commune: "",
     wilaya: "",
-    postalCode: "",
-    
-    // Payment
-    paymentMethod: "cash",
-    notes: "",
   });
 
   const wilayas = [
@@ -44,17 +46,95 @@ const CheckoutPage = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would normally send the order to your backend
-    console.log("Order Data:", { ...formData, items: cartItems, total: getCartTotal() });
-    setOrderPlaced(true);
-    
-    // Clear cart after 3 seconds and redirect
-    setTimeout(() => {
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      // Format cart items for backend
+      const cart_items = cartItems.map(item => ({
+        product_id: Number(item.id),
+        quantity: item.quantity
+      }));
+
+      // Prepare order data
+      const orderData = {
+        phone_number: formData.phone,
+        email: formData.email,
+        willaya: formData.wilaya,
+        commune: formData.commune,
+        full_name: `${formData.firstName} ${formData.lastName}`.trim(),
+        notes: "",  // Empty string as per backend requirements
+        cart_items: cart_items
+      };
+
+      console.log("📤 Submitting order:", orderData);
+
+      // Submit order to backend
+      const response = await orderApi.createOrder(orderData);
+      
+      console.log("✅ Order created successfully:", response);
+      
+      // Clear cart from localStorage
       clearCart();
-      router.push("/");
-    }, 5000);
+      
+      // Show success message
+      setOrderPlaced(true);
+      
+      // Redirect after 5 seconds
+      setTimeout(() => {
+        router.push("/");
+      }, 5000);
+      
+    } catch (err: any) {
+      console.error("❌ Order submission error:", err);
+      console.error("❌ Error details:", {
+        message: err.message,
+        status: err.status,
+        data: err.data,
+        stack: err.stack
+      });
+      
+      // Extract detailed error information
+      let errorMessage = "Une erreur s'est produite lors de la commande.";
+      
+      if (err.data) {
+        // Backend returned structured error data
+        console.log("📋 Backend error data:", err.data);
+        
+        if (err.data.message) {
+          errorMessage = err.data.message;
+        } else if (err.data.error) {
+          errorMessage = typeof err.data.error === 'string' 
+            ? err.data.error 
+            : JSON.stringify(err.data.error);
+        } else if (err.data.details) {
+          errorMessage = typeof err.data.details === 'string'
+            ? err.data.details
+            : JSON.stringify(err.data.details);
+        } else {
+          // Try to stringify entire data object
+          try {
+            errorMessage = JSON.stringify(err.data);
+          } catch {
+            errorMessage = "Erreur de format de réponse du serveur";
+          }
+        }
+      } else if (err.message) {
+        // Standard error message
+        errorMessage = err.message;
+      }
+      
+      // Add status code if available
+      if (err.status) {
+        errorMessage = `[Erreur ${err.status}] ${errorMessage}`;
+      }
+      
+      console.log("📢 Displaying error to user:", errorMessage);
+      setError(errorMessage);
+      setIsSubmitting(false);
+    }
   };
 
   if (cartItems.length === 0 && !orderPlaced) {
@@ -172,6 +252,36 @@ const CheckoutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form Section */}
           <div className="lg:col-span-2">
+            {/* Global Error Display */}
+            {error && (
+              <div className={`mb-6 p-5 rounded-2xl border-2 border-red-500/50 backdrop-blur-xl animate-pulse ${
+                theme === 'light' 
+                  ? 'bg-red-50 shadow-lg shadow-red-500/20' 
+                  : 'bg-red-950/30 shadow-lg shadow-red-500/10'
+              }`}>
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl flex-shrink-0">⚠️</span>
+                  <div className="flex-1">
+                    <h3 className="text-red-600 dark:text-red-400 font-extrabold text-lg mb-2 uppercase tracking-wide">
+                      Erreur de commande
+                    </h3>
+                    <p className={`text-sm leading-relaxed break-words ${
+                      theme === 'light' ? 'text-red-700' : 'text-red-300'
+                    }`}>
+                      {error}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setError("")}
+                      className="mt-3 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline"
+                    >
+                      Fermer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Personal Information */}
               <div className={`rounded-2xl p-6 md:p-8 border-2 border-[#fe8002]/30 shadow-2xl backdrop-blur-xl ${
@@ -271,26 +381,7 @@ const CheckoutPage = () => {
                 </div>
                 
                 <div className="space-y-4">
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      Adresse complète *
-                    </label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      required
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                        theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                      placeholder="Rue, numéro, bâtiment..."
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
                         theme === 'light' ? 'text-gray-800' : 'text-white'
@@ -321,8 +412,8 @@ const CheckoutPage = () => {
                       </label>
                       <input
                         type="text"
-                        name="city"
-                        value={formData.city}
+                        name="commune"
+                        value={formData.commune}
                         onChange={handleInputChange}
                         required
                         className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
@@ -331,84 +422,6 @@ const CheckoutPage = () => {
                         placeholder="Commune"
                       />
                     </div>
-                    
-                    <div>
-                      <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
-                        theme === 'light' ? 'text-gray-800' : 'text-white'
-                      }`}>
-                        Code postal
-                      </label>
-                      <input
-                        type="text"
-                        name="postalCode"
-                        value={formData.postalCode}
-                        onChange={handleInputChange}
-                        className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                          theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                        }`}
-                        placeholder="16000"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Payment Method */}
-              <div className={`rounded-2xl p-6 md:p-8 border-2 border-[#fe8002]/30 shadow-2xl backdrop-blur-xl ${
-                theme === 'light' ? 'bg-white shadow-[#fe8002]/20' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] shadow-[#fe8002]/10'
-              }`}>
-                <div className="flex items-center gap-3 mb-6">
-                  <FaCreditCard className="text-[#fe8002] text-2xl" />
-                  <h2 className="text-[#fe8002] font-bold text-xl uppercase tracking-wide">Mode de paiement</h2>
-                </div>
-                
-                <div className="space-y-4">
-                  <label className={`flex items-center gap-4 p-4 rounded-xl border-2 border-[#fe8002]/40 cursor-pointer hover:border-[#fe8002] transition-all ${
-                    theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-                  }`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cash"
-                      checked={formData.paymentMethod === "cash"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-[#fe8002] focus:ring-[#fe8002]"
-                    />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Paiement à la livraison (Cash)</span>
-                  </label>
-                  
-                  <label className={`flex items-center gap-4 p-4 rounded-xl border-2 border-[#fe8002]/40 cursor-pointer hover:border-[#fe8002] transition-all ${
-                    theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-                  }`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="card"
-                      checked={formData.paymentMethod === "card"}
-                      onChange={handleInputChange}
-                      className="w-5 h-5 text-[#fe8002] focus:ring-[#fe8002]"
-                    />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Carte bancaire (CIB)</span>
-                  </label>
-                  
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      Notes supplémentaires
-                    </label>
-                    <textarea
-                      name="notes"
-                      value={formData.notes}
-                      onChange={handleInputChange}
-                      rows={4}
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all resize-none ${
-                        theme === 'light'
-                          ? 'bg-gray-50 text-gray-800'
-                          : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                      placeholder="Ajoutez des instructions de livraison ou des notes..."
-                    />
                   </div>
                 </div>
               </div>
@@ -462,26 +475,57 @@ const CheckoutPage = () => {
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className={`font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>Livraison:</span>
-                  <span className="text-green-400 font-bold">Gratuite</span>
+                  <div className="flex items-center gap-2">
+                    <FaTruck className={`text-sm ${isAuthenticated ? 'text-green-400' : 'text-[#fe8002]'}`} />
+                    <span className={`font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-300'}`}>Livraison:</span>
+                  </div>
+                  {isAuthenticated ? (
+                    <span className="text-green-400 font-bold">Gratuite (0 DZD)</span>
+                  ) : (
+                    <span className="text-[#fe8002] font-bold">500 DZD</span>
+                  )}
                 </div>
+                
+                {!isAuthenticated && (
+                  <div className={`text-xs p-2 rounded-lg border border-[#fe8002]/30 ${
+                    theme === 'light' ? 'bg-orange-50 text-orange-700' : 'bg-[#fe8002]/10 text-orange-300'
+                  }`}>
+                    💡 Connectez-vous pour bénéficier de la livraison gratuite !
+                  </div>
+                )}
                 
                 <div className="h-0.5 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent my-3 rounded-full" />
                 
                 <div className="flex justify-between items-center">
                   <span className={`font-extrabold text-xl ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Total:</span>
                   <span className="text-2xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
-                    {getCartTotal().toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
+                    {(getCartTotal() + (isAuthenticated ? 0 : 500)).toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
                   </span>
                 </div>
               </div>
               
+              {error && (
+                <div className="mt-4 p-4 bg-red-500/10 border-2 border-red-500/50 rounded-xl animate-pulse">
+                  <div className="flex items-start gap-3">
+                    <span className="text-red-500 text-xl flex-shrink-0">⚠️</span>
+                    <div className="flex-1">
+                      <p className="text-red-500 font-bold text-sm mb-1">Erreur de commande</p>
+                      <p className="text-red-400 text-xs break-words">{error}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <button
+                type="submit"
                 onClick={handleSubmit}
-                className="w-full mt-6 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black font-extrabold py-4 rounded-2xl hover:from-white hover:to-gray-200 transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 hover:scale-105 uppercase tracking-wider border-2 border-white/30 relative overflow-hidden group"
+                disabled={isSubmitting}
+                className={`w-full mt-6 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black font-extrabold py-4 rounded-2xl hover:from-white hover:to-gray-200 transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 hover:scale-105 uppercase tracking-wider border-2 border-white/30 relative overflow-hidden group ${
+                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                <span className="relative">Confirmer la commande</span>
+                <span className="relative">{isSubmitting ? 'Traitement...' : 'Confirmer la commande'}</span>
               </button>
               
               <button

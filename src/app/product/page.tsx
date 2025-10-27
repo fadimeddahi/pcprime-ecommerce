@@ -1,31 +1,85 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import ProductDetail from "../components/product-detail";
+import productApi from "../services/api";
+import { Product } from "../types/product";
+import { useTheme } from "../context/ThemeContext";
 
 export default function ProductPage() {
-  // Example product data
-  const product = {
-    id: 1,
-    name: "PC Gamer RTX 4090 Ultimate",
-    category: "PC Gaming",
-    image: "/pc gamer.jpeg",
-    price: 8999.99,
-    oldPrice: 10999.99,
-    description: "PC Gamer haute performance équipé d'une carte graphique RTX 4090, processeur Intel Core i9-13900K, 32GB RAM DDR5, et SSD NVMe 2TB. Parfait pour le gaming 4K et les applications professionnelles exigeantes.",
-    specs: [
-      { label: "Processeur", value: "Intel Core i9-13900K" },
-      { label: "Carte Graphique", value: "NVIDIA RTX 4090 24GB" },
-      { label: "Mémoire RAM", value: "32GB DDR5 6000MHz" },
-      { label: "Stockage", value: "2TB NVMe SSD" },
-      { label: "Alimentation", value: "1000W 80+ Gold" },
-      { label: "Boîtier", value: "ATX RGB avec vitre trempée" },
-      { label: "Refroidissement", value: "Watercooling AIO 360mm" },
-      { label: "Système", value: "Windows 11 Pro" },
-    ],
-    inStock: true,
-    rating: 4.8,
-    reviews: 124,
-    isPromo: true,
-    isTopSeller: true,
-  };
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id");
+  const { theme } = useTheme();
+  
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productId) {
+        setError("ID produit manquant");
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const data = await productApi.getProductById(productId);
+        setProduct(data);
+        setError(null);
+      } catch (err: any) {
+        console.error("Error fetching product:", err);
+        setError(err.message || "Erreur lors du chargement du produit");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'light' ? 'bg-gray-50' : 'bg-black'
+      }`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#fe8002] mx-auto mb-4"></div>
+          <p className={`text-xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            Chargement du produit...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'light' ? 'bg-gray-50' : 'bg-black'
+      }`}>
+        <div className="text-center max-w-md mx-auto p-8">
+          <div className="text-6xl mb-4">😕</div>
+          <h2 className={`text-2xl font-bold mb-4 ${
+            theme === 'light' ? 'text-gray-900' : 'text-white'
+          }`}>
+            Produit introuvable
+          </h2>
+          <p className={`mb-6 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+            {error || "Le produit que vous recherchez n'existe pas."}
+          </p>
+          <a
+            href="/"
+            className="inline-block bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white font-bold px-8 py-3 rounded-xl hover:scale-105 transition-all shadow-lg"
+          >
+            Retour à l'accueil
+          </a>
+        </div>
+      </div>
+    );
+  }
 
   return <ProductDetail product={product} />;
 }

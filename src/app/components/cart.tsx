@@ -43,28 +43,6 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
 
   return (
     <>
-      {/* Inline Theme Detection Script for Cart */}
-      {isOpen && (
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  const theme = localStorage.getItem('theme');
-                  if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                  }
-                } catch (e) {
-                  document.documentElement.classList.remove('dark');
-                }
-              })();
-            `,
-          }}
-        />
-      )}
-      
       {/* Full-Screen Cart Overlay */}
       <div
         className={`fixed inset-0 z-[10000] flex transition-all duration-300 ${

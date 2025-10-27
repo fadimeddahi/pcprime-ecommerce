@@ -43,9 +43,15 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           email: formData.email,
           password: formData.password,
         });
-        // Store user data in localStorage
-        localStorage.setItem('user_data', JSON.stringify(response.user));
-        onLoginSuccess();
+        
+        // Validate response structure
+        if (response && response.user && response.user.id && response.user.email) {
+          // Store user data in localStorage
+          localStorage.setItem('user_data', JSON.stringify(response.user));
+          onLoginSuccess();
+        } else {
+          throw new Error("Réponse invalide du serveur");
+        }
       } else {
         // Register
         const response = await authApi.register({
@@ -53,11 +59,18 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           email: formData.email,
           password: formData.password,
         });
-        // Store user data in localStorage
-        localStorage.setItem('user_data', JSON.stringify(response.user));
-        onLoginSuccess();
+        
+        // Validate response structure
+        if (response && response.user && response.user.id && response.user.email) {
+          // Store user data in localStorage
+          localStorage.setItem('user_data', JSON.stringify(response.user));
+          onLoginSuccess();
+        } else {
+          throw new Error("Réponse invalide du serveur");
+        }
       }
     } catch (err: any) {
+      console.error("Authentication error:", err);
       setError(err.message || "Une erreur s'est produite. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
@@ -76,28 +89,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
   if (!isOpen) return null;
 
   return (
-    <>
-      {/* Inline Theme Detection Script for Login Modal */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              try {
-                const theme = localStorage.getItem('theme');
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              } catch (e) {
-                document.documentElement.classList.remove('dark');
-              }
-            })();
-          `,
-        }}
-      />
-      
-      <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
       {/* Background Overlay */}
       <div 
         className={`absolute inset-0 backdrop-blur-lg ${
@@ -288,7 +280,6 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         </form>
       </div>
     </div>
-    </>
   );
 };
 
