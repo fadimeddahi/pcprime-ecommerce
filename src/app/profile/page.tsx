@@ -1,43 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
+import { authApi } from "../services/api";
 import Image from "next/image";
 import { 
   FaUser, 
   FaEnvelope, 
-  FaPhone, 
-  FaMapMarkerAlt, 
   FaEdit, 
-  FaSave, 
-  FaTimes,
   FaShoppingBag,
   FaHeart,
   FaCog,
   FaSignOutAlt,
-  FaCamera,
   FaLock
 } from "react-icons/fa";
+
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+}
 
 const ProfilePage = () => {
   const router = useRouter();
   const { theme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "orders" | "settings">("info");
+  const [isLoading, setIsLoading] = useState(true);
   
-  const [profileData, setProfileData] = useState({
-    name: "Ahmed Bensalah",
-    email: "ahmed.bensalah@email.com",
-    phone: "0555 12 34 56",
-    address: "12 Rue Didouche Mourad",
-    city: "Alger Centre",
-    wilaya: "Alger",
-    postalCode: "16000",
-    avatar: "/hero.png", // Default avatar
+  const [profileData, setProfileData] = useState<UserProfile | null>(null);
+  const [editData, setEditData] = useState({
+    username: "",
+    email: "",
   });
 
-  const [editData, setEditData] = useState({ ...profileData });
+  // Check authentication and load user data
+  useEffect(() => {
+    const loadUserProfile = () => {
+      if (!authApi.isAuthenticated()) {
+        router.push('/');
+        return;
+      }
+
+      // Get user data from localStorage (stored during login)
+      const token = authApi.getToken();
+      const userData = localStorage.getItem('user_data');
+      
+      if (userData) {
+        const user = JSON.parse(userData);
+        setProfileData(user);
+        setEditData({
+          username: user.username,
+          email: user.email,
+        });
+      }
+      
+      setIsLoading(false);
+    };
+
+    loadUserProfile();
+  }, [router]);
 
   // Mock orders data
   const orders = [
@@ -72,14 +95,49 @@ const ProfilePage = () => {
   };
 
   const handleSave = () => {
-    setProfileData({ ...editData });
-    setIsEditing(false);
+    // TODO: Add API call to update user profile when backend endpoint is available
+    if (profileData) {
+      const updatedProfile = { ...profileData, ...editData };
+      setProfileData(updatedProfile);
+      localStorage.setItem('user_data', JSON.stringify(updatedProfile));
+      setIsEditing(false);
+    }
   };
 
   const handleCancel = () => {
-    setEditData({ ...profileData });
+    if (profileData) {
+      setEditData({
+        username: profileData.username,
+        email: profileData.email,
+      });
+    }
     setIsEditing(false);
   };
+
+  const handleLogout = () => {
+    authApi.logout();
+    localStorage.removeItem('user_data');
+    router.push('/');
+  };
+
+  if (isLoading) {
+    return (
+      <main className={`min-h-screen flex items-center justify-center ${
+        theme === 'light' ? 'bg-gray-50' : 'bg-black'
+      }`}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#fe8002] mx-auto mb-4"></div>
+          <p className={`text-xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+            Chargement...
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (!profileData) {
+    return null;
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -130,18 +188,9 @@ const ProfilePage = () => {
             <div className="flex flex-col md:flex-row items-center gap-6">
               {/* Avatar */}
               <div className="relative group">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50">
-                  <Image
-                    src={profileData.avatar}
-                    alt={profileData.name}
-                    width={128}
-                    height={128}
-                    className="object-cover"
-                  />
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 flex items-center justify-center bg-gradient-to-br from-[#fe8002] to-[#ff4500]">
+                  <FaUser className="text-6xl text-white" />
                 </div>
-                <button className="absolute bottom-0 right-0 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white p-3 rounded-full border-2 border-white shadow-xl hover:scale-110 transition-all">
-                  <FaCamera />
-                </button>
               </div>
 
               {/* User Info */}
@@ -149,35 +198,33 @@ const ProfilePage = () => {
                 <h2 className={`text-3xl font-extrabold mb-2 ${
                   theme === 'light' ? 'text-gray-900' : 'text-white'
                 }`}>
-                  {profileData.name}
+                  {profileData.username}
                 </h2>
-                <p className="text-[#fe8002] font-bold text-lg mb-4">
+                <p className="text-[#fe8002] font-bold text-lg mb-2">
                   {profileData.email}
                 </p>
-                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                  <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-[#fe8002]/20 ${
-                    theme === 'light' ? 'bg-gray-100' : 'bg-[#0f0f0f]'
-                  }`}>
-                    <FaShoppingBag className="text-[#fe8002]" />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>{orders.length} Commandes</span>
-                  </div>
-                  <div className={`flex items-center gap-2 px-4 py-2 rounded-lg border border-[#fe8002]/20 ${
-                    theme === 'light' ? 'bg-gray-100' : 'bg-[#0f0f0f]'
-                  }`}>
-                    <FaHeart className="text-[#fe8002]" />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>12 Favoris</span>
-                  </div>
-                </div>
+                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                  ID: #{profileData.id}
+                </p>
               </div>
 
               {/* Quick Actions */}
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3">
                 <button
                   onClick={() => setIsEditing(!isEditing)}
-                  className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-black font-bold px-6 py-3 rounded-xl hover:scale-105 transition-all shadow-lg shadow-[#fe8002]/50 border-2 border-white/30 flex items-center gap-2"
+                  className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white font-bold px-6 py-3 rounded-xl hover:scale-105 transition-all shadow-lg shadow-[#fe8002]/50 flex items-center gap-2"
                 >
                   <FaEdit />
                   {isEditing ? "Annuler" : "Modifier"}
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className={`border-2 border-red-500 text-red-500 font-bold px-6 py-3 rounded-xl hover:scale-105 hover:bg-red-500 hover:text-white transition-all flex items-center gap-2 ${
+                    theme === 'light' ? 'bg-white' : 'bg-[#0f0f0f]'
+                  }`}
+                >
+                  <FaSignOutAlt />
+                  Déconnexion
                 </button>
               </div>
             </div>
@@ -237,18 +284,18 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Name */}
+                  {/* Username */}
                   <div>
                     <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
                       theme === 'light' ? 'text-gray-800' : 'text-white'
                     }`}>
                       <FaUser className="text-[#fe8002]" />
-                      Nom complet
+                      Nom d'utilisateur
                     </label>
                     <input
                       type="text"
-                      name="name"
-                      value={isEditing ? editData.name : profileData.name}
+                      name="username"
+                      value={isEditing ? editData.username : profileData.username}
                       onChange={handleInputChange}
                       disabled={!isEditing}
                       className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
@@ -280,109 +327,23 @@ const ProfilePage = () => {
                       }`}
                     />
                   </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      <FaPhone className="text-[#fe8002]" />
-                      Téléphone
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={isEditing ? editData.phone : profileData.phone}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                        !isEditing && "opacity-70 cursor-not-allowed"
-                      } ${
-                        theme === 'light' ? 'bg-gray-50 text-gray-900' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Address */}
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      <FaMapMarkerAlt className="text-[#fe8002]" />
-                      Adresse
-                    </label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={isEditing ? editData.address : profileData.address}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                        !isEditing && "opacity-70 cursor-not-allowed"
-                      } ${
-                        theme === 'light' ? 'bg-gray-50 text-gray-900' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                    />
-                  </div>
-
-                  {/* City */}
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      Commune
-                    </label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={isEditing ? editData.city : profileData.city}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                        !isEditing && "opacity-70 cursor-not-allowed"
-                      } ${
-                        theme === 'light' ? 'bg-gray-50 text-gray-900' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                    />
-                  </div>
-
-                  {/* Wilaya */}
-                  <div>
-                    <label className={`text-sm font-bold mb-2 block uppercase tracking-wide ${
-                      theme === 'light' ? 'text-gray-800' : 'text-white'
-                    }`}>
-                      Wilaya
-                    </label>
-                    <input
-                      type="text"
-                      name="wilaya"
-                      value={isEditing ? editData.wilaya : profileData.wilaya}
-                      onChange={handleInputChange}
-                      disabled={!isEditing}
-                      className={`w-full border-2 border-[#fe8002]/40 rounded-xl px-4 py-3 focus:border-[#fe8002] focus:outline-none transition-all ${
-                        !isEditing && "opacity-70 cursor-not-allowed"
-                      } ${
-                        theme === 'light' ? 'bg-gray-50 text-gray-900' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                      }`}
-                    />
-                  </div>
                 </div>
 
                 {isEditing && (
-                  <div className="flex gap-4 mt-8">
-                    <button
-                      onClick={handleSave}
-                      className="flex-1 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black font-extrabold py-4 rounded-xl hover:scale-105 transition-all shadow-2xl shadow-[#fe8002]/60 border-2 border-white/30 flex items-center justify-center gap-2"
-                    >
-                      <FaSave />
-                      ENREGISTRER LES MODIFICATIONS
-                    </button>
+                  <div className="flex gap-4 mt-8 justify-end">
                     <button
                       onClick={handleCancel}
-                      className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white font-extrabold py-4 rounded-xl hover:scale-105 transition-all shadow-lg shadow-red-500/60 border-2 border-white/30 flex items-center justify-center gap-2"
+                      className={`px-8 py-3 rounded-xl font-bold transition-all border-2 border-gray-500 hover:scale-105 ${
+                        theme === 'light' ? 'bg-white text-gray-700 hover:bg-gray-100' : 'bg-[#0f0f0f] text-white hover:bg-[#1a1a1a]'
+                      }`}
                     >
-                      <FaTimes />
-                      ANNULER
+                      Annuler
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      className="px-8 py-3 rounded-xl font-bold bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white hover:scale-105 transition-all shadow-lg shadow-[#fe8002]/50"
+                    >
+                      Enregistrer
                     </button>
                   </div>
                 )}
@@ -391,58 +352,19 @@ const ProfilePage = () => {
 
             {/* Orders Tab */}
             {activeTab === "orders" && (
-              <div className="space-y-4">
-                <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/30 shadow-xl ${
-                  theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
-                }`}>
-                  <div className="flex items-center gap-3 mb-6">
-                    <FaShoppingBag className="text-[#fe8002] text-2xl" />
-                    <h2 className="text-[#fe8002] font-bold text-2xl uppercase tracking-wide">
-                      Historique des Commandes
-                    </h2>
-                  </div>
-
-                  <div className="space-y-4">
-                    {orders.map((order) => (
-                      <div
-                        key={order.id}
-                        className={`p-6 rounded-xl border-2 border-[#fe8002]/20 hover:border-[#fe8002] transition-all ${
-                          theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-                        }`}
-                      >
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-3">
-                              <span className="text-[#fe8002] font-extrabold text-xl">
-                                {order.id}
-                              </span>
-                              <span className={`px-4 py-1 rounded-full text-xs font-bold border-2 ${getStatusColor(order.status)}`}>
-                                {order.status}
-                              </span>
-                            </div>
-                            <p className="text-gray-400 text-sm">
-                              Date: <span className="text-white font-semibold">{order.date}</span>
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              Articles: <span className="text-white font-semibold">{order.items}</span>
-                            </p>
-                          </div>
-
-                          <div className="flex items-center gap-4">
-                            <div className="text-right">
-                              <p className="text-gray-400 text-sm mb-1">Total</p>
-                              <p className="text-2xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
-                                {order.total.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
-                              </p>
-                            </div>
-                            <button className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-black font-bold px-6 py-3 rounded-xl hover:scale-105 transition-all shadow-lg border-2 border-white/20">
-                              DÉTAILS
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              <div className={`rounded-2xl p-8 border-2 border-[#fe8002]/30 shadow-2xl ${
+                theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+              }`}>
+                <div className="flex items-center gap-3 mb-6">
+                  <FaShoppingBag className="text-[#fe8002] text-2xl" />
+                  <h2 className="text-[#fe8002] font-bold text-2xl uppercase tracking-wide">
+                    Historique des Commandes
+                  </h2>
+                </div>
+                <div className={`text-center py-12 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                  <FaShoppingBag className="text-6xl text-[#fe8002]/30 mx-auto mb-4" />
+                  <p className="text-xl font-bold">Aucune commande pour le moment</p>
+                  <p className="mt-2">Commencez à magasiner pour voir vos commandes ici!</p>
                 </div>
               </div>
             )}
@@ -477,7 +399,7 @@ const ProfilePage = () => {
                   theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
                 }`}>
                   <button
-                    onClick={() => router.push("/")}
+                    onClick={handleLogout}
                     className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white font-extrabold py-4 px-6 rounded-xl hover:scale-105 transition-all shadow-2xl shadow-red-500/60 border-2 border-white/30 flex items-center justify-center gap-3"
                   >
                     <FaSignOutAlt />

@@ -10,7 +10,7 @@ import {
   CategoriesResponse 
 } from '../types/product';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com';
 
 // API Error Class
 export class ApiError extends Error {
@@ -155,6 +155,86 @@ export const categoryApi = {
       ...data,
       products: data.products ? data.products.map(normalizeProduct) : undefined
     };
+  },
+};
+
+// Authentication Types
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+  };
+}
+
+// Authentication API
+export const authApi = {
+  // POST /users/register
+  register: async (userData: RegisterRequest): Promise<AuthResponse> => {
+    const data = await fetchApi<AuthResponse>('/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    
+    // Store token in localStorage if available
+    if (typeof window !== 'undefined' && data.token) {
+      localStorage.setItem('auth_token', data.token);
+    }
+    
+    return data;
+  },
+
+  // POST /users/login
+  login: async (credentials: LoginRequest): Promise<AuthResponse> => {
+    const data = await fetchApi<AuthResponse>('/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+    
+    // Store token in localStorage if available
+    if (typeof window !== 'undefined' && data.token) {
+      localStorage.setItem('auth_token', data.token);
+    }
+    
+    return data;
+  },
+
+  // Logout - Clear token
+  logout: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token');
+    }
+  },
+
+  // Get stored token
+  getToken: (): string | null => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('auth_token');
+    }
+    return null;
+  },
+
+  // Check if user is authenticated
+  isAuthenticated: (): boolean => {
+    return !!authApi.getToken();
   },
 };
 
