@@ -96,7 +96,6 @@ export interface Product {
   brand?: string;
   created_at?: string;
   updated_at?: string;
-<<<<<<< HEAD
   etat?: string;
   garantie?: string;
   retour?: string;
@@ -113,12 +112,11 @@ export interface Product {
   alimentation?: string;
   boîtier?: string;
   number_sold?: number;
-=======
-  // Policy info from backend
+  rating?: number;
+  reviews?: number;
   delivery_info?: string;
   warranty_info?: string;
   return_policy?: string;
->>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
 }
 
 export interface SearchProductsParams {
