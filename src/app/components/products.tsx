@@ -177,7 +177,11 @@ const ProductCard = ({ product }: { product: Product }) => {
             <FaShoppingCart className="text-base" />
             {addedToCart ? "✓" : "Panier"}
           </button>
+<<<<<<< HEAD
           <a href={`/product?id=${product.id}`} className="flex-1">
+=======
+          <a href={`/product/${product.id}`} className="flex-1">
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
             <button className={`w-full font-bold py-3 px-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm ${
               theme === 'light'
                 ? 'bg-white text-[#fe8002] border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30'

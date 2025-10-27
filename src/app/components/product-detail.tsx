@@ -5,8 +5,13 @@ import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
+<<<<<<< HEAD
 import { Product } from "../types/product";
 import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
+=======
+import { FaShoppingCart, FaHeart, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaShare } from "react-icons/fa";
+import { Product } from "../types/product";
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
 
 interface ProductDetailProps {
   product: Product;
@@ -25,7 +30,11 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const handleAddToCart = () => {
     addToCart(
       {
+<<<<<<< HEAD
         id: productIdNum,
+=======
+        id: typeof product.id === 'string' ? parseInt(product.id, 10) : product.id,
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
         name: product.name,
         price: product.price,
         image: product.image,
@@ -61,6 +70,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
+<<<<<<< HEAD
   // Use product image
   const images = [product.image];
   
@@ -91,6 +101,17 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   };
 
   const specs = buildSpecs();
+=======
+  // Use images array from product (fallback to single image)
+  const images = product.images && product.images.length > 0 
+    ? product.images 
+    : [product.image];
+
+  // Get warranty, delivery, and return policy info from backend or use defaults
+  const warrantyInfo = product.warranty_info || (product.warrantyMonths ? `${product.warrantyMonths} mois` : '1 an');
+  const deliveryInfo = product.delivery_info || 'Rapide';
+  const returnPolicy = product.return_policy || '30 jours';
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
 
   return (
     <section className={`py-12 px-4 min-h-screen relative overflow-hidden transition-all duration-300 ${
@@ -216,6 +237,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               {product.name}
             </h1>
 
+<<<<<<< HEAD
             {/* Rating */}
             {(product.rating || product.number_sold) && (
               <div className="flex items-center gap-4">
@@ -249,6 +271,8 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               </div>
             )}
 
+=======
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
             {/* Price */}
             <div className={`rounded-2xl p-6 border-4 shadow-2xl ring-4 ${
               theme === 'light'
@@ -372,7 +396,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaTruck className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Livraison</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Rapide</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{deliveryInfo}</p>
                 </div>
               </div>
               <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
@@ -383,7 +407,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaShieldAlt className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Garantie</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>1 an</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{warrantyInfo}</p>
                 </div>
               </div>
               <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
@@ -394,7 +418,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 <FaUndo className="text-[#fe8002] text-2xl" />
                 <div>
                   <p className={`font-bold text-sm ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Retour</p>
-                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>30 jours</p>
+                  <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{returnPolicy}</p>
                 </div>
               </div>
             </div>
@@ -402,7 +426,11 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
         </div>
 
         {/* Specifications */}
+<<<<<<< HEAD
         {specs.length > 0 && (
+=======
+        {product.specs && product.specs.length > 0 && (
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
           <div className={`rounded-3xl p-8 border-4 shadow-2xl backdrop-blur-xl ring-4 ${
             theme === 'light'
               ? 'bg-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
@@ -423,7 +451,11 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<<<<<<< HEAD
               {specs.map((spec, index) => (
+=======
+              {product.specs.map((spec, index) => (
+>>>>>>> aea23088098f7ace1e8aa3b3a45f50a5214af666
                 <div
                   key={index}
                   className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${

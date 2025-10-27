@@ -496,7 +496,7 @@ const ZoneDocassion = () => {
                           ? "✓ Ajouté"
                           : "Ajouter"}
                       </button>
-                      <a href="/product" className="flex-1">
+                      <a href={`/product/${product.id}`} className="flex-1">
                         <button className="w-full bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] font-bold py-3 px-4 rounded-xl border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm">
                           Détails
                         </button>

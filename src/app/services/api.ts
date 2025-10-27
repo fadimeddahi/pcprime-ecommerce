@@ -26,10 +26,64 @@ export class ApiError extends Error {
 
 // Normalize backend product data to frontend format
 function normalizeProduct(product: BackendProduct | any): Product {
+  // Build specs array from backend hardware fields
+  // Handle both English and French field names from backend
+  const specs: { label: string; value: string }[] = [];
+  
+  // Processor (English: processor, cpu; French: processeur)
+  if (product.processor || product.cpu) {
+    specs.push({ label: 'Processeur', value: product.processor || product.cpu });
+  }
+  
+  // Graphics Card (English: graphics_card, gpu; French: carte graphique)
+  if (product.graphics_card || product.gpu) {
+    specs.push({ label: 'Carte Graphique', value: product.graphics_card || product.gpu });
+  }
+  
+  // RAM
+  if (product.ram) specs.push({ label: 'Mémoire RAM', value: product.ram });
+  
+  // Storage
+  if (product.storage) specs.push({ label: 'Stockage', value: product.storage });
+  
+  // Motherboard
+  if (product.motherboard) specs.push({ label: 'Carte Mère', value: product.motherboard });
+  
+  // Power Supply (English: power_supply; French: alimentation)
+  if (product.power_supply || product.alimentation) {
+    specs.push({ label: 'Alimentation', value: product.power_supply || product.alimentation });
+  }
+  
+  // Case (English: case_type; French: boîtier)
+  if (product.case_type || product.boîtier) {
+    specs.push({ label: 'Boîtier', value: product.case_type || product.boîtier });
+  }
+  
+  // Cooling (English: cooling; French: refroidissement)
+  if (product.cooling || product.refroidissement) {
+    specs.push({ label: 'Refroidissement', value: product.cooling || product.refroidissement });
+  }
+  
+  // Operating System (English: operating_system; French: système)
+  if (product.operating_system || product.système) {
+    specs.push({ label: 'Système', value: product.operating_system || product.système });
+  }
+  
+  // Screen
+  if (product.screen) specs.push({ label: 'Écran', value: product.screen });
+  
+  // Battery
+  if (product.battery) specs.push({ label: 'Batterie', value: product.battery });
+  
+  // Camera
+  if (product.camera) specs.push({ label: 'Caméra', value: product.camera });
+
   return {
     ...product,
     // Use image_url from backend as image
     image: product.image_url || product.image || '',
+    // Handle multiple images (fallback to single image array if not provided)
+    images: product.images || (product.image_url ? [product.image_url] : product.image ? [product.image] : []),
     // Extract category name if category is an object
     category: typeof product.category === 'object' && product.category !== null 
       ? product.category.name 
@@ -46,6 +100,12 @@ function normalizeProduct(product: BackendProduct | any): Product {
     warrantyMonths: product.warranty_months || product.warrantyMonths,
     // Stock status
     inStock: product.quantity ? product.quantity > 0 : true,
+    // Hardware specs
+    specs: specs.length > 0 ? specs : undefined,
+    // Policy info (handle both English and French field names)
+    delivery_info: product.delivery_info,
+    warranty_info: product.warranty_info || product.garantie,
+    return_policy: product.return_policy || product.retour,
   };
 }
 
