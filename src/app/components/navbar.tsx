@@ -112,7 +112,12 @@ const Navbar = () => {
               PC Builder
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
             </a>
-            
+            <a href="/espace-society" className={`relative font-bold transition-colors group ${
+              theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
+            }`}>
+              Espace Society
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
+            </a>
             <a href="/contact" className={`relative font-bold transition-colors group ${
               theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
             }`}>
@@ -291,18 +296,7 @@ const Navbar = () => {
               PC Builder
             </span>
           </a>
-          <a
-            href="/espace-society"
-            onClick={toggleSidebar}
-            className={`font-bold transition-all py-3 px-5 rounded-xl hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:text-white hover:shadow-lg hover:shadow-[#fe8002]/50 group ${
-              theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
-            }`}
-          >
-            <span className="flex items-center gap-3">
-              <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full group-hover:h-8 transition-all" />
-              Espace Society
-            </span>
-          </a>
+        
           <a
             href="/contact"
             onClick={toggleSidebar}
