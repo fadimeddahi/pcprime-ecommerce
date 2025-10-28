@@ -18,11 +18,6 @@ const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { data: categories = [] } = useAllCategories();
 
-  // Refs to detect pointer movement so we can ignore swipes when opening mobile menu
-  const startXRef = useRef<number | null>(null);
-  const startYRef = useRef<number | null>(null);
-  const movedRef = useRef<boolean>(false);
-
   // Refs to track touch/swipe on the page to prevent opening sidebar on swipes
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -246,31 +241,9 @@ const Navbar = () => {
               </button>
             </div>
             
-            {/* Mobile Menu Button - only opens on tap/click, not on swipes */}
+            {/* Mobile Menu Button */}
             <button
-              // Use pointer events to ignore swipes: only toggle when the pointer doesn't move
-              onPointerDown={(e) => {
-                startXRef.current = (e as React.PointerEvent).clientX;
-                startYRef.current = (e as React.PointerEvent).clientY;
-                movedRef.current = false;
-              }}
-              onPointerMove={(e) => {
-                const px = (e as React.PointerEvent).clientX;
-                const py = (e as React.PointerEvent).clientY;
-                if (startXRef.current == null || startYRef.current == null) return;
-                if (Math.abs(px - startXRef.current) > 10 || Math.abs(py - startYRef.current) > 10) {
-                  movedRef.current = true;
-                }
-              }}
-              onPointerUp={(e) => {
-                // If pointer didn't move (a tap), toggle the sidebar. Otherwise ignore (it was a swipe).
-                if (!movedRef.current) {
-                  toggleSidebar();
-                }
-                startXRef.current = null;
-                startYRef.current = null;
-                movedRef.current = false;
-              }}
+              onClick={toggleSidebar}
               className={`lg:hidden text-2xl cursor-pointer hover:scale-110 transition-transform ${
                 theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
               }`}
