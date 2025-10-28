@@ -1,7 +1,7 @@
 "use client";
 
 import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
@@ -23,6 +23,10 @@ const Navbar = () => {
   const startYRef = useRef<number | null>(null);
   const movedRef = useRef<boolean>(false);
 
+  // Refs to track touch/swipe on the page to prevent opening sidebar on swipes
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -34,6 +38,43 @@ const Navbar = () => {
   const toggleWishlist = () => {
     setIsWishlistOpen(!isWishlistOpen);
   };
+
+  // Prevent sidebar from opening on page swipes (especially on mobile)
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartX.current || !touchStartY.current) return;
+      
+      const touchEndX = e.touches[0].clientX;
+      const touchEndY = e.touches[0].clientY;
+      const deltaX = touchEndX - touchStartX.current;
+      const deltaY = touchEndY - touchStartY.current;
+
+      // If it's a horizontal swipe from right edge (more than 30px), prevent it from opening sidebar
+      // Only block if sidebar is closed and it's a left swipe or right edge swipe
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
+        // Prevent default swipe behavior that might trigger sidebar
+        if (!isSidebarOpen && (deltaX < 0 || touchStartX.current > window.innerWidth - 50)) {
+          e.preventDefault();
+        }
+      }
+    };
+
+    // Only add listeners on mobile viewports
+    if (window.innerWidth < 768) {
+      document.addEventListener('touchstart', handleTouchStart, { passive: true });
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    }
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [isSidebarOpen]);
 
   return (
     <header className={`w-full z-50 shadow-2xl backdrop-blur-xl sticky top-0 transition-all duration-300 ${
@@ -212,6 +253,10 @@ const Navbar = () => {
             ? 'bg-gradient-to-br from-white via-gray-50 to-white' 
             : 'bg-gradient-to-br from-[#181818] via-[#1a1a1a] to-[#0f0f0f]'
         }`}
+        // Prevent touch events on sidebar from bubbling
+        onTouchStart={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+        onTouchEnd={(e) => e.stopPropagation()}
       >
         <div className={`flex justify-between items-center p-5 border-b-2 border-[#fe8002] ${
           theme === 'light' ? 'bg-white' : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f]'
