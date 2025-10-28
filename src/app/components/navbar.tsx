@@ -45,12 +45,23 @@ const Navbar = () => {
     if (typeof window !== 'undefined') {
       document.body.style.overscrollBehavior = 'none';
       document.documentElement.style.overscrollBehavior = 'none';
+      // Prevent zoom on mobile
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
     }
 
     const handleTouchStart = (e: TouchEvent) => {
-      // Don't track if touch is on the sidebar
       const target = e.target as HTMLElement;
-      if (target.closest('[data-sidebar]')) return;
+      // Don't track if touch is on sidebar, navbar buttons, or interactive elements
+      if (target.closest('[data-sidebar]') || 
+          target.closest('button') || 
+          target.closest('a') ||
+          target.closest('input') ||
+          target.closest('select')) {
+        return;
+      }
       
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
@@ -59,9 +70,15 @@ const Navbar = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (!touchStartX.current || !touchStartY.current) return;
       
-      // Don't block if touch is on the sidebar
       const target = e.target as HTMLElement;
-      if (target.closest('[data-sidebar]')) return;
+      // Don't block if touch is on sidebar, navbar buttons, or interactive elements
+      if (target.closest('[data-sidebar]') || 
+          target.closest('button') || 
+          target.closest('a') ||
+          target.closest('input') ||
+          target.closest('select')) {
+        return;
+      }
       
       const touchEndX = e.touches[0].clientX;
       const touchEndY = e.touches[0].clientY;
