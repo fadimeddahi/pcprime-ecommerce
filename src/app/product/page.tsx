@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductDetail from "../components/product-detail";
 import productApi from "../services/api";
 import { Product } from "../types/product";
 import { useTheme } from "../context/ThemeContext";
 
-export default function ProductPage() {
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
+function ProductPageContent() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("id");
   const { theme } = useTheme();
@@ -82,4 +85,21 @@ export default function ProductPage() {
   }
 
   return <ProductDetail product={product} />;
+}
+
+export default function ProductPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-[#fe8002] mx-auto mb-4"></div>
+          <p className="text-xl font-bold text-gray-900 dark:text-white">
+            Chargement du produit...
+          </p>
+        </div>
+      </div>
+    }>
+      <ProductPageContent />
+    </Suspense>
+  );
 }
