@@ -41,7 +41,17 @@ const Navbar = () => {
 
   // Prevent sidebar from opening on page swipes (especially on mobile)
   useEffect(() => {
+    // Disable overscroll behavior on mobile to prevent gesture navigation
+    if (typeof window !== 'undefined') {
+      document.body.style.overscrollBehavior = 'none';
+      document.documentElement.style.overscrollBehavior = 'none';
+    }
+
     const handleTouchStart = (e: TouchEvent) => {
+      // Don't track if touch is on the sidebar
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-sidebar]')) return;
+      
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
     };
@@ -49,30 +59,41 @@ const Navbar = () => {
     const handleTouchMove = (e: TouchEvent) => {
       if (!touchStartX.current || !touchStartY.current) return;
       
+      // Don't block if touch is on the sidebar
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-sidebar]')) return;
+      
       const touchEndX = e.touches[0].clientX;
       const touchEndY = e.touches[0].clientY;
       const deltaX = touchEndX - touchStartX.current;
       const deltaY = touchEndY - touchStartY.current;
 
-      // If it's a horizontal swipe from right edge (more than 30px), prevent it from opening sidebar
-      // Only block if sidebar is closed and it's a left swipe or right edge swipe
+      // If it's a horizontal swipe (more than 30px), prevent it from opening sidebar
+      // Block both left swipes and right-edge swipes
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 30) {
-        // Prevent default swipe behavior that might trigger sidebar
-        if (!isSidebarOpen && (deltaX < 0 || touchStartX.current > window.innerWidth - 50)) {
+        if (!isSidebarOpen) {
           e.preventDefault();
+          e.stopPropagation();
         }
       }
+    };
+
+    const handleTouchEnd = () => {
+      touchStartX.current = null;
+      touchStartY.current = null;
     };
 
     // Only add listeners on mobile viewports
     if (window.innerWidth < 768) {
       document.addEventListener('touchstart', handleTouchStart, { passive: true });
       document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd, { passive: true });
     }
 
     return () => {
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isSidebarOpen]);
 
@@ -109,7 +130,7 @@ const Navbar = () => {
             <a href="/pc-builder" className={`relative font-bold transition-colors group ${
               theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
             }`}>
-              PCC
+              PC Builder
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
             </a>
             <a href="/espace-society" className={`relative font-bold transition-colors group ${
@@ -245,7 +266,9 @@ const Navbar = () => {
       </nav>
 
       {/* --- MOBILE SIDEBAR --- */}
+      {/* Only render on mobile and when needed */}
       <div
+        data-sidebar="true"
         className={`fixed top-0 right-0 h-screen w-72 shadow-2xl transform transition-transform duration-300 ease-in-out z-[9999] border-l-4 border-[#fe8002] overflow-y-auto ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
         } md:hidden ${
@@ -253,6 +276,12 @@ const Navbar = () => {
             ? 'bg-gradient-to-br from-white via-gray-50 to-white' 
             : 'bg-gradient-to-br from-[#181818] via-[#1a1a1a] to-[#0f0f0f]'
         }`}
+        style={{
+          // Ensure sidebar stays completely off-screen when closed
+          visibility: isSidebarOpen ? 'visible' : 'hidden',
+          pointerEvents: isSidebarOpen ? 'auto' : 'none',
+          touchAction: 'pan-y', // Only allow vertical scrolling
+        }}
         // Prevent touch events on sidebar from bubbling
         onTouchStart={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
