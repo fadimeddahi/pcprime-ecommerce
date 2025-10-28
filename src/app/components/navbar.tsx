@@ -1,7 +1,7 @@
 "use client";
 
 import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
@@ -17,6 +17,11 @@ const Navbar = () => {
   const { getWishlistItemsCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const { data: categories = [] } = useAllCategories();
+
+  // Refs to detect pointer movement so we can ignore swipes when opening mobile menu
+  const startXRef = useRef<number | null>(null);
+  const startYRef = useRef<number | null>(null);
+  const movedRef = useRef<boolean>(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -162,9 +167,31 @@ const Navbar = () => {
               </button>
             </div>
             
-            {/* Mobile Menu Button */}
-            <button 
-              onClick={toggleSidebar}
+            {/* Mobile Menu Button - only opens on tap/click, not on swipes */}
+            <button
+              // Use pointer events to ignore swipes: only toggle when the pointer doesn't move
+              onPointerDown={(e) => {
+                startXRef.current = (e as React.PointerEvent).clientX;
+                startYRef.current = (e as React.PointerEvent).clientY;
+                movedRef.current = false;
+              }}
+              onPointerMove={(e) => {
+                const px = (e as React.PointerEvent).clientX;
+                const py = (e as React.PointerEvent).clientY;
+                if (startXRef.current == null || startYRef.current == null) return;
+                if (Math.abs(px - startXRef.current) > 10 || Math.abs(py - startYRef.current) > 10) {
+                  movedRef.current = true;
+                }
+              }}
+              onPointerUp={(e) => {
+                // If pointer didn't move (a tap), toggle the sidebar. Otherwise ignore (it was a swipe).
+                if (!movedRef.current) {
+                  toggleSidebar();
+                }
+                startXRef.current = null;
+                startYRef.current = null;
+                movedRef.current = false;
+              }}
               className={`lg:hidden text-2xl cursor-pointer hover:scale-110 transition-transform ${
                 theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
               }`}
