@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: 'pcprimedz.onrender.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**',
+      },
     ],
   },
 };
