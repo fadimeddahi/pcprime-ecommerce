@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
+import ChangePasswordModal from "../components/change-password-modal";
 import Image from "next/image";
 import { 
   FaUser, 
@@ -17,7 +18,7 @@ import {
 } from "react-icons/fa";
 
 interface UserProfile {
-  id: number;
+  id: number | string;
   username: string;
   email: string;
 }
@@ -28,6 +29,7 @@ const ProfilePage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<"info" | "orders" | "settings">("info");
   const [isLoading, setIsLoading] = useState(true);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
   
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [editData, setEditData] = useState({
@@ -400,7 +402,8 @@ const ProfilePage = () => {
 
                   <button className={`w-full font-bold py-4 px-6 rounded-xl border-2 border-[#fe8002]/40 hover:border-[#fe8002] transition-all flex items-center justify-between group ${
                     theme === 'light' ? 'bg-gray-50 text-gray-900' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-white'
-                  }`}>
+                  }`}
+                  onClick={() => setShowChangePasswordModal(true)}>
                     <span className="flex items-center gap-3">
                       <FaLock className="text-[#fe8002]" />
                       Changer le mot de passe
@@ -426,8 +429,18 @@ const ProfilePage = () => {
           </div>
         </div>
       </section>
+
+      {/* Change Password Modal */}
+      {profileData && (
+        <ChangePasswordModal
+          isOpen={showChangePasswordModal}
+          onClose={() => setShowChangePasswordModal(false)}
+          userId={profileData.id}
+        />
+      )}
     </main>
   );
 };
+
 
 export default ProfilePage;

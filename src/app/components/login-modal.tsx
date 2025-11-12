@@ -5,6 +5,7 @@ import { FaTimes, FaUser, FaLock, FaEnvelope, FaTruck, FaUserPlus } from "react-
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
 import { OTPModal } from "./otp-modal";
+import ForgotPasswordModal from "./forgot-password-modal";
 import { extractUserIdFromJWT } from "../utils/jwt";
 
 interface LoginModalProps {
@@ -19,6 +20,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -398,6 +400,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
             <div className="flex justify-end">
               <button
                 type="button"
+                onClick={() => setShowForgotPassword(true)}
                 className="text-[#fe8002] hover:text-[#ff4500] text-sm font-bold transition-colors"
               >
                 Mot de passe oublié ?
@@ -472,6 +475,16 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         onSuccess={handleOTPSuccess}
         title={isLogin ? "Vérifier votre identité" : "Vérifier votre email"}
         description={isLogin ? "Entrez le code envoyé à votre email" : "Confirmer votre adresse email"}
+      />
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+        onSuccess={() => {
+          setShowForgotPassword(false);
+          setIsLogin(true);
+        }}
       />
     </div>
   );

@@ -1,0 +1,444 @@
+"use client";
+
+import { useState } from "react";
+import { FaEnvelope, FaLock, FaTimes, FaSpinner } from "react-icons/fa";
+import { useTheme } from "../context/ThemeContext";
+import { authApi } from "../services/api";
+
+interface ForgotPasswordModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+}
+
+const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModalProps) => {
+  const { theme } = useTheme();
+  const [step, setStep] = useState<"email" | "reset">("email");
+  const [email, setEmail] = useState("");
+  const [resetCode, setResetCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Password validation requirements
+  const passwordRequirements = {
+    minLength: newPassword.length >= 8,
+    uppercase: /[A-Z]/.test(newPassword),
+    lowercase: /[a-z]/.test(newPassword),
+    number: /[0-9]/.test(newPassword),
+    special: /[@$!%*?&]/.test(newPassword),
+  };
+
+  const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
+  const passwordsMatch = newPassword === confirmPassword && newPassword.length > 0;
+
+  const handleSendReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!email || !email.includes("@")) {
+      setError("Veuillez entrer une adresse email valide");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Call API to send reset code
+      // POST /users/forgot-password with { email }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com'}/users/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'envoi du code de réinitialisation");
+      }
+
+      setSuccess("Un code de réinitialisation a été envoyé à votre email");
+      setTimeout(() => {
+        setStep("reset");
+        setSuccess("");
+      }, 1500);
+    } catch (err: any) {
+      const errorMessage = err.message || "Erreur lors de l'envoi du code";
+      setError(errorMessage);
+      console.error("Forgot password error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!resetCode) {
+      setError("Veuillez entrer le code de réinitialisation");
+      return;
+    }
+
+    if (!isPasswordValid) {
+      setError("Le mot de passe ne respecte pas tous les critères requis");
+      return;
+    }
+
+    if (!passwordsMatch) {
+      setError("Les mots de passe ne correspondent pas");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Call API to reset password
+      // POST /users/reset-password with { email, reset_code, new_password }
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com'}/users/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          reset_code: resetCode,
+          new_password: newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Erreur lors de la réinitialisation du mot de passe");
+      }
+
+      setSuccess("Mot de passe réinitialisé avec succès!");
+      setTimeout(() => {
+        onSuccess?.();
+        onClose();
+      }, 2000);
+    } catch (err: any) {
+      const errorMessage = err.message || "Erreur lors de la réinitialisation";
+      setError(errorMessage);
+      console.error("Reset password error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    setStep("email");
+    setResetCode("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setError("");
+    setSuccess("");
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
+      {/* Background Overlay */}
+      <div
+        className={`absolute inset-0 backdrop-blur-lg ${
+          theme === 'light' ? 'bg-black/60' : 'bg-black/90'
+        }`}
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div
+        className={`relative z-10 w-full max-w-md rounded-3xl border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 overflow-hidden transform transition-all duration-300 scale-100 ${
+          theme === 'light'
+            ? 'bg-white'
+            : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f]'
+        }`}
+      >
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] p-6 text-center relative">
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="relative flex items-center justify-center gap-3">
+            <FaLock className="text-white text-3xl" />
+            <h1 className="text-white font-extrabold text-2xl uppercase tracking-wider">
+              Réinitialiser le Mot de Passe
+            </h1>
+          </div>
+        </div>
+
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className={`absolute top-4 right-4 transition-colors z-10 ${
+            theme === 'light' ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
+          }`}
+        >
+          <FaTimes className="text-2xl" />
+        </button>
+
+        {/* Content */}
+        <div className="p-8">
+          {step === "email" ? (
+            // Step 1: Email Input
+            <form onSubmit={handleSendReset} className="space-y-6">
+              <div className={`rounded-lg p-4 ${
+                theme === 'light'
+                  ? 'bg-blue-50 border border-blue-200'
+                  : 'bg-blue-500/10 border border-blue-500/30'
+              }`}>
+                <p className={`text-sm ${
+                  theme === 'light' ? 'text-blue-700' : 'text-blue-300'
+                }`}>
+                  Entrez votre adresse email pour recevoir un code de réinitialisation
+                </p>
+              </div>
+
+              <div>
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
+                  theme === 'light' ? 'text-gray-800' : 'text-white'
+                }`}>
+                  <FaEnvelope className="text-[#fe8002]" />
+                  Email
+                </label>
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
+                  theme === 'light'
+                    ? 'bg-white border-gray-200 focus-within:border-[#fe8002]'
+                    : 'bg-[#0f0f0f] border-[#2a2a2a] focus-within:border-[#fe8002]'
+                }`}>
+                  <FaEnvelope className={`text-lg ${
+                    theme === 'light' ? 'text-gray-400' : 'text-gray-500'
+                  }`} />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="votre@email.com"
+                    className={`flex-1 bg-transparent outline-none text-sm font-medium placeholder-opacity-50 ${
+                      theme === 'light'
+                        ? 'text-gray-900 placeholder-gray-500'
+                        : 'text-white placeholder-gray-600'
+                    }`}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg text-sm font-medium">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-500/10 border border-green-500/30 text-green-500 px-4 py-3 rounded-lg text-sm font-medium animate-pulse">
+                  {success}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading || !email}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all duration-300 ${
+                  isLoading || !email
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#fe8002] to-[#ff4500] hover:shadow-lg hover:shadow-[#fe8002]/50 active:scale-95'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <FaSpinner className="animate-spin" />
+                    Envoi en cours...
+                  </div>
+                ) : (
+                  "Envoyer le Code"
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={onClose}
+                className={`w-full py-3 px-4 rounded-lg font-bold transition-all duration-300 border-2 ${
+                  theme === 'light'
+                    ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    : 'bg-[#0f0f0f] text-white border-gray-600 hover:bg-[#1a1a1a]'
+                }`}
+              >
+                Annuler
+              </button>
+            </form>
+          ) : (
+            // Step 2: Reset Code and New Password
+            <form onSubmit={handleResetPassword} className="space-y-6">
+              {/* Reset Code */}
+              <div>
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
+                  theme === 'light' ? 'text-gray-800' : 'text-white'
+                }`}>
+                  <FaLock className="text-[#fe8002]" />
+                  Code de Réinitialisation
+                </label>
+                <input
+                  type="text"
+                  value={resetCode}
+                  onChange={(e) => setResetCode(e.target.value)}
+                  placeholder="Entrez le code reçu par email"
+                  className={`w-full px-4 py-3 border-2 rounded-lg font-medium ${
+                    theme === 'light'
+                      ? 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#fe8002]'
+                      : 'bg-[#0f0f0f] border-[#2a2a2a] text-white focus:border-[#fe8002]'
+                  } outline-none transition-all`}
+                  disabled={isLoading}
+                />
+              </div>
+
+              {/* New Password */}
+              <div>
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
+                  theme === 'light' ? 'text-gray-800' : 'text-white'
+                }`}>
+                  <FaLock className="text-[#fe8002]" />
+                  Nouveau Mot de Passe
+                </label>
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
+                  theme === 'light'
+                    ? 'bg-white border-gray-200 focus-within:border-[#fe8002]'
+                    : 'bg-[#0f0f0f] border-[#2a2a2a] focus-within:border-[#fe8002]'
+                }`}>
+                  <FaLock className={`text-lg ${
+                    theme === 'light' ? 'text-gray-400' : 'text-gray-500'
+                  }`} />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Entrez votre nouveau mot de passe"
+                    className={`flex-1 bg-transparent outline-none text-sm font-medium placeholder-opacity-50 ${
+                      theme === 'light'
+                        ? 'text-gray-900 placeholder-gray-500'
+                        : 'text-white placeholder-gray-600'
+                    }`}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Password Requirements */}
+              <div className={`rounded-lg p-4 space-y-2 text-xs ${
+                theme === 'light'
+                  ? 'bg-blue-50 border border-blue-200'
+                  : 'bg-blue-500/10 border border-blue-500/30'
+              }`}>
+                <p className={`font-bold uppercase tracking-wider ${
+                  theme === 'light' ? 'text-blue-700' : 'text-blue-300'
+                }`}>
+                  Critères:
+                </p>
+                <div className={passwordRequirements.minLength ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                  ✓ Au moins 8 caractères
+                </div>
+                <div className={passwordRequirements.uppercase ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                  ✓ 1 lettre majuscule
+                </div>
+                <div className={passwordRequirements.lowercase ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                  ✓ 1 lettre minuscule
+                </div>
+                <div className={passwordRequirements.number ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                  ✓ 1 chiffre
+                </div>
+                <div className={passwordRequirements.special ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
+                  ✓ 1 caractère spécial (@$!%*?&)
+                </div>
+              </div>
+
+              {/* Confirm Password */}
+              <div>
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
+                  theme === 'light' ? 'text-gray-800' : 'text-white'
+                }`}>
+                  <FaLock className="text-[#fe8002]" />
+                  Confirmer le Mot de Passe
+                </label>
+                <div className={`flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-all ${
+                  theme === 'light'
+                    ? 'bg-white border-gray-200 focus-within:border-[#fe8002]'
+                    : 'bg-[#0f0f0f] border-[#2a2a2a] focus-within:border-[#fe8002]'
+                } ${
+                  confirmPassword && !passwordsMatch ? (theme === 'light' ? 'border-red-500' : 'border-red-600') : ''
+                }`}>
+                  <FaLock className={`text-lg ${
+                    theme === 'light' ? 'text-gray-400' : 'text-gray-500'
+                  }`} />
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirmez votre mot de passe"
+                    className={`flex-1 bg-transparent outline-none text-sm font-medium placeholder-opacity-50 ${
+                      theme === 'light'
+                        ? 'text-gray-900 placeholder-gray-500'
+                        : 'text-white placeholder-gray-600'
+                    }`}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg text-sm font-medium">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-500/10 border border-green-500/30 text-green-500 px-4 py-3 rounded-lg text-sm font-medium animate-pulse">
+                  {success}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading || !resetCode || !isPasswordValid || !passwordsMatch}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all duration-300 ${
+                  isLoading || !resetCode || !isPasswordValid || !passwordsMatch
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#fe8002] to-[#ff4500] hover:shadow-lg hover:shadow-[#fe8002]/50 active:scale-95'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <FaSpinner className="animate-spin" />
+                    Traitement...
+                  </div>
+                ) : (
+                  "Réinitialiser le Mot de Passe"
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={isLoading}
+                className={`w-full py-3 px-4 rounded-lg font-bold transition-all duration-300 border-2 ${
+                  theme === 'light'
+                    ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    : 'bg-[#0f0f0f] text-white border-gray-600 hover:bg-[#1a1a1a]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Retour
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ForgotPasswordModal;

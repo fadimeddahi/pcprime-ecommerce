@@ -270,6 +270,15 @@ export interface AuthResponse {
   [key: string]: any;
 }
 
+export interface ChangePasswordRequest {
+  new_password: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+  success?: boolean;
+}
+
 // Authentication API
 export const authApi = {
   // POST /users/register
@@ -344,6 +353,27 @@ export const authApi = {
   // Check if user is authenticated
   isAuthenticated: (): boolean => {
     return !!authApi.getToken();
+  },
+
+  // PUT /users/{id}/password
+  // Change user password
+  changePassword: async (userId: string | number, newPassword: string): Promise<ChangePasswordResponse> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const data = await fetchApi<ChangePasswordResponse>(`/users/${userId}/password`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({
+        new_password: newPassword,
+      } as ChangePasswordRequest),
+    });
+    return data;
   },
 };
 
