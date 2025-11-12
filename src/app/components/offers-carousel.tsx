@@ -128,6 +128,8 @@ const OffersCarousel = () => {
         className="relative h-[600px] sm:h-[500px] md:h-[550px] lg:h-[600px] w-full"
         onMouseEnter={() => setIsAutoPlaying(false)}
         onMouseLeave={() => setIsAutoPlaying(true)}
+        onTouchStart={() => setIsAutoPlaying(false)}
+        onTouchEnd={() => setTimeout(() => setIsAutoPlaying(true), 500)}
       >
         {specialOffers.map((offer, index) => (
           <div
