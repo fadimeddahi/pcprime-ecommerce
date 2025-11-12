@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FaTimes, FaUser, FaLock, FaEnvelope, FaTruck, FaUserPlus } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
+import { OTPModal } from "./otp-modal";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -22,6 +23,8 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
     password: "",
     username: "",
   });
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -46,9 +49,9 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         
         // Validate response structure
         if (response && response.user && response.user.id && response.user.email) {
-          // Store user data in localStorage
-          localStorage.setItem('user_data', JSON.stringify(response.user));
-          onLoginSuccess();
+          // Show OTP modal for 2FA
+          setOtpEmail(formData.email);
+          setShowOTPModal(true);
         } else {
           throw new Error("Réponse invalide du serveur");
         }
@@ -62,9 +65,9 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         
         // Validate response structure
         if (response && response.user && response.user.id && response.user.email) {
-          // Store user data in localStorage
-          localStorage.setItem('user_data', JSON.stringify(response.user));
-          onLoginSuccess();
+          // Show OTP modal to verify email
+          setOtpEmail(formData.email);
+          setShowOTPModal(true);
         } else {
           throw new Error("Réponse invalide du serveur");
         }
@@ -75,6 +78,25 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleOTPSuccess = (token?: string) => {
+    // Store user data and token in localStorage
+    const userData = {
+      email: otpEmail,
+      verified: true,
+      token: token,
+    };
+    localStorage.setItem('user_data', JSON.stringify(userData));
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
+    
+    // Close modals and trigger success
+    setShowOTPModal(false);
+    setFormData({ email: "", password: "", username: "" });
+    onLoginSuccess();
+    onClose();
   };
 
   const toggleMode = () => {
@@ -279,6 +301,18 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           </div>
         </form>
       </div>
+
+      {/* OTP Modal */}
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => {
+          setShowOTPModal(false);
+          setFormData({ email: "", password: "", username: "" });
+        }}
+        onSuccess={handleOTPSuccess}
+        title={isLogin ? "Vérifier votre identité" : "Vérifier votre email"}
+        description={isLogin ? "Entrez le code envoyé à votre email" : "Confirmer votre adresse email"}
+      />
     </div>
   );
 };

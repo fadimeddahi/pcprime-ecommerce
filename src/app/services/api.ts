@@ -9,6 +9,14 @@ import {
   BackendCategory,
   CategoriesResponse 
 } from '../types/product';
+import {
+  OTPSendRequest,
+  OTPSendResponse,
+  OTPVerifyRequest,
+  OTPVerifyResponse,
+  OTPResendRequest,
+  OTPResendResponse
+} from '../types/otp';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com';
 
@@ -134,9 +142,22 @@ async function fetchApi<T>(
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      let errorData: any = {};
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { message: `HTTP Error: ${response.status}` };
+      }
+      
+      console.error(`API Error [${response.status}] ${endpoint}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: options.body,
+        response: errorData,
+      });
+
       throw new ApiError(
-        errorData.message || `HTTP Error: ${response.status}`,
+        errorData.message || errorData.error || `HTTP Error: ${response.status}`,
         response.status,
         errorData
       );
@@ -147,6 +168,7 @@ async function fetchApi<T>(
     if (error instanceof ApiError) {
       throw error;
     }
+    console.error(`Fetch Error ${endpoint}:`, error);
     throw new ApiError(
       error instanceof Error ? error.message : 'Network error occurred',
       undefined,
@@ -407,6 +429,53 @@ export const pcBuilderApi = {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(buildData),
+    });
+    return data;
+  },
+};
+
+// OTP API Service
+export const otpApi = {
+  // POST /otp/send - Send OTP to email
+  sendOTP: async (request: OTPSendRequest): Promise<OTPSendResponse> => {
+    const data = await fetchApi<OTPSendResponse>('/otp/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    return data;
+  },
+
+  // POST /otp/verify - Verify OTP code
+  verifyOTP: async (request: OTPVerifyRequest): Promise<OTPVerifyResponse> => {
+    const data = await fetchApi<OTPVerifyResponse>('/otp/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+    return data;
+  },
+
+  // POST /otp/resend - Resend OTP (auth required)
+  resendOTP: async (request: OTPResendRequest, token?: string): Promise<OTPResendResponse> => {
+    // Get token from localStorage if not provided
+    const authToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null);
+    
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (authToken) {
+      headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
+    const data = await fetchApi<OTPResendResponse>('/otp/resend', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(request),
     });
     return data;
   },

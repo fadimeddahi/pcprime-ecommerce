@@ -242,7 +242,7 @@ const Products = () => {
       
       <div className="container mx-auto relative z-10">
         {/* Filters Section */}
-        <div className={`rounded-xl p-3 md:p-8 mb-4 md:mb-12 border shadow-lg md:shadow-2xl backdrop-blur-xl transition-all duration-300 ${
+        <div className={`rounded-xl p-4 md:p-6 mb-6 md:mb-8 border shadow-lg backdrop-blur-xl transition-all duration-300 ${
           theme === 'light'
             ? 'bg-white border-gray-200 shadow-gray-200/50'
             : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#fe8002]/30 shadow-[#fe8002]/10'
@@ -478,8 +478,8 @@ const Products = () => {
 
         {/* Products Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div
                 key={i}
                 className={`rounded-2xl overflow-hidden shadow-xl border backdrop-blur-sm animate-pulse ${
@@ -534,7 +534,7 @@ const Products = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
