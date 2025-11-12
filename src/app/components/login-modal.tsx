@@ -5,6 +5,7 @@ import { FaTimes, FaUser, FaLock, FaEnvelope, FaTruck, FaUserPlus } from "react-
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
 import { OTPModal } from "./otp-modal";
+import { extractUserIdFromJWT } from "../utils/jwt";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -47,12 +48,92 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           password: formData.password,
         });
         
-        // Validate response structure
-        if (response && response.user && response.user.id && response.user.email) {
+        console.log("Login response (raw):", response);
+        console.log("Login response keys:", Object.keys(response || {}));
+        console.log("Login response.id:", response?.id);
+        console.log("Login response.uuid:", response?.uuid);
+        console.log("Login response.user_id:", response?.user_id);
+        console.log("Login response.user:", response?.user);
+        if (response?.user) {
+          console.log("Login response.user keys:", Object.keys(response.user));
+          console.log("Login response.user.id:", response.user.id);
+          console.log("Login response.user.uuid:", response.user.uuid);
+          console.log("Login response.user.user_id:", response.user.user_id);
+        }
+        
+        // Store token first
+        if (response?.token) {
+          localStorage.setItem('auth_token', response.token);
+        }
+        
+        // Fetch full user profile to get UUID user_id
+        // Note: /users/me endpoint may return 403 Forbidden - skip if it does
+        let userProfile = null;
+        try {
+          userProfile = await authApi.getProfile();
+          console.log("User profile fetched:", userProfile);
+          console.log("Profile ID field (number):", userProfile?.id);
+          console.log("Profile user_id field:", userProfile?.user_id);
+        } catch (err: any) {
+          if (err.status === 403) {
+            console.log("Profile endpoint requires admin privileges - skipping, will use JWT");
+          } else {
+            console.error("Could not fetch user profile:", err);
+          }
+        }
+        
+        // Extract user data from response and profile
+        // Priority order: response fields (uuid/user_id/id), then profile fields, then JWT, then email fallback
+        let extractedId = response?.uuid || response?.user_id || response?.id || 
+                         response?.user?.uuid || response?.user?.user_id || response?.user?.id;
+        
+        console.log("Extracted ID from response:", extractedId);
+        
+        // If not found in response, try profile
+        if (!extractedId && userProfile) {
+          extractedId = userProfile.uuid || userProfile.user_id || userProfile.id;
+          console.log("Extracted ID from profile:", extractedId);
+        }
+        
+        // If still not found, try JWT token
+        if (!extractedId && response?.token) {
+          console.log("Attempting to extract user_id from JWT token...");
+          const jwtUserId = extractUserIdFromJWT(response.token);
+          console.log("Extracted user_id from JWT:", jwtUserId);
+          if (jwtUserId) {
+            extractedId = jwtUserId;
+          }
+        }
+        
+        // Final fallback: Use email as identifier
+        const finalUserEmail = response?.user?.email || response?.email || userProfile?.email || formData.email;
+        if (!extractedId) {
+          console.log("No UUID found in response or JWT. Using email as identifier for OTP...");
+          extractedId = finalUserEmail;
+        } else {
+          console.log("Using extracted UUID:", extractedId);
+        }
+        
+        const userData = {
+          id: extractedId,
+          email: finalUserEmail,
+          username: response?.user?.username || response?.username || userProfile?.username,
+          user_id: extractedId, // UUID/user_id for OTP endpoints
+        };
+        
+        console.log("Final extracted user data:", userData);
+        
+        // Validate we have token and email
+        if (response?.token && userData.email && userData.user_id) {
+          // Store user data in localStorage BEFORE showing OTP
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          console.log("Stored to localStorage - user_data:", userData);
+          
           // Show OTP modal for 2FA
-          setOtpEmail(formData.email);
+          setOtpEmail(userData.email);
           setShowOTPModal(true);
         } else {
+          console.error("Invalid response structure or missing required fields:", response);
           throw new Error("Réponse invalide du serveur");
         }
       } else {
@@ -63,12 +144,91 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           password: formData.password,
         });
         
-        // Validate response structure
-        if (response && response.user && response.user.id && response.user.email) {
+        console.log("Register response (raw):", response);
+        console.log("Register response keys:", Object.keys(response || {}));
+        console.log("Register response.id:", response?.id);
+        console.log("Register response.uuid:", response?.uuid);
+        console.log("Register response.user_id:", response?.user_id);
+        console.log("Register response.user:", response?.user);
+        if (response?.user) {
+          console.log("Register response.user keys:", Object.keys(response.user));
+          console.log("Register response.user.id:", response.user.id);
+          console.log("Register response.user.uuid:", response.user.uuid);
+          console.log("Register response.user.user_id:", response.user.user_id);
+        }
+        
+        // Store token first
+        if (response?.token) {
+          localStorage.setItem('auth_token', response.token);
+        }
+        
+        // Fetch full user profile to get UUID user_id
+        // Note: /users/me endpoint may return 403 Forbidden - skip if it does
+        let userProfile = null;
+        try {
+          userProfile = await authApi.getProfile();
+          console.log("User profile fetched:", userProfile);
+          console.log("Profile ID field (number):", userProfile?.id);
+          console.log("Profile user_id field:", userProfile?.user_id);
+        } catch (err: any) {
+          if (err.status === 403) {
+            console.log("Profile endpoint requires admin privileges - skipping, will use JWT");
+          } else {
+            console.error("Could not fetch user profile:", err);
+          }
+        }
+        
+        // Extract user data from response and profile
+        // Priority order: response fields (uuid/user_id/id), then profile fields, then JWT, then email fallback
+        let extractedId = response?.uuid || response?.user_id || response?.id || 
+                         response?.user?.uuid || response?.user?.user_id || response?.user?.id;
+        
+        console.log("Extracted ID from response:", extractedId);
+        
+        // If not found in response, try profile
+        if (!extractedId && userProfile) {
+          extractedId = userProfile.uuid || userProfile.user_id || userProfile.id;
+          console.log("Extracted ID from profile:", extractedId);
+        }
+        
+        // If still not found, try JWT token
+        if (!extractedId && response?.token) {
+          console.log("Attempting to extract user_id from JWT token...");
+          const jwtUserId = extractUserIdFromJWT(response.token);
+          console.log("Extracted user_id from JWT:", jwtUserId);
+          if (jwtUserId) {
+            extractedId = jwtUserId;
+          }
+        }
+        
+        // Final fallback: Use email as identifier
+        const finalUserEmail = response?.user?.email || response?.email || userProfile?.email || formData.email;
+        if (!extractedId) {
+          console.log("No UUID found in response or JWT. Using email as identifier for OTP...");
+          extractedId = finalUserEmail;
+        } else {
+          console.log("Using extracted UUID:", extractedId);
+        }
+        
+        const userData = {
+          id: extractedId,
+          email: finalUserEmail,
+          username: response?.user?.username || response?.username || userProfile?.username,
+          user_id: extractedId, // This will be email if no ID was found
+        };
+        
+        console.log("Final extracted user data:", userData);
+        
+        if (response?.token && userData.email && userData.user_id) {
+          // Store user data in localStorage BEFORE showing OTP
+          localStorage.setItem('user_data', JSON.stringify(userData));
+          console.log("Stored to localStorage - user_data:", userData);
+          
           // Show OTP modal to verify email
-          setOtpEmail(formData.email);
+          setOtpEmail(userData.email);
           setShowOTPModal(true);
         } else {
+          console.error("Invalid response structure or missing required fields:", response);
           throw new Error("Réponse invalide du serveur");
         }
       }

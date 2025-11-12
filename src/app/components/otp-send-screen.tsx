@@ -33,25 +33,40 @@ export const OTPSendScreen = ({ onSuccess, onError }: OTPSendScreenProps) => {
 
     try {
       // Get user ID from localStorage
-      const userData = localStorage.getItem('user_data');
-      const userId = userData ? JSON.parse(userData).id : null;
+      let userData = localStorage.getItem('user_data');
+      let userId: string | null = null;
+      
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          // Try to get UUID format user_id first, fallback to id
+          userId = parsed.user_id || parsed.id;
+          console.log("Extracted userId from storage:", userId, "from parsed data:", parsed);
+        } catch (e) {
+          console.warn("Failed to parse user_data from localStorage", e);
+        }
+      }
 
       if (!userId) {
-        setError("User ID not found. Please log in again.");
-        onError?.("User ID not found");
+        setError("User not properly authenticated. Please log in again.");
+        onError?.("User not authenticated");
         setIsLoading(false);
         return;
       }
 
-      console.log("Sending OTP to:", email, "with user_id:", userId);
+      console.log("Sending OTP with user_id:", userId, "email:", email);
       const response = await otpApi.sendOTP({ user_id: userId, email });
       console.log("OTP send response:", response);
+      console.log("OTP send response message:", response?.message);
       setSuccess("OTP sent successfully! Check your email for the 6-digit code.");
       setTimeout(() => {
         onSuccess(email);
       }, 1000);
     } catch (err: any) {
       console.error("OTP send error:", err);
+      console.error("OTP send error full details:", err);
+      console.error("OTP send error.data:", err.data);
+      console.error("OTP send error.status:", err.status);
       const errorMessage = err.data?.message || err.message || "Failed to send OTP";
       setError(errorMessage);
       onError?.(errorMessage);

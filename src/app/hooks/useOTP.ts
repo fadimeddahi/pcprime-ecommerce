@@ -24,11 +24,22 @@ export const useOTP = (options?: UseOTPOptions) => {
 
       try {
         // Get user ID from localStorage
-        const userData = localStorage.getItem('user_data');
-        const userId = userData ? JSON.parse(userData).id : null;
+        let userData = localStorage.getItem('user_data');
+        let userId: string | null = null;
+        
+        if (userData) {
+          try {
+            const parsed = JSON.parse(userData);
+            // Try to get UUID format user_id first, fallback to id
+            userId = parsed.user_id || parsed.id;
+            console.log("Extracted userId from storage:", userId);
+          } catch (e) {
+            console.warn("Failed to parse user_data from localStorage", e);
+          }
+        }
 
         if (!userId) {
-          throw new Error('User ID not found');
+          throw new Error('User not properly authenticated');
         }
 
         const response = await otpApi.sendOTP({ user_id: userId, email: sendEmail });
@@ -57,11 +68,22 @@ export const useOTP = (options?: UseOTPOptions) => {
 
       try {
         // Get user ID from localStorage
-        const userData = localStorage.getItem('user_data');
-        const userId = userData ? JSON.parse(userData).id : null;
+        let userData = localStorage.getItem('user_data');
+        let userId: string | null = null;
+        
+        if (userData) {
+          try {
+            const parsed = JSON.parse(userData);
+            // Try to get UUID format user_id first, fallback to id
+            userId = parsed.user_id || parsed.id;
+            console.log("Extracted userId from storage:", userId);
+          } catch (e) {
+            console.warn("Failed to parse user_data from localStorage", e);
+          }
+        }
 
         if (!userId) {
-          throw new Error('User ID not found');
+          throw new Error('User not properly authenticated');
         }
 
         const response = await otpApi.verifyOTP({ user_id: userId, email, code });
@@ -99,12 +121,23 @@ export const useOTP = (options?: UseOTPOptions) => {
 
     try {
       // Get user ID and token from localStorage
-      const userData = localStorage.getItem('user_data');
+      let userData = localStorage.getItem('user_data');
+      let userId: string | null = null;
       const token = localStorage.getItem('auth_token');
-      const userId = userData ? JSON.parse(userData).id : null;
+      
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          // Try to get UUID format user_id first, fallback to id
+          userId = parsed.user_id || parsed.id;
+          console.log("Extracted userId from storage:", userId);
+        } catch (e) {
+          console.warn("Failed to parse user_data from localStorage", e);
+        }
+      }
 
       if (!userId) {
-        throw new Error('User ID not found');
+        throw new Error('User not properly authenticated');
       }
 
       const response = await otpApi.resendOTP({ user_id: userId, email }, token || undefined);

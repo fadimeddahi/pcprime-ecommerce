@@ -106,12 +106,23 @@ export const OTPVerifyScreen = ({
 
     try {
       // Get user ID from localStorage
-      const userData = localStorage.getItem('user_data');
-      const userId = userData ? JSON.parse(userData).id : null;
+      let userData = localStorage.getItem('user_data');
+      let userId: string | null = null;
+      
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          // Try to get UUID format user_id first, fallback to id
+          userId = parsed.user_id || parsed.id;
+          console.log("Extracted userId from storage:", userId, "from parsed data:", parsed);
+        } catch (e) {
+          console.warn("Failed to parse user_data from localStorage", e);
+        }
+      }
 
       if (!userId) {
-        setError("User ID not found. Please log in again.");
-        onError?.("User ID not found");
+        setError("User not properly authenticated. Please log in again.");
+        onError?.("User not authenticated");
         setIsLoading(false);
         return;
       }
@@ -154,13 +165,24 @@ export const OTPVerifyScreen = ({
 
     try {
       // Get user ID and token from localStorage
-      const userData = localStorage.getItem('user_data');
+      let userData = localStorage.getItem('user_data');
+      let userId: string | null = null;
       const token = localStorage.getItem('auth_token');
-      const userId = userData ? JSON.parse(userData).id : null;
+      
+      if (userData) {
+        try {
+          const parsed = JSON.parse(userData);
+          // Try to get UUID format user_id first, fallback to id
+          userId = parsed.user_id || parsed.id;
+          console.log("Extracted userId from storage:", userId, "from parsed data:", parsed);
+        } catch (e) {
+          console.warn("Failed to parse user_data from localStorage", e);
+        }
+      }
 
       if (!userId) {
-        setError("User ID not found. Please log in again.");
-        onError?.("User ID not found");
+        setError("User not properly authenticated. Please log in again.");
+        onError?.("User not authenticated");
         setIsResending(false);
         return;
       }

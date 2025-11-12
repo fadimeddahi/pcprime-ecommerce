@@ -136,6 +136,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 src={images[selectedImage]}
                 alt={product.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 600px"
                 className="object-cover"
                 priority
               />
@@ -186,7 +187,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                       : "border-2 border-[#2a2a2a] hover:border-[#fe8002]/50"
                   }`}
                 >
-                  <Image src={img} alt={`${product.name} ${index + 1}`} fill className="object-cover" />
+                  <Image src={img} alt={`${product.name} ${index + 1}`} fill sizes="128px" className="object-cover" />
                 </button>
               ))}
             </div>

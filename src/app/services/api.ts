@@ -253,12 +253,21 @@ export interface LoginRequest {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
+  token?: string;
+  user?: {
+    id?: string | number;
+    uuid?: string;
+    user_id?: string;
+    username?: string;
+    email?: string;
+    [key: string]: any;
   };
+  id?: string | number;
+  uuid?: string;
+  user_id?: string;
+  username?: string;
+  email?: string;
+  [key: string]: any;
 }
 
 // Authentication API
@@ -304,6 +313,24 @@ export const authApi = {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('auth_token');
     }
+  },
+
+  // Get current user profile
+  // GET /users/me
+  getProfile: async (): Promise<any> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const data = await fetchApi<any>('/users/me', {
+      method: 'GET',
+      headers,
+    });
+    return data;
   },
 
   // Get stored token
