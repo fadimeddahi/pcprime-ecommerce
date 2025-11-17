@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import Footer from "./components/footer";
+import ChatbotWidget from "./components/chatbot-widget";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -20,8 +21,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Prime Computer - Votre destination informatique",
-  description: "Solutions informatiques premium pour professionnels et gamers",
+  title: {
+    default: "PCPrimeDZ - Matériel Informatique en Algérie",
+    template: "%s | PCPrimeDZ"
+  },
+  description: "Votre destination pour le matériel informatique en Algérie. PC gaming, composants, périphériques et solutions professionnelles.",
+  keywords: ["ordinateur", "gaming", "PC", "composants", "Algérie", "informatique", "matériel"],
+  authors: [{ name: "PCPrimeDZ" }],
+  openGraph: {
+    type: "website",
+    locale: "fr_DZ",
+    siteName: "PCPrimeDZ",
+  },
 };
 
 export default function RootLayout({
@@ -64,6 +75,7 @@ export default function RootLayout({
                   <Navbar />
                   {children}
                   <Footer />
+                  <ChatbotWidget />
                 </WishlistProvider>
               </CartProvider>
             </ThemeWrapper>

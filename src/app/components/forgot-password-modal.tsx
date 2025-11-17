@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { FaEnvelope, FaLock, FaTimes, FaSpinner } from "react-icons/fa";
+import { FaEnvelope, FaLock, FaTimes, FaSpinner, FaCheck } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
-import { authApi } from "../services/api";
+import { otpApi, authApi } from "../services/api";
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -13,9 +13,9 @@ interface ForgotPasswordModalProps {
 
 const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModalProps) => {
   const { theme } = useTheme();
-  const [step, setStep] = useState<"email" | "reset">("email");
+  const [step, setStep] = useState<"email" | "otp" | "reset">("email");
   const [email, setEmail] = useState("");
-  const [resetCode, setResetCode] = useState("");
+  const [otpCode, setOtpCode] = useState(["", "", "", "", "", ""]);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +36,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
   const isPasswordValid = Object.values(passwordRequirements).every(Boolean);
   const passwordsMatch = newPassword === confirmPassword && newPassword.length > 0;
 
-  const handleSendReset = async (e: React.FormEvent) => {
+  const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -49,29 +49,69 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
     setIsLoading(true);
 
     try {
-      // Call API to send reset code
-      // POST /users/forgot-password with { email }
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com'}/users/forgot-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de l'envoi du code de réinitialisation");
-      }
-
-      setSuccess("Un code de réinitialisation a été envoyé à votre email");
+      // Send OTP to email for password reset
+      await otpApi.sendOTP({ user_id: email, email });
+      setSuccess("Un code OTP a été envoyé à votre email");
       setTimeout(() => {
-        setStep("reset");
+        setStep("otp");
         setSuccess("");
       }, 1500);
     } catch (err: any) {
-      const errorMessage = err.message || "Erreur lors de l'envoi du code";
+      const errorMessage = err.data?.message || err.message || "Erreur lors de l'envoi du code OTP";
       setError(errorMessage);
-      console.error("Forgot password error:", err);
+      console.error("Send OTP error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOTPChange = (index: number, value: string) => {
+    if (value.length > 1) {
+      value = value.slice(-1);
+    }
+    if (!/^\d*$/.test(value) && value !== "") {
+      return;
+    }
+    const newOtp = [...otpCode];
+    newOtp[index] = value;
+    setOtpCode(newOtp);
+    setError("");
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    const code = otpCode.join("");
+    if (code.length !== 6) {
+      setError("Veuillez entrer tous les 6 chiffres");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Verify OTP
+      const response = await otpApi.verifyOTP({
+        user_id: email,
+        email,
+        code,
+      });
+
+      if (response.verified) {
+        setSuccess("Code OTP vérifié avec succès!");
+        setTimeout(() => {
+          setStep("reset");
+          setSuccess("");
+        }, 1500);
+      } else {
+        setError("Code OTP invalide");
+      }
+    } catch (err: any) {
+      const errorMessage = err.data?.message || err.message || "Erreur lors de la vérification du code";
+      setError(errorMessage);
+      console.error("Verify OTP error:", err);
     } finally {
       setIsLoading(false);
     }
@@ -81,11 +121,6 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
     e.preventDefault();
     setError("");
     setSuccess("");
-
-    if (!resetCode) {
-      setError("Veuillez entrer le code de réinitialisation");
-      return;
-    }
 
     if (!isPasswordValid) {
       setError("Le mot de passe ne respecte pas tous les critères requis");
@@ -100,24 +135,10 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
     setIsLoading(true);
 
     try {
-      // Call API to reset password
-      // POST /users/reset-password with { email, reset_code, new_password }
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com'}/users/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          reset_code: resetCode,
-          new_password: newPassword,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Erreur lors de la réinitialisation du mot de passe");
-      }
+      // Use the changePassword API to update password after OTP verification
+      // Since OTP is already verified, we can use the email as identifier
+      const userId = email; // Using email as identifier
+      await authApi.changePassword(userId, newPassword);
 
       setSuccess("Mot de passe réinitialisé avec succès!");
       setTimeout(() => {
@@ -125,7 +146,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
         onClose();
       }, 2000);
     } catch (err: any) {
-      const errorMessage = err.message || "Erreur lors de la réinitialisation";
+      const errorMessage = err.data?.message || err.message || "Erreur lors de la réinitialisation";
       setError(errorMessage);
       console.error("Reset password error:", err);
     } finally {
@@ -135,7 +156,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
 
   const handleBack = () => {
     setStep("email");
-    setResetCode("");
+    setOtpCode(["", "", "", "", "", ""]);
     setNewPassword("");
     setConfirmPassword("");
     setError("");
@@ -187,7 +208,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
         <div className="p-8">
           {step === "email" ? (
             // Step 1: Email Input
-            <form onSubmit={handleSendReset} className="space-y-6">
+            <form onSubmit={handleSendOTP} className="space-y-6">
               <div className={`rounded-lg p-4 ${
                 theme === 'light'
                   ? 'bg-blue-50 border border-blue-200'
@@ -273,29 +294,122 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
                 Annuler
               </button>
             </form>
-          ) : (
-            // Step 2: Reset Code and New Password
-            <form onSubmit={handleResetPassword} className="space-y-6">
-              {/* Reset Code */}
+          ) : step === "otp" ? (
+            // Step 2: OTP Verification
+            <form onSubmit={handleVerifyOTP} className="space-y-6">
+              <div className={`rounded-lg p-4 ${
+                theme === 'light'
+                  ? 'bg-blue-50 border border-blue-200'
+                  : 'bg-blue-500/10 border border-blue-500/30'
+              }`}>
+                <p className={`text-sm ${
+                  theme === 'light' ? 'text-blue-700' : 'text-blue-300'
+                }`}>
+                  Un code OTP à 6 chiffres a été envoyé à <strong>{email}</strong>
+                </p>
+              </div>
+
               <div>
-                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
+                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
                   theme === 'light' ? 'text-gray-800' : 'text-white'
                 }`}>
                   <FaLock className="text-[#fe8002]" />
-                  Code de Réinitialisation
+                  Code OTP
                 </label>
-                <input
-                  type="text"
-                  value={resetCode}
-                  onChange={(e) => setResetCode(e.target.value)}
-                  placeholder="Entrez le code reçu par email"
-                  className={`w-full px-4 py-3 border-2 rounded-lg font-medium ${
-                    theme === 'light'
-                      ? 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#fe8002]'
-                      : 'bg-[#0f0f0f] border-[#2a2a2a] text-white focus:border-[#fe8002]'
-                  } outline-none transition-all`}
-                  disabled={isLoading}
-                />
+                <div className="flex gap-2 justify-center">
+                  {otpCode.map((digit, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOTPChange(index, e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Backspace" && !digit && index > 0) {
+                          const inputs = document.querySelectorAll('input[maxLength="1"]');
+                          (inputs[index - 1] as HTMLInputElement)?.focus();
+                        } else if (!/^\d$/.test(e.key) && e.key !== "Backspace") {
+                          e.preventDefault();
+                        }
+                      }}
+                      onPaste={(e) => {
+                        e.preventDefault();
+                        const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+                        const newOtp = [...otpCode];
+                        for (let i = 0; i < pasteData.length; i++) {
+                          newOtp[i] = pasteData[i] || '';
+                        }
+                        setOtpCode(newOtp);
+                      }}
+                      className={`w-12 h-12 text-center text-xl font-bold border-2 rounded-lg transition-all ${
+                        theme === 'light'
+                          ? 'bg-white border-gray-300 text-gray-900 focus:border-[#fe8002]'
+                          : 'bg-[#0f0f0f] border-[#2a2a2a] text-white focus:border-[#fe8002]'
+                      } outline-none`}
+                      disabled={isLoading}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {error && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg text-sm font-medium">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="bg-green-500/10 border border-green-500/30 text-green-500 px-4 py-3 rounded-lg text-sm font-medium animate-pulse">
+                  {success}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading || otpCode.join("").length !== 6}
+                className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all duration-300 ${
+                  isLoading || otpCode.join("").length !== 6
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-[#fe8002] to-[#ff4500] hover:shadow-lg hover:shadow-[#fe8002]/50 active:scale-95'
+                }`}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <FaSpinner className="animate-spin" />
+                    Vérification...
+                  </div>
+                ) : (
+                  "Vérifier le Code"
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={isLoading}
+                className={`w-full py-3 px-4 rounded-lg font-bold transition-all duration-300 border-2 ${
+                  theme === 'light'
+                    ? 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                    : 'bg-[#0f0f0f] text-white border-gray-600 hover:bg-[#1a1a1a]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Retour
+              </button>
+            </form>
+          ) : (
+            // Step 3: New Password
+            <form onSubmit={handleResetPassword} className="space-y-6">
+              <div className={`rounded-lg p-4 ${
+                theme === 'light'
+                  ? 'bg-green-50 border border-green-200'
+                  : 'bg-green-500/10 border border-green-500/30'
+              }`}>
+                <p className={`text-sm ${
+                  theme === 'light' ? 'text-green-700' : 'text-green-300'
+                }`}>
+                  <FaCheck className="inline mr-2" />
+                  Votre code OTP a été vérifié avec succès!
+                </p>
               </div>
 
               {/* New Password */}
@@ -326,6 +440,15 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
                     }`}
                     disabled={isLoading}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className={`text-lg transition-colors ${
+                      theme === 'light' ? 'text-gray-500 hover:text-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
                 </div>
               </div>
 
@@ -341,19 +464,19 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
                   Critères:
                 </p>
                 <div className={passwordRequirements.minLength ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                  ✓ Au moins 8 caractères
+                  {passwordRequirements.minLength ? '✓' : '○'} Au moins 8 caractères
                 </div>
                 <div className={passwordRequirements.uppercase ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                  ✓ 1 lettre majuscule
+                  {passwordRequirements.uppercase ? '✓' : '○'} 1 lettre majuscule
                 </div>
                 <div className={passwordRequirements.lowercase ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                  ✓ 1 lettre minuscule
+                  {passwordRequirements.lowercase ? '✓' : '○'} 1 lettre minuscule
                 </div>
                 <div className={passwordRequirements.number ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                  ✓ 1 chiffre
+                  {passwordRequirements.number ? '✓' : '○'} 1 chiffre
                 </div>
                 <div className={passwordRequirements.special ? 'text-green-600' : theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                  ✓ 1 caractère spécial (@$!%*?&)
+                  {passwordRequirements.special ? '✓' : '○'} 1 caractère spécial (@$!%*?&)
                 </div>
               </div>
 
@@ -387,8 +510,23 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
                     }`}
                     disabled={isLoading}
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirm(!showConfirm)}
+                    className={`text-lg transition-colors ${
+                      theme === 'light' ? 'text-gray-500 hover:text-gray-700' : 'text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    {showConfirm ? "🙈" : "👁️"}
+                  </button>
                 </div>
               </div>
+
+              {confirmPassword && !passwordsMatch && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg text-sm font-medium">
+                  Les mots de passe ne correspondent pas
+                </div>
+              )}
 
               {error && (
                 <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-4 py-3 rounded-lg text-sm font-medium">
@@ -404,9 +542,9 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
 
               <button
                 type="submit"
-                disabled={isLoading || !resetCode || !isPasswordValid || !passwordsMatch}
+                disabled={isLoading || !isPasswordValid || !passwordsMatch}
                 className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-all duration-300 ${
-                  isLoading || !resetCode || !isPasswordValid || !passwordsMatch
+                  isLoading || !isPasswordValid || !passwordsMatch
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-[#fe8002] to-[#ff4500] hover:shadow-lg hover:shadow-[#fe8002]/50 active:scale-95'
                 }`}
@@ -414,7 +552,7 @@ const ForgotPasswordModal = ({ isOpen, onClose, onSuccess }: ForgotPasswordModal
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
                     <FaSpinner className="animate-spin" />
-                    Traitement...
+                    Réinitialisation...
                   </div>
                 ) : (
                   "Réinitialiser le Mot de Passe"

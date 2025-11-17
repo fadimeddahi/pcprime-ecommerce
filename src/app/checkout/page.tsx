@@ -69,12 +69,8 @@ const CheckoutPage = () => {
         cart_items: cart_items
       };
 
-      console.log("📤 Submitting order:", orderData);
-
       // Submit order to backend
       const response = await orderApi.createOrder(orderData);
-      
-      console.log("✅ Order created successfully:", response);
       
       // Clear cart from localStorage
       clearCart();
@@ -88,20 +84,11 @@ const CheckoutPage = () => {
       }, 5000);
       
     } catch (err: any) {
-      console.error("❌ Order submission error:", err);
-      console.error("❌ Error details:", {
-        message: err.message,
-        status: err.status,
-        data: err.data,
-        stack: err.stack
-      });
-      
       // Extract detailed error information
       let errorMessage = "Une erreur s'est produite lors de la commande.";
       
       if (err.data) {
         // Backend returned structured error data
-        console.log("📋 Backend error data:", err.data);
         
         if (err.data.message) {
           errorMessage = err.data.message;
@@ -131,7 +118,6 @@ const CheckoutPage = () => {
         errorMessage = `[Erreur ${err.status}] ${errorMessage}`;
       }
       
-      console.log("📢 Displaying error to user:", errorMessage);
       setError(errorMessage);
       setIsSubmitting(false);
     }

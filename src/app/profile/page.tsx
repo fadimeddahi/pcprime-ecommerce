@@ -112,7 +112,6 @@ const ProfilePage = () => {
   };
 
   const handleSave = () => {
-    // TODO: Add API call to update user profile when backend endpoint is available
     if (profileData) {
       const updatedProfile = { ...profileData, ...editData };
       setProfileData(updatedProfile);

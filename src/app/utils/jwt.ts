@@ -96,14 +96,8 @@ export function extractUserIdFromJWT(token: string): string | null {
     return null;
   }
 
-  console.log("JWT Payload keys:", Object.keys(payload));
-  console.log("Full JWT Payload:", payload);
-
   // Try common field names for user ID
-  // Common field names: sub (subject), user_id, userId, id, uid
   const userId = payload.sub || payload.user_id || payload.userId || payload.id || payload.uid || null;
-  
-  console.log("Extracted userId from JWT payload:", userId);
   
   return userId;
 }
