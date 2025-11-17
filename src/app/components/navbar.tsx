@@ -1,6 +1,6 @@
 "use client";
 
-import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun } from "react-icons/fa";
+import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun, FaComments } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -8,11 +8,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useAllCategories } from "../hooks/useProducts";
 import Cart from "./cart";
 import Wishlist from "./wishlist";
+import FeedbackModal from "./feedback-modal";
 
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { getCartItemsCount } = useCart();
   const { getWishlistItemsCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
@@ -195,6 +197,18 @@ const Navbar = () => {
           {/* Icons */}
           <div className="flex items-center gap-4 md:gap-6">
             {/* Theme Toggle */}
+            {/* Feedback Button */}
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
+                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
+              }`}
+              aria-label="Send feedback"
+              title="Send feedback"
+            >
+              <FaComments />
+            </button>
+
             <button
               onClick={toggleTheme}
               className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
@@ -360,6 +374,12 @@ const Navbar = () => {
           onClick={toggleSidebar}
         />
       )}
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
 
       {/* Cart Component */}
       <Cart isOpen={isCartOpen} onClose={toggleCart} />
