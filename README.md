@@ -1,10 +1,13 @@
 # PCPrime E-Commerce Platform
 
-A modern e-commerce platform built for computer hardware retail, featuring real-time product browsing, AI-powered chat assistance, and B2B company management.
+[![GitHub](https://img.shields.io/badge/GitHub-fadimeddahi-blue?logo=github)](https://github.com/fadimeddahi)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
+A modern, full-featured e-commerce platform built for computer hardware retail, featuring real-time product browsing, AI-powered chat assistance, and B2B company management.
 
 ## Overview
 
-This is a full-featured e-commerce application designed for PCPrimeDZ, an Algerian computer hardware retailer. The platform handles both B2C and B2B sales channels with integrated inventory management, order processing, and customer support.
+PCPrime is a full-featured e-commerce application designed for the Algerian computer hardware market. The platform seamlessly handles both B2C and B2B sales channels with integrated inventory management, order processing, and AI-powered customer support. Built with Next.js 15 and modern web technologies for optimal performance and user experience.
 
 ## Features
 
@@ -88,8 +91,8 @@ next-app/
 
 1. Clone the repository
 ```bash
-git clone <repository-url>
-cd next-app
+git clone https://github.com/fadimeddahi/pcprime-ecommerce
+cd pcprime-ecommerce
 ```
 
 2. Install dependencies
@@ -172,10 +175,21 @@ The application connects to a backend REST API with the following endpoints:
 
 ## Contributing
 
-This is a private commercial project. For bug reports or feature requests, contact the development team.
+Contributions are welcome! Feel free to fork the repository and submit pull requests with improvements, bug fixes, or new features.
 
-## Support
+## Support & Contact
 
-For technical support or questions:
-- Email: contact@pcprimedz.dz
-- Website: https://pcprimedz.onrender.com
+For technical support, questions, or contributions:
+- **GitHub**: [github.com/fadimeddahi](https://github.com/fadimeddahi)
+- **Email**: contact@pcprimedz.dz
+- **Website**: https://pcprimedz.onrender.com
+
+## Author
+
+**Fadi Meddahi** - Full Stack Developer
+
+This project showcases modern web development practices including React Server Components, type-safe API integration, and scalable e-commerce architecture.
+
+## License
+
+MIT License - See LICENSE file for details

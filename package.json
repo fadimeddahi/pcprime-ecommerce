@@ -1,7 +1,15 @@
 {
-  "name": "next-app",
-  "version": "0.1.0",
-  "private": true,
+  "name": "pcprime-ecommerce",
+  "version": "1.0.0",
+  "description": "Modern e-commerce platform for computer hardware retail with AI chatbot and B2B portal",
+  "author": "Fadi Meddahi",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fadimeddahi/pcprime-ecommerce"
+  },
+  "homepage": "https://github.com/fadimeddahi/pcprime-ecommerce",
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
