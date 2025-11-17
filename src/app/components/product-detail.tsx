@@ -7,6 +7,7 @@ import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
 import { Product } from "../types/product";
 import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
+import FeedbackModal from "./feedback-modal";
 
 interface ProductDetailProps {
   product: Product;
@@ -17,6 +18,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const productIdNum = Number(product.id);
@@ -363,6 +365,18 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               )}
             </button>
 
+            {/* Feedback Button */}
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 border-2 flex items-center justify-center gap-3 ${
+                theme === 'light'
+                  ? 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200'
+                  : 'bg-blue-900/30 border-blue-500 text-blue-300 hover:bg-blue-900/50'
+              }`}
+            >
+              💬 Donner votre avis
+            </button>
+
             {/* Features */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
               <div className={`flex items-center gap-3 p-4 rounded-xl border border-[#fe8002]/20 ${
@@ -440,6 +454,12 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
             </div>
           </div>
         )}
+
+        {/* Feedback Modal */}
+        <FeedbackModal
+          isOpen={isFeedbackOpen}
+          onClose={() => setIsFeedbackOpen(false)}
+        />
       </div>
     </section>
   );

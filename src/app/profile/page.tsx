@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
 import ChangePasswordModal from "../components/change-password-modal";
+import FeedbackModal from "../components/feedback-modal";
 import Image from "next/image";
 import { 
   FaUser, 
@@ -30,6 +31,7 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState<"info" | "orders" | "settings">("info");
   const [isLoading, setIsLoading] = useState(true);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   
   const [profileData, setProfileData] = useState<UserProfile | null>(null);
   const [editData, setEditData] = useState({
@@ -388,6 +390,29 @@ const ProfilePage = () => {
             {/* Settings Tab */}
             {activeTab === "settings" && (
               <div className="space-y-6">
+                {/* Feedback */}
+                <div className={`rounded-2xl p-8 border-2 border-blue-500/30 shadow-2xl ${
+                  theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+                }`}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-2xl">💬</span>
+                    <h2 className="text-blue-500 font-bold text-2xl uppercase tracking-wide">
+                      Retour d'expérience
+                    </h2>
+                  </div>
+
+                  <button className={`w-full font-bold py-4 px-6 rounded-xl border-2 border-blue-500/40 hover:border-blue-500 transition-all flex items-center justify-between group ${
+                    theme === 'light' ? 'bg-blue-50 text-blue-900' : 'bg-gradient-to-r from-blue-900/20 to-blue-800/20 text-blue-400'
+                  }`}
+                  onClick={() => setIsFeedbackOpen(true)}>
+                    <span className="flex items-center gap-3">
+                      <span>💬</span>
+                      Partager votre avis
+                    </span>
+                    <span className="text-blue-500 group-hover:translate-x-2 transition-transform">→</span>
+                  </button>
+                </div>
+
                 {/* Security */}
                 <div className={`rounded-2xl p-8 border-2 border-[#fe8002]/30 shadow-2xl ${
                   theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
@@ -431,11 +456,21 @@ const ProfilePage = () => {
 
       {/* Change Password Modal */}
       {profileData && (
-        <ChangePasswordModal
-          isOpen={showChangePasswordModal}
-          onClose={() => setShowChangePasswordModal(false)}
-          userId={profileData.id}
-        />
+        <>
+          <ChangePasswordModal
+            isOpen={showChangePasswordModal}
+            onClose={() => setShowChangePasswordModal(false)}
+            userId={profileData.id}
+          />
+
+          {/* Feedback Modal */}
+          <FeedbackModal
+            isOpen={isFeedbackOpen}
+            onClose={() => setIsFeedbackOpen(false)}
+            userId={profileData.id ? Number(profileData.id) : undefined}
+            userEmail={profileData.email}
+          />
+        </>
       )}
     </main>
   );

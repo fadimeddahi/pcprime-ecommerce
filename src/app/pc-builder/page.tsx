@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTheme } from "../context/ThemeContext";
 import { pcBuilderApi } from "../services/api";
 import { CPU, Motherboard, RAM, Storage, Monitor, BuildResponse } from "../types/pc-builder";
+import FeedbackModal from "../components/feedback-modal";
 
 type AllComponentsResult = {
   cpus: CPU[];
@@ -17,6 +18,7 @@ import { FaMicrochip, FaMemory, FaHdd, FaDesktop, FaCheckCircle, FaExclamationTr
 
 const PCBuilderPage = () => {
   const { theme } = useTheme();
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   
 
   // Fetch all component lists in parallel with one query
@@ -391,7 +393,27 @@ const PCBuilderPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Feedback Button */}
+        <div className="mt-12 text-center">
+          <button
+            onClick={() => setIsFeedbackOpen(true)}
+            className={`font-bold py-3 px-8 rounded-xl transition-all duration-300 border-2 ${
+              theme === 'light'
+                ? 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200'
+                : 'bg-blue-900/30 border-blue-500 text-blue-300 hover:bg-blue-900/50'
+            }`}
+          >
+            💬 Avis sur le PC Builder
+          </button>
+        </div>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </div>
   );
 };

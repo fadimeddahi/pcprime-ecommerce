@@ -1,11 +1,14 @@
 "use client";
 
 import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useAllCategories } from "../hooks/useProducts";
+import FeedbackModal from "./feedback-modal";
 
 const Footer = () => {
   const { theme } = useTheme();
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const { data: categories = [] } = useAllCategories();
   
   return (
@@ -72,6 +75,16 @@ const Footer = () => {
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Contact
                 </a>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setIsFeedbackOpen(true)}
+                  className={`hover:text-[#fe8002] transition-all text-sm flex items-center group w-full text-left ${
+                    theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                  }`}>
+                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
+                  Feedback
+                </button>
               </li>
             </ul>
           </div>
@@ -184,6 +197,12 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </footer>
   );
 };

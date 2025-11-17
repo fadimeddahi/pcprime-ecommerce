@@ -7,6 +7,7 @@ import { useTheme } from "../context/ThemeContext";
 import Image from "next/image";
 import { FaShoppingCart, FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCheckCircle, FaTruck } from "react-icons/fa";
 import { orderApi, authApi } from "../services/api";
+import FeedbackModal from "./feedback-modal";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const CheckoutPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   
   useEffect(() => {
     setIsAuthenticated(authApi.isAuthenticated());
@@ -203,7 +205,23 @@ const CheckoutPage = () => {
           >
             Retour à la boutique
           </button>
+          <button 
+            onClick={() => setIsFeedbackOpen(true)}
+            className={`mt-6 font-bold py-3 px-8 rounded-xl transition-all duration-300 border-2 ${
+              theme === 'light'
+                ? 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200'
+                : 'bg-blue-900/30 border-blue-500 text-blue-300 hover:bg-blue-900/50'
+            }`}
+          >
+            Partager votre avis
+          </button>
         </div>
+
+        {/* Feedback Modal */}
+        <FeedbackModal
+          isOpen={isFeedbackOpen}
+          onClose={() => setIsFeedbackOpen(false)}
+        />
       </div>
     );
   }

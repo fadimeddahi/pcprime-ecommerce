@@ -6,6 +6,7 @@ import { useTheme } from "../context/ThemeContext";
 import { companyApi, BulkOrder, type CompanyDashboard as CompanyDashboardType } from "../services/espaceSocietyApi";
 import CompanyRegistrationModal from "./company-registration-modal";
 import BulkOrderForm from "./bulk-order-form";
+import FeedbackModal from "./feedback-modal";
 
 interface CompanyDashboardProps {
   companyId?: string;
@@ -19,6 +20,7 @@ const CompanyDashboard = ({ companyId }: CompanyDashboardProps) => {
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"overview" | "orders" | "invoices" | "team" | "settings">("overview");
   const [showBulkOrderForm, setShowBulkOrderForm] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   useEffect(() => {
     if (companyId) {
@@ -301,13 +303,43 @@ const CompanyDashboard = ({ companyId }: CompanyDashboardProps) => {
                 theme === 'light'
                   ? 'bg-white border-gray-200'
                   : 'bg-[#1a1a1a] border-[#2a2a2a]'
-              } p-6`}>
-                <h2 className={`text-2xl font-bold mb-6 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
+              } p-6 space-y-6`}>
+                <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
                   Paramètres de l'Entreprise
                 </h2>
-                <p className={`text-center py-8 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                  Gérez les informations de votre entreprise et les préférences
-                </p>
+
+                {/* Feedback Section */}
+                <div className={`border rounded-lg p-6 ${
+                  theme === 'light'
+                    ? 'bg-blue-50 border-blue-200'
+                    : 'bg-blue-900/20 border-blue-700'
+                }`}>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-2xl">💬</span>
+                    <h3 className={`text-lg font-bold ${theme === 'light' ? 'text-blue-900' : 'text-blue-300'}`}>
+                      Retour d'expérience
+                    </h3>
+                  </div>
+                  <p className={`text-sm mb-4 ${theme === 'light' ? 'text-blue-700' : 'text-blue-400'}`}>
+                    Partagez vos suggestions et votre expérience avec notre plateforme B2B
+                  </p>
+                  <button
+                    onClick={() => setIsFeedbackOpen(true)}
+                    className={`font-bold py-2 px-6 rounded-lg transition-all border ${
+                      theme === 'light'
+                        ? 'bg-blue-200 border-blue-400 text-blue-900 hover:bg-blue-300'
+                        : 'bg-blue-700 border-blue-500 text-blue-100 hover:bg-blue-600'
+                    }`}
+                  >
+                    Envoyer un avis
+                  </button>
+                </div>
+
+                {/* Feedback Modal */}
+                <FeedbackModal
+                  isOpen={isFeedbackOpen}
+                  onClose={() => setIsFeedbackOpen(false)}
+                />
               </div>
             )}
           </>
