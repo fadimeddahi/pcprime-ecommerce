@@ -71,6 +71,7 @@ export interface BackendProduct {
 // Normalized product type for frontend use
 export interface Product {
   id: number | string;
+  uuid?: string; // UUID from backend for API requests
   name: string;
   category: string; // Always a string after normalization
   category_id?: number;

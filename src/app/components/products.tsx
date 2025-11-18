@@ -20,6 +20,7 @@ const ProductCard = ({ product }: { product: Product }) => {
     addToCart(
       {
         id: Number(product.id),
+        uuid: product.uuid,
         name: product.name,
         price: product.price,
         image: product.image,

@@ -8,6 +8,8 @@ import { useTheme } from "../context/ThemeContext";
 import { Product } from "../types/product";
 import { FaShoppingCart, FaHeart, FaStar, FaTruck, FaShieldAlt, FaUndo, FaCheckCircle, FaMinus, FaPlus, FaShare } from "react-icons/fa";
 import FeedbackModal from "./feedback-modal";
+import UpsellWidget from "./upsell-widget";
+import { useRecommendations } from "../hooks/useRecommendations";
 
 interface ProductDetailProps {
   product: Product;
@@ -23,11 +25,15 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const productIdNum = Number(product.id);
   const [isFavorite, setIsFavorite] = useState(isInWishlist(productIdNum));
+  
+  // Get recommendations based on product category
+  const { data: recommendations = [] } = useRecommendations(product.category, [productIdNum]);
 
   const handleAddToCart = () => {
     addToCart(
       {
         id: productIdNum,
+        uuid: product.uuid,
         name: product.name,
         price: product.price,
         image: product.image,
@@ -452,6 +458,17 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Upsell Widget */}
+        {recommendations.length > 0 && (
+          <div className="mt-8">
+            <UpsellWidget
+              products={recommendations}
+              title="Produits similaires"
+              subtitle="Découvrez ces produits complémentaires"
+            />
           </div>
         )}
 

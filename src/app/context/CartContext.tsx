@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 
 export interface CartItem {
   id: number;
+  uuid?: string; // UUID for API requests
   name: string;
   price: number;
   image: string;
@@ -19,6 +20,7 @@ interface CartContextType {
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
+  isInCart: (id: number) => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -110,6 +112,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
+  const isInCart = (id: number) => {
+    return cartItems.some(item => item.id === id);
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -120,6 +126,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         getCartTotal,
         getCartItemsCount,
+        isInCart,
       }}
     >
       {children}

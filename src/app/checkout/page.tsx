@@ -6,8 +6,12 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "../context/ThemeContext";
 import Image from "next/image";
 import { FaShoppingCart, FaUser, FaMapMarkerAlt, FaPhone, FaEnvelope, FaCheckCircle, FaTruck } from "react-icons/fa";
-import { orderApi, authApi } from "../services/api";
-import FeedbackModal from "./feedback-modal";
+import { orderApi, authApi, productApi } from "../services/api";
+import FeedbackModal from "../components/feedback-modal";
+import PostOrderUpsellModal from "../components/post-order-upsell-modal";
+import CheckoutUpsellWidget from "../components/checkout-upsell-widget";
+import { usePromoProducts } from "../hooks/useRecommendations";
+import { Product } from "../types/product";
 
 const CheckoutPage = () => {
   const router = useRouter();
@@ -18,6 +22,9 @@ const CheckoutPage = () => {
   const [error, setError] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [isUpsellModalOpen, setIsUpsellModalOpen] = useState(false);
+  const [upsellProducts, setUpsellProducts] = useState<any[]>([]);
+  const [discountApplied, setDiscountApplied] = useState(false);
   
   useEffect(() => {
     setIsAuthenticated(authApi.isAuthenticated());
@@ -54,11 +61,19 @@ const CheckoutPage = () => {
     setIsSubmitting(true);
 
     try {
+      // Debug: Log all cart items before processing
+      console.log('[Order] Cart items before processing:', cartItems);
+      
       // Format cart items for backend
-      const cart_items = cartItems.map(item => ({
-        product_id: Number(item.id),
-        quantity: item.quantity
-      }));
+      // The product.id from backend should already be a UUID string
+      const cart_items = cartItems.map(item => {
+        const productId = String(item.uuid || item.id);
+        console.log(`[Order] Processing item - ID: ${item.id}, UUID: ${item.uuid}, Final productId: ${productId}`);
+        return {
+          product_id: productId,
+          quantity: item.quantity
+        };
+      });
 
       // Prepare order data
       const orderData = {
@@ -71,19 +86,47 @@ const CheckoutPage = () => {
         cart_items: cart_items
       };
 
+      // Log order data for debugging
+      console.log('[Order] Submitting order with data:', {
+        ...orderData,
+        cart_items: orderData.cart_items.map(ci => ({
+          product_id: ci.product_id,
+          quantity: ci.quantity
+        }))
+      });
+      
       // Submit order to backend
       const response = await orderApi.createOrder(orderData);
+      const orderId = String(response.id);
+      
+      console.log('[Order] Order created:', orderId);
       
       // Clear cart from localStorage
       clearCart();
       
+      // Try to apply the 10% discount if order has all required categories
+      try {
+        console.log('[Order] Attempting to confirm purchase with discount for order:', orderId);
+        const confirmResponse = await orderApi.confirmPurchaseWithDiscount(orderId);
+        console.log('[Order] Confirm purchase response:', confirmResponse);
+        
+        // If successful, show the discount confirmation
+        if (confirmResponse.success || confirmResponse.discount_applied) {
+          console.log('[Order] 10% discount applied!');
+          setDiscountApplied(true);
+        }
+      } catch (confirmError: any) {
+        // If discount not applicable, just log it - order is still valid
+        console.log('[Order] Discount not applicable:', confirmError.message);
+      }
+      
       // Show success message
       setOrderPlaced(true);
       
-      // Redirect after 5 seconds
+      // Redirect after 8 seconds
       setTimeout(() => {
         router.push("/");
-      }, 5000);
+      }, 8000);
       
     } catch (err: any) {
       // Extract detailed error information
@@ -180,15 +223,41 @@ const CheckoutPage = () => {
         
         {/* Subtle orange accent gradients */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
-        <div className={`p-12 md:p-16 rounded-3xl border-4 border-green-500/40 shadow-2xl backdrop-blur-xl max-w-2xl text-center ${
-          theme === 'light' 
-            ? 'bg-white shadow-green-500/30' 
-            : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] shadow-green-500/20'
+        <div className={`p-12 md:p-16 rounded-3xl border-4 shadow-2xl backdrop-blur-xl max-w-2xl text-center ${
+          discountApplied
+            ? theme === 'light'
+              ? 'border-yellow-400/60 bg-white shadow-yellow-400/30'
+              : 'border-yellow-500/40 bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] shadow-yellow-500/20'
+            : theme === 'light'
+            ? 'border-green-500/40 bg-white shadow-green-500/30'
+            : 'border-green-500/40 bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] shadow-green-500/20'
         }`}>
           <FaCheckCircle className="text-7xl md:text-8xl text-green-500 mb-6 mx-auto animate-bounce" />
           <h2 className="text-3xl md:text-4xl font-extrabold mb-4 bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
             Commande confirmée !
           </h2>
+          {discountApplied && (
+            <div className={`mb-6 p-4 rounded-xl border-2 border-yellow-400/50 ${
+              theme === 'light'
+                ? 'bg-yellow-100/50'
+                : 'bg-yellow-900/20'
+            }`}>
+              <p className={`text-lg font-bold ${
+                theme === 'light'
+                  ? 'text-yellow-700'
+                  : 'text-yellow-300'
+              }`}>
+                ✨ 10% de réduction appliquée !
+              </p>
+              <p className={`text-sm ${
+                theme === 'light'
+                  ? 'text-yellow-600'
+                  : 'text-yellow-400'
+              }`}>
+                Merci d'avoir complété votre build avec tous les composants essentiels.
+              </p>
+            </div>
+          )}
           <p className={`text-lg md:text-xl mb-4 leading-relaxed ${
             theme === 'light' ? 'text-gray-600' : 'text-gray-400'
           }`}>
@@ -221,6 +290,21 @@ const CheckoutPage = () => {
         <FeedbackModal
           isOpen={isFeedbackOpen}
           onClose={() => setIsFeedbackOpen(false)}
+        />
+        
+        {/* Post-Order Upsell Modal */}
+        <PostOrderUpsellModal
+          isOpen={isUpsellModalOpen}
+          onClose={() => {
+            setIsUpsellModalOpen(false);
+            // Redirect immediately when user closes modal
+            router.push("/");
+          }}
+          onContinueShopping={() => {
+            setIsUpsellModalOpen(false);
+            router.push("/");
+          }}
+          products={upsellProducts}
         />
       </div>
     );
@@ -256,6 +340,9 @@ const CheckoutPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form Section */}
           <div className="lg:col-span-2">
+            {/* Checkout Upsell Widget - Show category completion suggestions */}
+            <CheckoutUpsellWidget cartItems={cartItems} />
+            
             {/* Global Error Display */}
             {error && (
               <div className={`mb-6 p-5 rounded-2xl border-2 border-red-500/50 backdrop-blur-xl animate-pulse ${

@@ -8,6 +8,8 @@ import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import { useRouter } from "next/navigation";
 import LoginModal from "./login-modal";
+import UpsellWidget from "./upsell-widget";
+import { useCartRecommendations } from "../hooks/useRecommendations";
 
 interface CartProps {
   isOpen: boolean;
@@ -20,6 +22,10 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // Get recommendations based on cart items
+  const cartItemsForRec = cartItems.map(item => ({ id: item.id, category: item.category }));
+  const { data: recommendations = [] } = useCartRecommendations(cartItemsForRec);
 
   useEffect(() => {
     setMounted(true);
@@ -59,7 +65,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
         
         {/* Cart Modal */}
         <div
-          className={`relative w-full h-screen md:w-[95vw] md:h-[95vh] lg:w-[90vw] lg:h-[90vh] xl:w-[85vw] xl:h-[85vh] shadow-2xl border-0 md:border-4 border-[#fe8002] rounded-none md:rounded-3xl transform transition-all duration-300 overflow-hidden flex flex-col ${
+          className={`relative w-full h-screen md:w-[85vw] md:h-[90vh] lg:w-[82vw] lg:h-[90vh] xl:w-[80vw] xl:h-[90vh] shadow-2xl border-0 md:border-4 border-[#fe8002] rounded-none md:rounded-3xl transform transition-all duration-300 overflow-hidden flex flex-col ${
             isOpen ? "scale-100" : "scale-95"
           } ${
             theme === 'light' 
@@ -148,7 +154,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                   {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className={`rounded-xl p-4 border-2 hover:border-[#fe8002] transition-all duration-300 shadow-xl hover:shadow-[#fe8002]/40 backdrop-blur-sm ${
+                    className={`rounded-xl p-1.5 border-2 hover:border-[#fe8002] transition-all duration-300 shadow-xl hover:shadow-[#fe8002]/40 backdrop-blur-sm ${
                       theme === 'light'
                         ? 'bg-white border-gray-300'
                         : 'bg-gradient-to-br from-[#1f1f1f] via-[#1a1a1a] to-[#0f0f0f] border-[#2a2a2a]'
@@ -156,42 +162,42 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                   >
                     {/* Mobile Layout */}
                     <div className="md:hidden">
-                      <div className="flex gap-3 mb-3">
+                      <div className="flex gap-1.5 mb-1.5">
                         {/* Product Image */}
-                        <div className={`relative w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg ${
+                        <div className={`relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg ${
                           theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-black'
                         }`}>
                           <Image
                             src={item.image}
                             alt={item.name}
                             fill
-                            sizes="64px"
+                            sizes="40px"
                             className="object-contain"
                           />
                         </div>
                         
                         {/* Product Info */}
                         <div className="flex-1 min-w-0">
-                          <h3 className={`font-bold text-sm leading-tight hover:text-[#fe8002] transition-colors mb-2 ${
+                          <h3 className={`font-bold text-[10px] leading-tight hover:text-[#fe8002] transition-colors mb-0.5 ${
                             theme === 'light' ? 'text-gray-800' : 'text-white'
                           }`}>
                             {item.name}
                           </h3>
-                          <div className="flex items-baseline gap-1">
-                            <p className="text-lg font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                          <div className="flex items-baseline gap-0.5">
+                            <p className="text-xs font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
                               {item.price.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })}
                             </p>
-                            <span className={`text-xs font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
+                            <span className={`text-[8px] font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
                           </div>
                         </div>
                         
                         {/* Remove Button */}
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="w-8 h-8 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
+                          className="w-5 h-5 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
                           title="Supprimer"
                         >
-                          <FaTrash className="text-xs" />
+                          <FaTrash className="text-[8px]" />
                         </button>
                       </div>
                       
@@ -231,62 +237,62 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                     </div>
 
                     {/* Desktop Layout */}
-                    <div className="hidden md:flex gap-3 items-center">
+                    <div className="hidden md:flex gap-1.5 items-center">
                       {/* Product Image */}
-                      <div className={`relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg group ${
+                      <div className={`relative w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden border-2 border-[#fe8002]/40 shadow-lg group ${
                         theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-black'
                       }`}>
                         <Image
                           src={item.image}
                           alt={item.name}
                           fill
-                          sizes="100px"
+                          sizes="48px"
                           className="object-contain group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
                       
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <h3 className={`font-bold text-base leading-tight hover:text-[#fe8002] transition-colors line-clamp-1 mb-1 ${
+                        <h3 className={`font-bold text-[10px] leading-tight hover:text-[#fe8002] transition-colors line-clamp-1 mb-0.5 ${
                           theme === 'light' ? 'text-gray-800' : 'text-white'
                         }`}>
                           {item.name}
                         </h3>
-                        <div className="flex items-baseline gap-1 mb-2">
-                          <p className="text-lg font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                        <div className="flex items-baseline gap-0.5 mb-0.5">
+                          <p className="text-xs font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
                             {item.price.toLocaleString('fr-DZ', { minimumFractionDigits: 0 })}
                           </p>
-                          <span className={`text-xs font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
+                          <span className={`text-[8px] font-bold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>DZD</span>
                         </div>
                       </div>
                       
                       {/* Quantity Controls */}
-                      <div className={`flex items-center gap-2 rounded-lg border border-[#fe8002]/40 p-1.5 shadow-lg flex-shrink-0 ${
+                      <div className={`flex items-center gap-0.5 rounded-lg border border-[#fe8002]/40 p-0.5 shadow-lg flex-shrink-0 ${
                         theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
                       }`}>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                          className="w-4 h-4 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-[8px] rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                         >
                           −
                         </button>
-                        <span className={`font-extrabold text-sm w-8 text-center ${
+                        <span className={`font-extrabold text-[10px] w-5 text-center ${
                           theme === 'light' ? 'text-gray-800' : 'text-white'
                         }`}>
                           {item.quantity}
                         </span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-7 h-7 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
+                          className="w-4 h-4 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-[8px] rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                         >
                           +
                         </button>
                       </div>
                       
                       {/* Total Price */}
-                      <div className="text-right flex-shrink-0 min-w-[100px]">
-                        <p className={`text-xs font-semibold mb-0.5 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total:</p>
-                        <p className="text-base font-extrabold text-[#fe8002]">
+                      <div className="text-right flex-shrink-0 min-w-[60px]">
+                        <p className={`text-[8px] font-semibold mb-0.5 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Total:</p>
+                        <p className="text-[10px] font-extrabold text-[#fe8002]">
                           {(item.price * item.quantity).toLocaleString('fr-DZ', { minimumFractionDigits: 0 })} DZD
                         </p>
                       </div>
@@ -294,78 +300,89 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                       {/* Remove Button */}
                       <button
                         onClick={() => removeFromCart(item.id)}
-                        className="w-10 h-10 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
+                        className="w-5 h-5 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
                         title="Supprimer"
                       >
-                        <FaTrash className="text-sm" />
+                        <FaTrash className="text-[8px]" />
                       </button>
                     </div>
                   </div>
                 ))}
                 </div>
+
+                {/* Upsell Widget */}
+                {cartItems.length > 0 && recommendations.length > 0 && (
+                  <div className="mt-6 px-4 md:px-6">
+                    <UpsellWidget
+                      products={recommendations}
+                      title="Complétez votre configuration"
+                      subtitle="Ces produits s'adaptent parfaitement à votre sélection"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Footer/Checkout Section */}
           {cartItems.length > 0 && (
-            <div className={`flex-shrink-0 border-t-4 border-[#fe8002] p-4 md:p-6 shadow-2xl backdrop-blur-xl ${
+            <div className={`flex-shrink-0 border-t-4 border-[#fe8002] p-2 md:p-3 shadow-2xl backdrop-blur-xl ${
               theme === 'light'
                 ? 'bg-gradient-to-br from-white via-gray-50 to-gray-100'
                 : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f]'
             }`}>
               <div className="max-w-5xl mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-center">
-                <div className={`rounded-2xl p-4 md:p-6 border-2 border-[#fe8002]/40 shadow-2xl ${
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 items-center">
+                <div className={`rounded-2xl p-2.5 md:p-3 border-2 border-[#fe8002]/40 shadow-2xl ${
                   theme === 'light'
                     ? 'bg-gradient-to-r from-gray-50 to-white'
                     : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
                 }`}>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={`font-bold text-sm md:text-base ${
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`font-bold text-xs md:text-sm ${
                       theme === 'light' ? 'text-gray-600' : 'text-gray-300'
                     }`}>Sous-total:</span>
-                    <span className={`font-bold text-lg md:text-xl ${
+                    <span className={`font-bold text-sm md:text-base ${
                       theme === 'light' ? 'text-gray-800' : 'text-white'
                     }`}>
                       {getCartTotal().toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD
                     </span>
                   </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={`font-bold text-sm md:text-base ${
+                  <div className="flex justify-between items-center mb-1">
+                    <span className={`font-bold text-xs md:text-sm ${
                       theme === 'light' ? 'text-gray-600' : 'text-gray-300'
                     }`}>Livraison:</span>
-                    <span className="text-green-400 font-extrabold text-base md:text-lg flex items-center gap-2">
-                      <span className="text-xl">✓</span> Gratuite
+                    <span className="text-green-400 font-extrabold text-xs md:text-sm flex items-center gap-1">
+                      <span className="text-lg">✓</span> Gratuite
                     </span>
                   </div>
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent my-3 rounded-full" />
+                  <div className="h-0.5 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent my-2 rounded-full" />
                   <div className="flex justify-between items-center">
-                    <span className={`font-extrabold text-lg md:text-xl ${
+                    <span className={`font-extrabold text-sm md:text-base ${
                       theme === 'light' ? 'text-gray-800' : 'text-white'
                     }`}>Total:</span>
-                    <span className="text-2xl md:text-3xl lg:text-4xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent">
+                    <span className="text-lg md:text-xl lg:text-2xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent">
                       {getCartTotal().toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD
                     </span>
                   </div>
                 </div>
                 
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-1.5">
                   <button 
                     onClick={handleCheckoutClick}
-                    className={`w-full bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] font-extrabold py-4 md:py-5 rounded-2xl transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 hover:shadow-[#fe8002]/80 hover:scale-105 uppercase tracking-wider border-2 border-white/30 text-base md:text-lg relative overflow-hidden group ${
+                    className={`w-full bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] font-extrabold py-2 md:py-3 rounded-2xl transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 hover:shadow-[#fe8002]/80 hover:scale-105 uppercase tracking-wider border-2 border-white/30 text-xs md:text-sm relative overflow-hidden group ${
                       theme === 'light' ? 'text-white hover:from-[#ff6002] hover:to-[#ff3500]' : 'text-white hover:from-white hover:to-gray-200 hover:text-black'
                     }`}
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                    <span className="relative flex items-center justify-center gap-3">
-                      <FaShoppingCart className="text-xl md:text-2xl animate-pulse" />
+                    <span className="relative flex items-center justify-center gap-2">
+                      <FaShoppingCart className="text-lg md:text-xl animate-pulse" />
                       Commander Maintenant
                     </span>
                   </button>
                   <button 
                     onClick={onClose}
-                    className={`w-full text-[#fe8002] font-bold py-3 md:py-4 rounded-2xl hover:border-[#fe8002] transition-all duration-300 shadow-lg border-2 border-[#fe8002]/40 hover:shadow-[#fe8002]/40 hover:scale-105 uppercase tracking-wider text-sm md:text-base ${
+                    className={`w-full text-[#fe8002] font-bold py-2 md:py-2.5 rounded-2xl hover:border-[#fe8002] transition-all duration-300 shadow-lg border-2 border-[#fe8002]/40 hover:shadow-[#fe8002]/40 hover:scale-105 uppercase tracking-wider text-xs md:text-sm ${
                       theme === 'light' ? 'bg-white' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
                     }`}
                   >

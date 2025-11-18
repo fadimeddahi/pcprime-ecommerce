@@ -88,6 +88,10 @@ function normalizeProduct(product: BackendProduct | any): Product {
 
   return {
     ...product,
+    // Ensure id is always present (numeric or string UUID)
+    id: product.id !== undefined && product.id !== null ? product.id : product.uuid || undefined,
+    // UUID field for API requests
+    uuid: product.uuid || (typeof product.id === 'string' && product.id.length === 36 ? product.id : undefined),
     // Use image_url from backend as image
     image: product.image_url || product.image || '',
     // Handle multiple images (fallback to single image array if not provided)
@@ -379,7 +383,7 @@ export const authApi = {
 
 // Order API Types
 export interface OrderItem {
-  product_id: number;
+  product_id: string | number;
   quantity: number;
 }
 
@@ -429,6 +433,28 @@ export const orderApi = {
       method: 'POST',
       headers,
       body: JSON.stringify(orderData),
+    });
+    
+    return data;
+  },
+
+  // POST /products/confirm-purchase
+  // Confirm purchase and apply 10% discount if order has items from all categories
+  confirmPurchaseWithDiscount: async (orderId: string): Promise<any> => {
+    const token = authApi.getToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    
+    // Add Authorization header if user is logged in
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    const data = await fetchApi<any>('/products/confirm-purchase', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ order_id: orderId }),
     });
     
     return data;
