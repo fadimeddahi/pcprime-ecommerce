@@ -1,74 +1,58 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import CompanyDashboard from "../components/company-dashboard";
+import { useState } from "react";
+import CompanyRegistrationModal from "../components/company-registration-modal";
 import { useTheme } from "../context/ThemeContext";
-import { authApi } from "../services/api";
 
-export default function EspaceSocietyPage() {
+export default function EspaceEntreprisePage() {
   const { theme } = useTheme();
-  const [companyId, setCompanyId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // Check if user is authenticated
-        if (authApi.isAuthenticated()) {
-          setIsAuthenticated(true);
-          // In a real app, would fetch user's company ID from profile
-          // const profile = await authApi.getProfile();
-          // setCompanyId(profile.companyId);
-        }
-      } catch (error) {
-        console.error("Auth check error:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${
-        theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
-      }`}>
-        <div className="animate-spin">
-          <div className="w-12 h-12 border-4 border-[#fe8002]/20 border-t-[#fe8002] rounded-full" />
-        </div>
+  return (
+    <div className={`min-h-screen py-12 px-4 relative overflow-hidden transition-all duration-300 ${
+      theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
+    }`}>
+      {/* Background Pattern */}
+      <div className={`absolute inset-0 ${theme === 'light' ? 'opacity-[0.03]' : 'opacity-[0.02]'}`}>
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'radial-gradient(circle at 2px 2px, #fe8002 1px, transparent 0)',
+          backgroundSize: '40px 40px'
+        }} />
       </div>
-    );
-  }
+      
+      {/* Subtle orange accent gradients */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
 
-  if (!isAuthenticated) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center p-4 ${
-        theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
-      }`}>
-        <div className={`text-center max-w-md ${
-          theme === 'light'
-            ? 'bg-white'
-            : 'bg-[#1a1a1a] border border-[#2a2a2a]'
-        } p-8 rounded-lg`}>
-          <h1 className={`text-2xl font-bold mb-4 ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>
-            Accès Requis
+      <div className="container mx-auto max-w-2xl relative z-10">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent tracking-tight mb-4">
+            Espace Entreprise
           </h1>
-          <p className={`mb-6 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-            Veuillez vous connecter pour accéder à Espace Société
+          <div className="w-24 h-1.5 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] mx-auto mb-6 shadow-lg shadow-[#fe8002]/50" />
+          <p className={`text-lg md:text-xl font-bold ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>
+            Inscrivez votre entreprise pour accéder à nos services B2B
           </p>
+        </div>
+
+        {/* Registration Section */}
+        <div className="text-center">
           <button
-            onClick={() => window.location.href = '/'}
-            className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white px-6 py-2 rounded-lg font-bold hover:shadow-lg hover:shadow-[#fe8002]/50"
+            onClick={() => setIsModalOpen(true)}
+            className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold py-4 px-12 text-lg rounded-2xl hover:scale-110 transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 uppercase tracking-wide border-2 border-white/30"
           >
-            Retour à l'Accueil
+            S'inscrire Maintenant
           </button>
         </div>
-      </div>
-    );
-  }
 
-  return <CompanyDashboard companyId={companyId || undefined} />;
+        {/* Modal */}
+        <CompanyRegistrationModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      </div>
+    </div>
+  );
 }

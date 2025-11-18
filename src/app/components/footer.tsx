@@ -65,7 +65,7 @@ const Footer = () => {
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
-                  Espace Society
+                  Espace Entreprise
                 </a>
               </li>
               <li>

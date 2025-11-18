@@ -66,7 +66,7 @@ const CompanyDashboard = ({ companyId }: CompanyDashboardProps) => {
           <div className="flex items-center gap-4 mb-4">
             <FaBuilding className="text-white text-4xl" />
             <h1 className="text-white font-extrabold text-3xl uppercase tracking-wider">
-              Espace Société
+              Espace Entreprise
             </h1>
           </div>
           <p className="text-white/90">Portail B2B - Gestion d'entreprise et commandes en gros</p>

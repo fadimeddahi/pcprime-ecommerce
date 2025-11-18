@@ -14,10 +14,15 @@ export interface Company {
   postalCode: string;
   country: string;
   taxId: string;
+  registrationNumber?: string;
   businessType: string;
   numberOfEmployees: number;
   website?: string;
   logo?: string;
+  contactPerson?: string;
+  contactTitle?: string;
+  industry?: string;
+  annualRevenue?: string;
   createdAt: string;
   status: 'pending' | 'approved' | 'rejected';
 }
@@ -31,9 +36,15 @@ export interface CompanyRegistrationRequest {
   postalCode: string;
   country: string;
   taxId: string;
-  businessType: string;
-  numberOfEmployees: number;
+  businessType?: string;
+  numberOfEmployees?: number;
   website?: string;
+  registrationNumber?: string;
+  contactPerson?: string;
+  contactTitle?: string;
+  industry?: string;
+  employeeCount?: string;
+  annualRevenue?: string;
 }
 
 export interface CompanyResponse {
