@@ -1,6 +1,6 @@
 "use client";
 
-import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun, FaComments } from "react-icons/fa";
+import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun, FaComments, FaFire } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -134,11 +134,21 @@ const Navbar = () => {
           </a>
 
           {/* Desktop Links */}
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden xl:flex items-center gap-6">
             <a href="/" className={`relative font-bold transition-colors group ${
               theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
             }`}>
               Accueil
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
+            </a>
+            <a href="/hot-sales" className={`relative font-bold transition-colors group flex items-center gap-2 ${
+              theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
+            }`}>
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-sm opacity-60 group-hover:opacity-100 transition-all" />
+                <FaFire className="text-lg relative z-10 group-hover:scale-110 transition-transform" />
+              </div>
+              Hot Sales
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
             </a>
             <a href="/pc-builder" className={`relative font-bold transition-colors group ${
@@ -258,7 +268,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
-              className={`lg:hidden text-2xl cursor-pointer hover:scale-110 transition-transform ${
+              className={`xl:hidden text-2xl cursor-pointer hover:scale-110 transition-transform ${
                 theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
               }`}
               aria-label="Toggle menu"
@@ -275,7 +285,7 @@ const Navbar = () => {
         data-sidebar="true"
         className={`fixed top-0 right-0 h-screen w-72 shadow-2xl transform transition-transform duration-300 ease-in-out z-[9999] border-l-4 border-[#fe8002] overflow-y-auto ${
           isSidebarOpen ? "translate-x-0" : "translate-x-full"
-        } md:hidden ${
+        } xl:hidden ${
           theme === 'light' 
             ? 'bg-gradient-to-br from-white via-gray-50 to-white' 
             : 'bg-gradient-to-br from-[#181818] via-[#1a1a1a] to-[#0f0f0f]'
@@ -315,6 +325,22 @@ const Navbar = () => {
             <span className="flex items-center gap-3">
               <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full group-hover:h-8 transition-all" />
               Accueil
+            </span>
+          </a>
+          <a
+            href="/hot-sales"
+            onClick={toggleSidebar}
+            className={`font-bold transition-all py-3 px-5 rounded-xl hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:text-white hover:shadow-lg hover:shadow-[#fe8002]/50 group ${
+              theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full group-hover:h-8 transition-all" />
+              <div className="relative w-5 h-5 flex items-center justify-center">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-sm opacity-50" />
+                <FaFire className="relative z-10" />
+              </div>
+              Hot Sales
             </span>
           </a>
           <a

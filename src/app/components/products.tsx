@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -198,6 +198,7 @@ const Products = () => {
   const [selectedCondition, setSelectedCondition] = useState<string>("all");
   const [showPromoOnly, setShowPromoOnly] = useState(false);
   const [showTopSellersOnly, setShowTopSellersOnly] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const { theme } = useTheme();
   
   // Fetch all products and categories from API
@@ -206,6 +207,9 @@ const Products = () => {
   
   const allProducts = productsData || [];
   const categories = categoriesData || [];
+
+  // Pagination settings
+  const PRODUCTS_PER_PAGE = 12;
 
   // Filter products
   const filteredProducts = allProducts.filter((product: Product) => {
@@ -223,6 +227,17 @@ const Products = () => {
     }
     return true;
   });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+  const endIndex = startIndex + PRODUCTS_PER_PAGE;
+  const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, selectedCondition, showPromoOnly, showTopSellersOnly]);
 
   return (
     <section id="products" className={`py-20 px-4 relative overflow-hidden transition-all duration-300 ${
@@ -536,8 +551,8 @@ const Products = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product: Product) => (
+            {paginatedProducts.length > 0 ? (
+              paginatedProducts.map((product: Product) => (
                 <ProductCard key={product.id} product={product} />
               ))
             ) : (
@@ -570,6 +585,51 @@ const Products = () => {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!isLoading && filteredProducts.length > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-12">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 flex items-center gap-2 ${
+                currentPage === 1
+                  ? theme === 'light'
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-[#0f0f0f] text-gray-600 cursor-not-allowed'
+                  : theme === 'light'
+                    ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105'
+                    : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105'
+              }`}
+            >
+              ← Précédent
+            </button>
+
+            <div className={`px-6 py-3 rounded-lg font-bold ${
+              theme === 'light'
+                ? 'bg-gray-100 text-gray-900'
+                : 'bg-[#1a1a1a] text-white border border-[#fe8002]/30'
+            }`}>
+              Page {currentPage} sur {totalPages}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-6 py-3 rounded-lg font-bold transition-all duration-300 flex items-center gap-2 ${
+                currentPage === totalPages
+                  ? theme === 'light'
+                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                    : 'bg-[#0f0f0f] text-gray-600 cursor-not-allowed'
+                  : theme === 'light'
+                    ? 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105'
+                    : 'bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105'
+              }`}
+            >
+              Suivant →
+            </button>
           </div>
         )}
       </div>
