@@ -207,18 +207,6 @@ const Navbar = () => {
           {/* Icons */}
           <div className="flex items-center gap-4 md:gap-6">
             {/* Theme Toggle */}
-            {/* Feedback Button */}
-            <button
-              onClick={() => setIsFeedbackOpen(true)}
-              className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
-                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
-              }`}
-              aria-label="Send feedback"
-              title="Send feedback"
-            >
-              <FaComments />
-            </button>
-
             <button
               onClick={toggleTheme}
               className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
@@ -280,8 +268,8 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
-              className={`xl:hidden text-2xl cursor-pointer hover:scale-110 transition-transform ${
-                theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
+              className={`xl:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform rounded-lg ${
+                theme === 'light' ? 'text-gray-800 hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`}
               aria-label="Toggle menu"
             >
