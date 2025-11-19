@@ -60,6 +60,38 @@ const CheckoutPage = () => {
     setError("");
     setIsSubmitting(true);
 
+    // Validation
+    if (!formData.firstName.trim()) {
+      setError("Le prénom est requis");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.lastName.trim()) {
+      setError("Le nom est requis");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.email.trim() || !formData.email.includes("@")) {
+      setError("Veuillez entrer une adresse email valide");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.phone.trim()) {
+      setError("Le numéro de téléphone est requis");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.commune.trim()) {
+      setError("La commune est requise");
+      setIsSubmitting(false);
+      return;
+    }
+    if (!formData.wilaya.trim()) {
+      setError("La wilaya est requise");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       // Debug: Log all cart items before processing
       console.log('[Order] Cart items before processing:', cartItems);
@@ -361,13 +393,22 @@ const CheckoutPage = () => {
                     }`}>
                       {error}
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setError("")}
-                      className="mt-3 text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline"
-                    >
-                      Fermer
-                    </button>
+                    <div className="flex gap-3 mt-4 flex-wrap">
+                      <button
+                        type="button"
+                        onClick={() => setError("")}
+                        className="text-xs font-bold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200 underline"
+                      >
+                        Fermer
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => window.location.reload()}
+                        className="text-xs font-bold px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-all"
+                      >
+                        Rafraîchir
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -380,7 +421,7 @@ const CheckoutPage = () => {
               }`}>
                 <div className="flex items-center gap-3 mb-6">
                   <FaUser className="text-[#fe8002] text-2xl" />
-                  <h2 className="text-[#fe8002] font-bold text-xl uppercase tracking-wide">Informations personnelles</h2>
+                  <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Informations personnelles</h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -468,7 +509,7 @@ const CheckoutPage = () => {
               }`}>
                 <div className="flex items-center gap-3 mb-6">
                   <FaMapMarkerAlt className="text-[#fe8002] text-2xl" />
-                  <h2 className="text-[#fe8002] font-bold text-xl uppercase tracking-wide">Adresse de livraison</h2>
+                  <h2 className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Adresse de livraison</h2>
                 </div>
                 
                 <div className="space-y-4">

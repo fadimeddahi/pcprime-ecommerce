@@ -221,26 +221,27 @@ const Navbar = () => {
 
             <button
               onClick={toggleTheme}
-              className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
-                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
+              className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:text-white hover:bg-[#1a1a1a]'
               }`}
               aria-label="Toggle theme"
+              title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
             >
               {theme === 'light' ? <FaMoon /> : <FaSun />}
             </button>
             
             <div className="relative group">
-              <a href="/profile">
-                <FaUser className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
-                  theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002]'
-                }`} />
+              <a href="/profile" className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg inline-flex ${
+                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
+              }`} title="Mon profil">
+                <FaUser />
               </a>
             </div>
             <div className="relative">
-              <a href="/wishlist" className="relative inline-block">
-                <FaRegHeart className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
-                  theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002]'
-                }`} />
+              <a href="/wishlist" className={`relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
+              }`} title="Ma liste de souhaits">
+                <FaRegHeart />
                 {getWishlistItemsCount() > 0 && (
                   <span className={`absolute -top-1 -right-1 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center animate-pulse ${
                     theme === 'light' ? 'border-2 border-white' : 'border-2 border-black'
@@ -251,10 +252,10 @@ const Navbar = () => {
               </a>
             </div>
             <div className="relative">
-              <button onClick={toggleCart} className="relative inline-block">
-                <FaShoppingCart className={`text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform ${
-                  theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002]'
-                }`} />
+              <button onClick={toggleCart} className={`relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+                theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
+              }`} title="Mon panier">
+                <FaShoppingCart />
                 {getCartItemsCount() > 0 && (
                   <span className={`absolute -top-1 -right-1 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center animate-pulse ${
                     theme === 'light' ? 'border-2 border-white' : 'border-2 border-black'
@@ -265,6 +266,17 @@ const Navbar = () => {
               </button>
             </div>
             
+            {/* Feedback Button */}
+            <button
+              onClick={() => setIsFeedbackOpen(true)}
+              className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+                theme === 'light' ? 'text-[#fe8002] hover:bg-orange-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
+              }`}
+              title="Envoyer un commentaire"
+            >
+              <FaComments />
+            </button>
+
             {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
