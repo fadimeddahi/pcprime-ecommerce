@@ -23,7 +23,7 @@ const PostOrderUpsellModal = ({
 }: PostOrderUpsellModalProps) => {
   const { theme } = useTheme();
   const { addToCart, isInCart } = useCart();
-  const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
+  const [addedItems, setAddedItems] = useState<Set<number | string>>(new Set());
 
   const handleAddToCart = (product: UpsellOffer) => {
     addToCart({
