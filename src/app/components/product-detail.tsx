@@ -32,7 +32,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const handleAddToCart = () => {
     addToCart(
       {
-        id: productIdNum,
+        id: product.id,
         uuid: product.uuid,
         name: product.name,
         price: product.price,

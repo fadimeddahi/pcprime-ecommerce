@@ -5,7 +5,7 @@ import { Product } from '../types/product';
 
 // Convert Product to UpsellOffer
 const convertToUpsellOffer = (product: Product): UpsellOffer => ({
-  id: Number(product.id),
+  id: product.id,
   uuid: product.uuid,
   name: product.name,
   price: product.price,
@@ -23,7 +23,7 @@ const fetchAllProducts = async (): Promise<Product[]> => {
 };
 
 // Get recommendations based on category
-export const useRecommendations = (category?: string, excludeIds: number[] = []) => {
+export const useRecommendations = (category?: string, excludeIds: (number | string)[] = []) => {
   return useQuery({
     queryKey: ['recommendations', category, excludeIds],
     queryFn: async (): Promise<UpsellOffer[]> => {
@@ -32,7 +32,7 @@ export const useRecommendations = (category?: string, excludeIds: number[] = [])
       if (!category) {
         // If no category, get promo items
         return allProducts
-          .filter(p => p.is_promo && !excludeIds.includes(Number(p.id)))
+          .filter(p => p.is_promo && !excludeIds.includes(p.id))
           .sort((a, b) => (b.discount || 0) - (a.discount || 0))
           .slice(0, 4)
           .map(convertToUpsellOffer);
@@ -43,7 +43,7 @@ export const useRecommendations = (category?: string, excludeIds: number[] = [])
       if (suggestedCategories.length === 0) {
         // Fallback: get promo items
         return allProducts
-          .filter(p => p.is_promo && !excludeIds.includes(Number(p.id)))
+          .filter(p => p.is_promo && !excludeIds.includes(p.id))
           .sort((a, b) => (b.discount || 0) - (a.discount || 0))
           .slice(0, 4)
           .map(convertToUpsellOffer);
@@ -53,7 +53,7 @@ export const useRecommendations = (category?: string, excludeIds: number[] = [])
       const recommendations = allProducts
         .filter(p => 
           suggestedCategories.includes(p.category) && 
-          !excludeIds.includes(Number(p.id))
+          !excludeIds.includes(p.id)
         )
         .sort((a, b) => (b.discount || 0) - (a.discount || 0))
         .slice(0, 4)
@@ -66,14 +66,14 @@ export const useRecommendations = (category?: string, excludeIds: number[] = [])
 };
 
 // Get promo products
-export const usePromoProducts = (limit: number = 4, excludeIds: number[] = []) => {
+export const usePromoProducts = (limit: number = 4, excludeIds: (number | string)[] = []) => {
   return useQuery({
     queryKey: ['promo-products', limit, excludeIds],
     queryFn: async (): Promise<UpsellOffer[]> => {
       const allProducts = await fetchAllProducts();
       
       return allProducts
-        .filter(p => p.is_promo && !excludeIds.includes(Number(p.id)))
+        .filter(p => p.is_promo && !excludeIds.includes(p.id))
         .sort((a, b) => (b.discount || 0) - (a.discount || 0))
         .slice(0, limit)
         .map(convertToUpsellOffer);
@@ -82,7 +82,7 @@ export const usePromoProducts = (limit: number = 4, excludeIds: number[] = []) =
 };
 
 // Get recommendations for multiple cart items
-export const useCartRecommendations = (cartItems: Array<{ id: number; category: string }>) => {
+export const useCartRecommendations = (cartItems: Array<{ id: number | string; category: string }>) => {
   return useQuery({
     queryKey: ['cart-recommendations', cartItems],
     queryFn: async (): Promise<UpsellOffer[]> => {
@@ -108,7 +108,7 @@ export const useCartRecommendations = (cartItems: Array<{ id: number; category: 
 
       if (suggestedCategories.size === 0) {
         return allProducts
-          .filter(p => p.is_promo && !cartIds.includes(Number(p.id)))
+          .filter(p => p.is_promo && !cartIds.includes(p.id))
           .sort((a, b) => (b.discount || 0) - (a.discount || 0))
           .slice(0, 4)
           .map(convertToUpsellOffer);
@@ -118,7 +118,7 @@ export const useCartRecommendations = (cartItems: Array<{ id: number; category: 
       const recommendations = allProducts
         .filter(p => 
           Array.from(suggestedCategories).includes(p.category) && 
-          !cartIds.includes(Number(p.id))
+          !cartIds.includes(p.id)
         )
         .sort((a, b) => {
           // Sort by: promo first, then discount, then price

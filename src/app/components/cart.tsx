@@ -174,7 +174,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                         
                         {/* Remove Button */}
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            removeFromCart(item.id);
+                          }}
                           className="w-5 h-5 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
                           title="Supprimer"
                         >
@@ -189,7 +193,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                           theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
                         }`}>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              updateQuantity(item.id, Number(item.quantity) - 1);
+                            }}
                             className="w-8 h-8 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                           >
                             −
@@ -200,7 +208,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              updateQuantity(item.id, Number(item.quantity) + 1);
+                            }}
                             className="w-8 h-8 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-sm rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                           >
                             +
@@ -252,7 +264,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                         theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
                       }`}>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateQuantity(item.id, Number(item.quantity) - 1);
+                          }}
                           className="w-4 h-4 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-[8px] rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                         >
                           −
@@ -263,7 +279,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            updateQuantity(item.id, Number(item.quantity) + 1);
+                          }}
                           className="w-4 h-4 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-[8px] rounded-md hover:shadow-lg hover:shadow-[#fe8002]/60 transition-all duration-300 hover:scale-110 border border-white/30 flex items-center justify-center"
                         >
                           +
@@ -280,7 +300,11 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                       
                       {/* Remove Button */}
                       <button
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          removeFromCart(item.id);
+                        }}
                         className="w-5 h-5 flex-shrink-0 bg-gradient-to-r from-red-600 via-red-700 to-red-600 text-white rounded-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 hover:scale-110 shadow-lg hover:shadow-red-500/60 flex items-center justify-center border border-white/20"
                         title="Supprimer"
                       >

@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 export interface CartItem {
-  id: number;
+  id: number | string;
   uuid?: string; // UUID for API requests
   name: string;
   price: number;
@@ -20,12 +20,12 @@ export interface CartToast {
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">, quantity: number) => void;
-  removeFromCart: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeFromCart: (id: number | string) => void;
+  updateQuantity: (id: number | string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
   getCartItemsCount: () => number;
-  isInCart: (id: number) => boolean;
+  isInCart: (id: number | string) => boolean;
   toast: CartToast;
   hideToast: () => void;
   shouldOpenCart: boolean;
@@ -113,11 +113,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setShouldOpenCart(true);
   };
 
-  const removeFromCart = (id: number) => {
+  const removeFromCart = (id: number | string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: number | string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(id);
       return;
@@ -142,7 +142,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     return cartItems.reduce((count, item) => count + item.quantity, 0);
   };
 
-  const isInCart = (id: number) => {
+  const isInCart = (id: number | string) => {
     return cartItems.some(item => item.id === id);
   };
 

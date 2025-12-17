@@ -19,7 +19,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   const handleAddToCart = () => {
     addToCart(
       {
-        id: Number(product.id),
+        id: product.id,
         uuid: product.uuid,
         name: product.name,
         price: product.price,

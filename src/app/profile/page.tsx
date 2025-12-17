@@ -261,17 +261,6 @@ const ProfilePage = () => {
               INFORMATIONS
             </button>
             <button
-              onClick={() => setActiveTab("orders")}
-              className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
-                activeTab === "orders"
-                  ? "bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-black shadow-lg"
-                  : theme === 'light' ? "text-gray-700 hover:text-[#fe8002]" : "text-white hover:text-[#fe8002]"
-              }`}
-            >
-              <FaShoppingBag />
-              MES COMMANDES
-            </button>
-            <button
               onClick={() => setActiveTab("settings")}
               className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
                 activeTab === "settings"
@@ -362,25 +351,6 @@ const ProfilePage = () => {
                     </button>
                   </div>
                 )}
-              </div>
-            )}
-
-            {/* Orders Tab */}
-            {activeTab === "orders" && (
-              <div className={`rounded-2xl p-8 border-2 border-[#fe8002]/30 shadow-2xl ${
-                theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
-              }`}>
-                <div className="flex items-center gap-3 mb-6">
-                  <FaShoppingBag className="text-[#fe8002] text-2xl" />
-                  <h2 className="text-[#fe8002] font-bold text-2xl uppercase tracking-wide">
-                    Historique des Commandes
-                  </h2>
-                </div>
-                <div className={`text-center py-12 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                  <FaShoppingBag className="text-6xl text-[#fe8002]/30 mx-auto mb-4" />
-                  <p className="text-xl font-bold">Aucune commande pour le moment</p>
-                  <p className="mt-2">Commencez à magasiner pour voir vos commandes ici!</p>
-                </div>
               </div>
             )}
 

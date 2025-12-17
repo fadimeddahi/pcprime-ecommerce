@@ -1,5 +1,5 @@
 export interface UpsellOffer {
-  id: number;
+  id: number | string;
   uuid?: string;
   name: string;
   price: number;

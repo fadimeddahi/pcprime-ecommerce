@@ -19,7 +19,7 @@ const CheckoutUpsellWidget = ({ cartItems, onAddItem }: CheckoutUpsellWidgetProp
   const [presentCategories, setPresentCategories] = useState<Set<string>>(new Set());
   const [suggestedCategories, setSuggestedCategories] = useState<string[]>([]);
   const [showWidget, setShowWidget] = useState(false);
-  const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
+  const [addedItems, setAddedItems] = useState<Set<number | string>>(new Set());
 
   // Required categories for complete build
   const REQUIRED_CATEGORIES = [
@@ -82,7 +82,7 @@ const CheckoutUpsellWidget = ({ cartItems, onAddItem }: CheckoutUpsellWidgetProp
   const handleAddToCart = (product: Product) => {
     addToCart(
       {
-        id: Number(product.id),
+        id: product.id,
         uuid: product.uuid,
         name: product.name,
         price: product.price,
@@ -92,11 +92,11 @@ const CheckoutUpsellWidget = ({ cartItems, onAddItem }: CheckoutUpsellWidgetProp
       1
     );
 
-    setAddedItems((prev) => new Set(prev).add(Number(product.id)));
+    setAddedItems((prev) => new Set(prev).add(product.id));
     setTimeout(() => {
       setAddedItems((prev) => {
         const newSet = new Set(prev);
-        newSet.delete(Number(product.id));
+        newSet.delete(product.id);
         return newSet;
       });
     }, 2000);
