@@ -147,14 +147,14 @@ const Navbar = () => {
         : 'bg-gradient-to-r from-black via-[#0f0f0f] to-black border-b-2 border-[#fe8002]/30'
     }`}>
       {/* --- UNIFIED NAVBAR --- */}
-      <nav className="container mx-auto px-4 py-4">
+      <nav className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <a href="/">
             <img
               src={theme === 'light' ? '/logo_white.png' : '/logo.png'}
               alt="Prime Computer Logo"
-              className={`w-16 h-16 md:w-20 md:h-20 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
+              className={`w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
                 theme === 'light'
                   ? 'border-2 border-[#fe8002]/60 shadow-[#fe8002]/40 hover:border-[#fe8002]'
                   : 'border-2 border-[#fe8002]/50 shadow-[#fe8002]/30 hover:border-[#fe8002]'
