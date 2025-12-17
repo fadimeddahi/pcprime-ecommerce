@@ -13,6 +13,7 @@ import Cart from "./cart";
 import Wishlist from "./wishlist";
 import FeedbackModal from "./feedback-modal";
 import LoginModal from "./login-modal";
+import CartToast from "./cart-toast";
 
 const Navbar = () => {
   const router = useRouter();
@@ -434,6 +435,9 @@ const Navbar = () => {
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
       />
+
+      {/* Cart Toast Notification */}
+      <CartToast onViewCart={() => setIsCartOpen(true)} />
 
       {/* Cart Component */}
       <Cart isOpen={isCartOpen} onClose={toggleCart} />

@@ -12,6 +12,11 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface CartToast {
+  show: boolean;
+  item: CartItem | null;
+}
+
 interface CartContextType {
   cartItems: CartItem[];
   addToCart: (item: Omit<CartItem, "quantity">, quantity: number) => void;
@@ -21,6 +26,8 @@ interface CartContextType {
   getCartTotal: () => number;
   getCartItemsCount: () => number;
   isInCart: (id: number) => boolean;
+  toast: CartToast;
+  hideToast: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -54,6 +61,7 @@ const saveCartToStorage = (cart: CartItem[]) => {
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [toast, setToast] = useState<CartToast>({ show: false, item: null });
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -69,7 +77,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [cartItems, isInitialized]);
 
+  // Auto-hide toast after 3 seconds
+  useEffect(() => {
+    if (toast.show) {
+      const timer = setTimeout(() => {
+        setToast({ show: false, item: null });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast.show]);
+
+  const hideToast = () => {
+    setToast({ show: false, item: null });
+  };
+
   const addToCart = (item: Omit<CartItem, "quantity">, quantity: number) => {
+    const cartItem: CartItem = { ...item, quantity };
+    
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id);
       
@@ -79,8 +103,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         );
       }
       
-      return [...prevItems, { ...item, quantity }];
+      return [...prevItems, cartItem];
     });
+
+    // Show toast notification
+    setToast({ show: true, item: cartItem });
   };
 
   const removeFromCart = (id: number) => {
@@ -127,6 +154,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         getCartTotal,
         getCartItemsCount,
         isInCart,
+        toast,
+        hideToast,
       }}
     >
       {children}
