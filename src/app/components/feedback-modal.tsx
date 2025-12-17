@@ -74,7 +74,7 @@ const FeedbackModal = ({ isOpen, onClose, userId, userEmail }: FeedbackModalProp
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4 pt-20 md:pt-24"
       onClick={onClose}
     >
       <div
@@ -82,7 +82,7 @@ const FeedbackModal = ({ isOpen, onClose, userId, userEmail }: FeedbackModalProp
           theme === "light"
             ? "bg-white"
             : "bg-[#1a1a1a] border border-gray-700"
-        } rounded-lg shadow-xl max-w-md w-full p-6 transition-all`}
+        } rounded-lg shadow-xl max-w-md w-full p-6 transition-all max-h-[90vh] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

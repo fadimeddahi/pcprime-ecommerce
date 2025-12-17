@@ -28,6 +28,8 @@ interface CartContextType {
   isInCart: (id: number) => boolean;
   toast: CartToast;
   hideToast: () => void;
+  shouldOpenCart: boolean;
+  setShouldOpenCart: (value: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -62,6 +64,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [toast, setToast] = useState<CartToast>({ show: false, item: null });
+  const [shouldOpenCart, setShouldOpenCart] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -106,8 +109,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return [...prevItems, cartItem];
     });
 
-    // Show toast notification
-    setToast({ show: true, item: cartItem });
+    // Trigger cart to open
+    setShouldOpenCart(true);
   };
 
   const removeFromCart = (id: number) => {
@@ -156,6 +159,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         isInCart,
         toast,
         hideToast,
+        shouldOpenCart,
+        setShouldOpenCart,
       }}
     >
       {children}

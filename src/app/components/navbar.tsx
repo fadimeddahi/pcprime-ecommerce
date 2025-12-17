@@ -13,7 +13,6 @@ import Cart from "./cart";
 import Wishlist from "./wishlist";
 import FeedbackModal from "./feedback-modal";
 import LoginModal from "./login-modal";
-import CartToast from "./cart-toast";
 
 const Navbar = () => {
   const router = useRouter();
@@ -23,7 +22,7 @@ const Navbar = () => {
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const { getCartItemsCount } = useCart();
+  const { getCartItemsCount, shouldOpenCart, setShouldOpenCart } = useCart();
   const { getWishlistItemsCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const { data: categories = [] } = useAllCategories();
@@ -31,6 +30,14 @@ const Navbar = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Open cart when item is added
+  useEffect(() => {
+    if (shouldOpenCart) {
+      setIsCartOpen(true);
+      setShouldOpenCart(false);
+    }
+  }, [shouldOpenCart, setShouldOpenCart]);
 
   const handleProfileClick = () => {
     if (authApi.isAuthenticated()) {
@@ -435,9 +442,6 @@ const Navbar = () => {
         isOpen={isFeedbackOpen}
         onClose={() => setIsFeedbackOpen(false)}
       />
-
-      {/* Cart Toast Notification */}
-      <CartToast onViewCart={() => setIsCartOpen(true)} />
 
       {/* Cart Component */}
       <Cart isOpen={isCartOpen} onClose={toggleCart} />
