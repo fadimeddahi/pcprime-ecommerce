@@ -4,7 +4,6 @@ import { useState } from "react";
 import { FaTimes, FaUser, FaLock, FaEnvelope, FaTruck, FaUserPlus } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
 import { authApi } from "../services/api";
-import { OTPModal } from "./otp-modal";
 import ForgotPasswordModal from "./forgot-password-modal";
 import { extractUserIdFromJWT } from "../utils/jwt";
 
@@ -26,8 +25,6 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
     password: "",
     username: "",
   });
-  const [showOTPModal, setShowOTPModal] = useState(false);
-  const [otpEmail, setOtpEmail] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -127,13 +124,15 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         
         // Validate we have token and email
         if (response?.token && userData.email && userData.user_id) {
-          // Store user data in localStorage BEFORE showing OTP
-          localStorage.setItem('user_data', JSON.stringify(userData));
+          // Store user data in localStorage
+          localStorage.setItem('user_data', JSON.stringify({ ...userData, verified: true }));
+          localStorage.setItem('authToken', response.token);
           console.log("Stored to localStorage - user_data:", userData);
           
-          // Show OTP modal for 2FA
-          setOtpEmail(userData.email);
-          setShowOTPModal(true);
+          // Direct login success - no OTP required
+          setFormData({ email: "", password: "", username: "" });
+          onLoginSuccess();
+          onClose();
         } else {
           console.error("Invalid response structure or missing required fields:", response);
           throw new Error("Réponse invalide du serveur");
@@ -222,13 +221,15 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         console.log("Final extracted user data:", userData);
         
         if (response?.token && userData.email && userData.user_id) {
-          // Store user data in localStorage BEFORE showing OTP
-          localStorage.setItem('user_data', JSON.stringify(userData));
+          // Store user data in localStorage
+          localStorage.setItem('user_data', JSON.stringify({ ...userData, verified: true }));
+          localStorage.setItem('authToken', response.token);
           console.log("Stored to localStorage - user_data:", userData);
           
-          // Show OTP modal to verify email
-          setOtpEmail(userData.email);
-          setShowOTPModal(true);
+          // Direct registration success - no OTP required
+          setFormData({ email: "", password: "", username: "" });
+          onLoginSuccess();
+          onClose();
         } else {
           console.error("Invalid response structure or missing required fields:", response);
           throw new Error("Réponse invalide du serveur");
@@ -240,25 +241,6 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleOTPSuccess = (token?: string) => {
-    // Store user data and token in localStorage
-    const userData = {
-      email: otpEmail,
-      verified: true,
-      token: token,
-    };
-    localStorage.setItem('user_data', JSON.stringify(userData));
-    if (token) {
-      localStorage.setItem('authToken', token);
-    }
-    
-    // Close modals and trigger success
-    setShowOTPModal(false);
-    setFormData({ email: "", password: "", username: "" });
-    onLoginSuccess();
-    onClose();
   };
 
   const toggleMode = () => {
@@ -464,18 +446,6 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           </div>
         </form>
       </div>
-
-      {/* OTP Modal */}
-      <OTPModal
-        isOpen={showOTPModal}
-        onClose={() => {
-          setShowOTPModal(false);
-          setFormData({ email: "", password: "", username: "" });
-        }}
-        onSuccess={handleOTPSuccess}
-        title={isLogin ? "Vérifier votre identité" : "Vérifier votre email"}
-        description={isLogin ? "Entrez le code envoyé à votre email" : "Confirmer votre adresse email"}
-      />
 
       {/* Forgot Password Modal */}
       <ForgotPasswordModal
