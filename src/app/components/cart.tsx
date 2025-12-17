@@ -2,12 +2,10 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { FaShoppingCart, FaTimes, FaTrash } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
 import { useRouter } from "next/navigation";
-import LoginModal from "./login-modal";
 import UpsellWidget from "./upsell-widget";
 import { useCartRecommendations } from "../hooks/useRecommendations";
 
@@ -20,29 +18,12 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
   const router = useRouter();
   const { theme } = useTheme();
   const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [mounted, setMounted] = useState(false);
   
   // Get recommendations based on cart items
   const cartItemsForRec = cartItems.map(item => ({ id: item.id, category: item.category }));
   const { data: recommendations = [] } = useCartRecommendations(cartItemsForRec);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   const handleCheckoutClick = () => {
-    setShowLoginModal(true);
-  };
-
-  const handleContinueAsGuest = () => {
-    setShowLoginModal(false);
-    onClose();
-    router.push("/checkout");
-  };
-
-  const handleLoginSuccess = () => {
-    setShowLoginModal(false);
     onClose();
     router.push("/checkout");
   };
@@ -396,16 +377,6 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
         </div>
       </div>
 
-      {/* Login Modal - Rendered via Portal to bypass stacking context */}
-      {mounted && createPortal(
-        <LoginModal
-          isOpen={showLoginModal}
-          onClose={() => setShowLoginModal(false)}
-          onContinueAsGuest={handleContinueAsGuest}
-          onLoginSuccess={handleLoginSuccess}
-        />,
-        document.body
-      )}
     </>
   );
 };

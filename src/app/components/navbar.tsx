@@ -2,23 +2,51 @@
 
 import { FaSearch, FaUser, FaRegHeart, FaShoppingCart, FaBars, FaTimes, FaMoon, FaSun, FaComments, FaFire } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAllCategories } from "../hooks/useProducts";
+import { authApi } from "../services/api";
 import Cart from "./cart";
 import Wishlist from "./wishlist";
 import FeedbackModal from "./feedback-modal";
+import LoginModal from "./login-modal";
 
 const Navbar = () => {
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { getCartItemsCount } = useCart();
   const { getWishlistItemsCount } = useWishlist();
   const { theme, toggleTheme } = useTheme();
   const { data: categories = [] } = useAllCategories();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleProfileClick = () => {
+    if (authApi.isAuthenticated()) {
+      router.push('/profile');
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    router.push('/profile');
+  };
+
+  const handleContinueAsGuest = () => {
+    setShowLoginModal(false);
+  };
 
   // Refs to track touch/swipe on the page to prevent opening sidebar on swipes
   const touchStartX = useRef<number | null>(null);
@@ -219,11 +247,11 @@ const Navbar = () => {
             </button>
             
             <div className="relative group">
-              <a href="/profile" className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg inline-flex ${
+              <button onClick={handleProfileClick} className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg inline-flex ${
                 theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`} title="Mon profil">
                 <FaUser />
-              </a>
+              </button>
             </div>
             <div className="relative">
               <a href="/wishlist" className={`relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
@@ -412,6 +440,17 @@ const Navbar = () => {
       
       {/* Wishlist Component */}
       <Wishlist isOpen={isWishlistOpen} onClose={toggleWishlist} />
+
+      {/* Login Modal - Rendered via Portal */}
+      {mounted && createPortal(
+        <LoginModal
+          isOpen={showLoginModal}
+          onClose={() => setShowLoginModal(false)}
+          onContinueAsGuest={handleContinueAsGuest}
+          onLoginSuccess={handleLoginSuccess}
+        />,
+        document.body
+      )}
     </header>
   );
 };
