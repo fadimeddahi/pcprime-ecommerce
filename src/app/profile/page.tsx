@@ -221,9 +221,6 @@ const ProfilePage = () => {
                 <p className="text-[#fe8002] font-bold text-lg mb-2">
                   {profileData.email}
                 </p>
-                <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
-                  ID: #{profileData.id}
-                </p>
               </div>
 
               {/* Quick Actions */}
