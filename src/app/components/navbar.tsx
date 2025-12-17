@@ -141,7 +141,7 @@ const Navbar = () => {
   }, [isSidebarOpen]);
 
   return (
-    <header className={`w-full z-50 shadow-2xl backdrop-blur-xl sticky top-0 transition-all duration-300 ${
+    <header className={`w-full z-50 shadow-2xl backdrop-blur-xl fixed top-0 left-0 transition-all duration-300 ${
       theme === 'light' 
         ? 'bg-gradient-to-r from-white via-gray-50 to-white border-b-2 border-[#fe8002]/40' 
         : 'bg-gradient-to-r from-black via-[#0f0f0f] to-black border-b-2 border-[#fe8002]/30'

@@ -65,7 +65,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16 md:pt-[72px]`}
       >
         <ReactQueryProvider>
           <ThemeProvider>
