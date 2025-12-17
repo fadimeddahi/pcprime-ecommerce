@@ -94,15 +94,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setToast({ show: false, item: null });
   };
 
+  // Helper to normalize ID for comparison (convert to string for consistent comparison)
+  const normalizeId = (id: number | string): string => String(id);
+
   const addToCart = (item: Omit<CartItem, "quantity">, quantity: number) => {
+    const normalizedItemId = normalizeId(item.id);
     const cartItem: CartItem = { ...item, quantity };
     
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((i) => i.id === item.id);
+      const existingItemIndex = prevItems.findIndex((i) => normalizeId(i.id) === normalizedItemId);
       
-      if (existingItem) {
-        return prevItems.map((i) =>
-          i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
+      if (existingItemIndex !== -1) {
+        return prevItems.map((i, index) =>
+          index === existingItemIndex ? { ...i, quantity: i.quantity + quantity } : i
         );
       }
       
@@ -114,7 +118,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeFromCart = (id: number | string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    const normalizedId = normalizeId(id);
+    setCartItems((prevItems) => prevItems.filter((item) => normalizeId(item.id) !== normalizedId));
   };
 
   const updateQuantity = (id: number | string, quantity: number) => {
@@ -123,9 +128,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     
+    const normalizedId = normalizeId(id);
     setCartItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === id ? { ...item, quantity } : item
+        normalizeId(item.id) === normalizedId ? { ...item, quantity } : item
       )
     );
   };
@@ -143,7 +149,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const isInCart = (id: number | string) => {
-    return cartItems.some(item => item.id === id);
+    const normalizedId = normalizeId(id);
+    return cartItems.some(item => normalizeId(item.id) === normalizedId);
   };
 
   return (
