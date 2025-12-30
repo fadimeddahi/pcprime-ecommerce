@@ -1,7 +1,7 @@
 // Chat Service - Handles communication with backend /chat/ endpoint
 // Uses Ollama AI (llama3 model) for intelligent responses
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.primecomputerdz.dz';
 
 export interface ChatMessage {
   id?: string;
