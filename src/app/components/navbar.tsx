@@ -304,7 +304,7 @@ const Navbar = () => {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
-              className={`xl:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform rounded-lg ${
+              className={`xl:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform rounded-lg mr-2 ${
                 theme === 'light' ? 'text-gray-800 hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`}
               aria-label="Toggle menu"
