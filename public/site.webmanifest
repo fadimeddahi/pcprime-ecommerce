@@ -1,0 +1,15 @@
+{
+  "name": "PCPrimeDZ",
+  "short_name": "PCPrimeDZ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#fe8002",
+  "icons": [
+    {
+      "src": "/favicon-new.ico",
+      "sizes": "48x48 72x72 96x96 144x144 192x192 256x256 384x384 512x512",
+      "type": "image/x-icon"
+    }
+  ]
+}

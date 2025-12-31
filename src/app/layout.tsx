@@ -47,6 +47,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-new.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon-new.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/favicon-new.ico" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
