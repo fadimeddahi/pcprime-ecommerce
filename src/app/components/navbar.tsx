@@ -154,14 +154,14 @@ const Navbar = () => {
         : 'bg-gradient-to-r from-black via-[#0f0f0f] to-black border-b-2 border-[#fe8002]/30'
     }`}>
       {/* --- UNIFIED NAVBAR --- */}
-      <nav className="container mx-auto px-4 py-2">
-        <div className="flex items-center justify-between gap-4">
+      <nav className="container mx-auto px-2 py-2 overflow-x-auto">
+        <div className="flex items-center justify-between gap-2 w-full flex-nowrap">
           {/* Logo */}
           <a href="/">
             <img
               src={theme === 'light' ? '/logo_white.png' : '/logo.png'}
               alt="Prime Computer Logo"
-              className={`w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
+              className={`w-10 h-10 md:w-14 md:h-14 rounded-full shadow-lg hover:scale-110 transition-all duration-300 cursor-pointer ${
                 theme === 'light'
                   ? 'border-2 border-[#fe8002]/60 shadow-[#fe8002]/40 hover:border-[#fe8002]'
                   : 'border-2 border-[#fe8002]/50 shadow-[#fe8002]/30 hover:border-[#fe8002]'
@@ -170,7 +170,7 @@ const Navbar = () => {
           </a>
 
           {/* Desktop Links */}
-          <div className="hidden xl:flex items-center gap-6">
+          <div className="hidden xl:flex items-center gap-4">
             <a href="/" className={`relative font-bold transition-colors group ${
               theme === 'light' ? 'text-gray-800 hover:text-[#fe8002]' : 'text-[#fe8002] hover:text-white'
             }`}>
@@ -207,7 +207,7 @@ const Navbar = () => {
             </a>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar (desktop only) */}
           <div className={`hidden md:flex items-center border-2 rounded-xl px-4 py-2.5 flex-1 max-w-md shadow-lg transition-all ${
             theme === 'light'
               ? 'border-[#fe8002]/40 hover:border-[#fe8002]/70 bg-white'
@@ -223,7 +223,7 @@ const Navbar = () => {
             <FaSearch className="text-[#fe8002] ml-2 text-lg hover:scale-125 transition-transform cursor-pointer" />
           </div>
 
-          {/* Categories Dropdown */}
+          {/* Categories Dropdown (desktop only) */}
           <select 
             className={`hidden lg:block border-2 rounded-xl px-4 py-2.5 shadow-lg focus:outline-none transition-all text-sm font-semibold cursor-pointer appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNSA3LjVMMTAgMTIuNUwxNSA3LjUiIHN0cm9rZT0iI2ZlODAwMiIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=')] bg-[length:18px] bg-[right_0.5rem_center] bg-no-repeat pr-10 ${
               theme === 'light'
@@ -240,12 +240,12 @@ const Navbar = () => {
             ))}
           </select>
 
-          {/* Icons */}
-          <div className="flex items-center gap-4 md:gap-6">
+          {/* Icons + Hamburger (right) */}
+          <div className="flex items-center gap-2 md:gap-4">
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+              className={`min-h-[40px] min-w-[40px] flex items-center justify-center text-lg md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
                 theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:text-white hover:bg-[#1a1a1a]'
               }`}
               aria-label="Toggle theme"
@@ -253,16 +253,15 @@ const Navbar = () => {
             >
               {theme === 'light' ? <FaMoon /> : <FaSun />}
             </button>
-            
             <div className="relative group">
-              <button onClick={handleProfileClick} className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg inline-flex ${
+              <button onClick={handleProfileClick} className={`min-h-[40px] min-w-[40px] flex items-center justify-center text-lg md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg inline-flex ${
                 theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`} title="Mon profil">
                 <FaUser />
               </button>
             </div>
             <div className="relative">
-              <a href="/wishlist" className={`relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+              <a href="/wishlist" className={`relative inline-flex min-h-[40px] min-w-[40px] items-center justify-center text-lg md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
                 theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`} title="Ma liste de souhaits">
                 <FaRegHeart />
@@ -276,7 +275,7 @@ const Navbar = () => {
               </a>
             </div>
             <div className="relative">
-              <button onClick={toggleCart} className={`relative inline-flex min-h-[44px] min-w-[44px] items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+              <button onClick={toggleCart} className={`relative inline-flex min-h-[40px] min-w-[40px] items-center justify-center text-lg md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
                 theme === 'light' ? 'text-gray-800 hover:text-[#fe8002] hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`} title="Mon panier">
                 <FaShoppingCart />
@@ -289,22 +288,20 @@ const Navbar = () => {
                 )}
               </button>
             </div>
-            
             {/* Feedback Button */}
             <button
               onClick={() => setIsFeedbackOpen(true)}
-              className={`min-h-[44px] min-w-[44px] flex items-center justify-center text-xl md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
+              className={`min-h-[40px] min-w-[40px] flex items-center justify-center text-lg md:text-2xl cursor-pointer hover:scale-125 transition-transform rounded-lg ${
                 theme === 'light' ? 'text-[#fe8002] hover:bg-orange-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`}
               title="Envoyer un commentaire"
             >
               <FaComments />
             </button>
-
             {/* Mobile Menu Button */}
             <button
               onClick={toggleSidebar}
-              className={`xl:hidden min-h-[44px] min-w-[44px] flex items-center justify-center text-2xl cursor-pointer hover:scale-110 transition-transform rounded-lg mr-2 ${
+              className={`xl:hidden min-h-[40px] min-w-[40px] flex items-center justify-center text-xl cursor-pointer hover:scale-110 transition-transform rounded-lg ml-1 ${
                 theme === 'light' ? 'text-gray-800 hover:bg-gray-100' : 'text-[#fe8002] hover:bg-[#1a1a1a]'
               }`}
               aria-label="Toggle menu"
