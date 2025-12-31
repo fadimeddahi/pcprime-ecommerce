@@ -45,6 +45,8 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <link rel="icon" href="/favicon-new.ico" type="image/x-icon" />
+        <link rel="shortcut icon" href="/favicon-new.ico" type="image/x-icon" />
+        <link rel="apple-touch-icon" href="/favicon-new.ico" />
         <script
           dangerouslySetInnerHTML={{
             __html: `
