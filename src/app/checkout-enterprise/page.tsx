@@ -123,7 +123,7 @@ const EnterpriseCheckoutPage = () => {
       }));
 
       // Prepare order data according to backend API documentation
-      const orderData: any = {
+      const company_data: any = {
         company_name: formData.company_name,
         person_name: formData.person_name,
         tax_id: formData.tax_id,
@@ -135,17 +135,21 @@ const EnterpriseCheckoutPage = () => {
         address: formData.address,
         city: formData.city,
         country: formData.country || "Algeria",
-        cart_items: items
       };
 
       // Only add optional fields if they have values
-      if (formData.rc) orderData.rc = formData.rc;
-      if (formData.art) orderData.art = formData.art;
-      if (formData.nic) orderData.nic = formData.nic;
-      if (formData.postal_code) orderData.postal_code = formData.postal_code;
-      if (formData.website) orderData.website = formData.website;
-      if (formData.registration_number) orderData.registration_number = formData.registration_number;
-      if (formData.industry) orderData.industry = formData.industry;
+      if (formData.rc) company_data.rc = formData.rc;
+      if (formData.art) company_data.art = formData.art;
+      if (formData.nic) company_data.nic = formData.nic;
+      if (formData.postal_code) company_data.postal_code = formData.postal_code;
+      if (formData.website) company_data.website = formData.website;
+      if (formData.registration_number) company_data.registration_number = formData.registration_number;
+      if (formData.industry) company_data.industry = formData.industry;
+
+      const orderData = {
+        company_data: company_data,
+        cart_items: items
+      };
 
       console.log('[Enterprise Order] Submitting order with data:', orderData);
       
