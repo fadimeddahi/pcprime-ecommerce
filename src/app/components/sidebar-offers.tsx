@@ -18,7 +18,7 @@ interface TopOffer {
 
 const SidebarOffers = () => {
   const { theme } = useTheme();
-  const { addToCart } = useCart();
+  const { addToCart, isEnterprise } = useCart();
   const [isOpen, setIsOpen] = useState(false);
   const [addedToCart, setAddedToCart] = useState<number | null>(null);
 
@@ -70,7 +70,8 @@ const SidebarOffers = () => {
         image: offer.image,
         category: "Promo",
       },
-      1
+      1,
+      isEnterprise
     );
     setAddedToCart(offer.id);
     setTimeout(() => setAddedToCart(null), 2000);

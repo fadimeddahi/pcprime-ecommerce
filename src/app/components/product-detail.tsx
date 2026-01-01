@@ -21,7 +21,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, isEnterprise } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const productIdNum = Number(product.id);
   const [isFavorite, setIsFavorite] = useState(isInWishlist(productIdNum));
@@ -39,7 +39,8 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
         image: product.image,
         category: product.category,
       },
-      quantity
+      quantity,
+      isEnterprise // Pass current cart mode
     );
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 3000);

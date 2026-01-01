@@ -19,7 +19,7 @@ const UpsellWidget = ({
   subtitle = "Complétez votre configuration"
 }: UpsellWidgetProps) => {
   const { theme } = useTheme();
-  const { addToCart, isInCart } = useCart();
+  const { addToCart, isInCart, isEnterprise } = useCart();
   const [addedItems, setAddedItems] = useState<Set<number | string>>(new Set());
 
   const handleAddToCart = (product: UpsellOffer) => {
@@ -30,7 +30,7 @@ const UpsellWidget = ({
       price: product.price,
       image: product.image,
       category: product.category,
-    }, 1);
+    }, 1, isEnterprise);
 
     setAddedItems(prev => new Set(prev).add(product.id));
     

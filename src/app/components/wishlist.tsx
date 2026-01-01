@@ -14,7 +14,7 @@ interface WishlistProps {
 
 const Wishlist = ({ isOpen, onClose }: WishlistProps) => {
   const { wishlistItems, removeFromWishlist, getWishlistItemsCount } = useWishlist();
-  const { addToCart } = useCart();
+  const { addToCart, isEnterprise } = useCart();
   const { theme } = useTheme();
   const [addedToCart, setAddedToCart] = useState<number | null>(null);
 
@@ -27,7 +27,8 @@ const Wishlist = ({ isOpen, onClose }: WishlistProps) => {
         image: item.image,
         category: item.category,
       },
-      1
+      1,
+      isEnterprise
     );
     setAddedToCart(item.id);
     setTimeout(() => setAddedToCart(null), 2000);
