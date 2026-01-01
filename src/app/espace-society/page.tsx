@@ -1,32 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import CompanyRegistrationModal from "../components/company-registration-modal";
 import CompanyDashboard from "../components/company-dashboard";
 import { useTheme } from "../context/ThemeContext";
 import { useCompany } from "../context/CompanyContext";
-import { authApi } from "../services/api";
 import { FaSpinner } from "react-icons/fa";
 
 export default function EspaceEntreprisePage() {
   const { theme } = useTheme();
   const { companyId, loading: companyLoading } = useCompany();
-  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
-  useEffect(() => {
-    // Check if user is authenticated
-    if (!authApi.isAuthenticated()) {
-      router.push('/');
-      return;
-    }
-    setIsCheckingAuth(false);
-  }, [router]);
-
-  // Show loading while checking auth or loading company
-  if (isCheckingAuth || companyLoading) {
+  // Show loading while loading company
+  if (companyLoading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${
         theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
