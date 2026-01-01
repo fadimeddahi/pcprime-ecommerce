@@ -79,15 +79,16 @@ const Chatbot = ({ isOpen, onClose }: ChatbotProps) => {
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (err: any) {
-      const errorMessage = err.message || "Failed to get response from chatbot";
-      setError(errorMessage);
+      // Log the actual error for debugging but show generic message to user
       console.error("Chat error:", err);
+      
+      const genericErrorMessage = "Désolé, je ne peux pas répondre pour le moment. Veuillez réessayer dans quelques instants.";
 
-      // Add error message to chat
+      // Add generic error message to chat
       const errorChatMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        message: errorMessage,
-        error: errorMessage,
+        message: genericErrorMessage,
+        error: genericErrorMessage,
         timestamp: Date.now(),
         sender: 'bot', // Explicitly mark as bot error
       };
