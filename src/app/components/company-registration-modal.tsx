@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { FaTimes, FaBuilding, FaSpinner, FaCheck } from "react-icons/fa";
 import { useTheme } from "../context/ThemeContext";
-import { companyApi, CompanyRegistrationRequest } from "../services/espaceSocietyApi";
+import { useCompany } from "../context/CompanyContext";
+import { companyApi } from "../services/espaceSocietyApi";
+import { CreateCompanyRequest } from "../types/enterprise";
 
 interface CompanyRegistrationModalProps {
   isOpen: boolean;
@@ -13,6 +15,7 @@ interface CompanyRegistrationModalProps {
 
 const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistrationModalProps) => {
   const { theme } = useTheme();
+  const { setCompanyId } = useCompany();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -24,23 +27,23 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
     website: "",
     
     // Legal Info
-    taxId: "",
-    registrationNumber: "",
+    tax_id: "",
+    registration_number: "",
     
     // Address Info
     address: "",
     city: "",
-    postalCode: "",
+    postal_code: "",
     country: "Algeria",
     
     // Contact Person
-    contactPerson: "",
-    contactTitle: "",
+    contact_person: "",
+    contact_title: "",
     
     // Business Info
     industry: "",
-    employeeCount: "",
-    annualRevenue: "",
+    nif: "",
+    rc: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -53,17 +56,21 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
     e.preventDefault();
     setError("");
 
-    if (!formData.name.trim() || !formData.email.includes("@") || !formData.phone.trim() || !formData.contactPerson.trim() || !formData.taxId.trim()) {
+    if (!formData.name.trim() || !formData.email.includes("@") || !formData.phone.trim() || !formData.contact_person.trim() || !formData.tax_id.trim()) {
       setError("Les champs marqués * sont requis");
       return;
     }
 
     setIsLoading(true);
     try {
-      const response = await companyApi.registerCompany(formData as CompanyRegistrationRequest);
+      const response = await companyApi.createCompany(formData as CreateCompanyRequest);
       setSuccess(true);
+      
+      // Store company ID in context
+      setCompanyId(response.id);
+      
       setTimeout(() => {
-        onSuccess?.(response.company?.id || "");
+        onSuccess?.(response.id);
         onClose();
       }, 1500);
     } catch (err: any) {
@@ -177,10 +184,24 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                 </label>
                 <input
                   type="text"
-                  name="taxId"
-                  value={formData.taxId}
+                  name="tax_id"
+                  value={formData.tax_id}
                   onChange={handleInputChange}
                   placeholder="123456789012345"
+                  className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
+                />
+              </div>
+
+              <div>
+                <label className={`text-xs font-bold block mb-0.5 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
+                  Numéro RC
+                </label>
+                <input
+                  type="text"
+                  name="rc"
+                  value={formData.rc}
+                  onChange={handleInputChange}
+                  placeholder="987654321"
                   className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
                 />
               </div>
@@ -191,10 +212,10 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                 </label>
                 <input
                   type="text"
-                  name="registrationNumber"
-                  value={formData.registrationNumber}
+                  name="registration_number"
+                  value={formData.registration_number}
                   onChange={handleInputChange}
-                  placeholder="987654321"
+                  placeholder="Numéro d'immatriculation"
                   className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
                 />
               </div>
@@ -238,8 +259,8 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                   </label>
                   <input
                     type="text"
-                    name="postalCode"
-                    value={formData.postalCode}
+                    name="postal_code"
+                    value={formData.postal_code}
                     onChange={handleInputChange}
                     placeholder="16000"
                     className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
@@ -258,8 +279,8 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                 </label>
                 <input
                   type="text"
-                  name="contactPerson"
-                  value={formData.contactPerson}
+                  name="contact_person"
+                  value={formData.contact_person}
                   onChange={handleInputChange}
                   placeholder="Jean Dupont"
                   className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
@@ -272,8 +293,8 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                 </label>
                 <input
                   type="text"
-                  name="contactTitle"
-                  value={formData.contactTitle}
+                  name="contact_title"
+                  value={formData.contact_title}
                   onChange={handleInputChange}
                   placeholder="Directeur Général / Manager"
                   className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
@@ -299,41 +320,18 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-1">
-                <div>
-                  <label className={`text-xs font-bold block mb-0.5 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-                    Effectif
-                  </label>
-                  <select
-                    name="employeeCount"
-                    value={formData.employeeCount}
-                    onChange={handleInputChange}
-                    className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
-                  >
-                    <option value="">--</option>
-                    <option value="1-10">1-10</option>
-                    <option value="11-50">11-50</option>
-                    <option value="51-200">51-200</option>
-                    <option value="200+">200+</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={`text-xs font-bold block mb-0.5 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-                    CA Annuel
-                  </label>
-                  <select
-                    name="annualRevenue"
-                    value={formData.annualRevenue}
-                    onChange={handleInputChange}
-                    className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
-                  >
-                    <option value="">--</option>
-                    <option value="<1M">&lt;1M DA</option>
-                    <option value="1-5M">1-5M DA</option>
-                    <option value="5-10M">5-10M DA</option>
-                    <option value="10M+">10M+ DA</option>
-                  </select>
-                </div>
+              <div>
+                <label className={`text-xs font-bold block mb-0.5 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
+                  NIF (optionnel)
+                </label>
+                <input
+                  type="text"
+                  name="nif"
+                  value={formData.nif}
+                  onChange={handleInputChange}
+                  placeholder="Numéro NIF"
+                  className={`w-full px-2 py-1 border-2 rounded text-xs ${theme === 'light' ? 'bg-gray-50 border-gray-200 text-gray-900' : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'} outline-none focus:border-[#fe8002]`}
+                />
               </div>
 
               {error && <div className={`p-1.5 rounded text-xs ${theme === 'light' ? 'bg-red-100 text-red-600' : 'bg-red-500/10 text-red-400'}`}>{error}</div>}

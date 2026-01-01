@@ -1,13 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import CompanyRegistrationModal from "../components/company-registration-modal";
+import CompanyDashboard from "../components/company-dashboard";
 import { useTheme } from "../context/ThemeContext";
+import { useCompany } from "../context/CompanyContext";
+import { authApi } from "../services/api";
+import { FaSpinner } from "react-icons/fa";
 
 export default function EspaceEntreprisePage() {
   const { theme } = useTheme();
+  const { companyId, loading: companyLoading } = useCompany();
+  const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  useEffect(() => {
+    // Check if user is authenticated
+    if (!authApi.isAuthenticated()) {
+      router.push('/');
+      return;
+    }
+    setIsCheckingAuth(false);
+  }, [router]);
+
+  // Show loading while checking auth or loading company
+  if (isCheckingAuth || companyLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${
+        theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
+      }`}>
+        <div className="text-center">
+          <FaSpinner className="text-5xl text-[#fe8002] animate-spin mx-auto mb-4" />
+          <p className={`text-lg font-bold ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>
+            Chargement...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user has a company, show dashboard
+  if (companyId) {
+    return <CompanyDashboard companyId={companyId} />;
+  }
+
+  // Otherwise show registration page
   return (
     <div className={`min-h-screen py-12 px-4 relative overflow-hidden transition-all duration-300 ${
       theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
@@ -51,6 +92,10 @@ export default function EspaceEntreprisePage() {
         <CompanyRegistrationModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            // Component will auto-redirect to dashboard via useEffect
+          }}
         />
       </div>
     </div>

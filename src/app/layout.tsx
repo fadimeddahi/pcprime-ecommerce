@@ -7,6 +7,7 @@ import ChatbotWidget from "./components/chatbot-widget";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { CompanyProvider } from "./context/CompanyContext";
 import ThemeWrapper from "./components/theme-wrapper";
 import ReactQueryProvider from "./providers/ReactQueryProvider";
 
@@ -77,10 +78,12 @@ export default function RootLayout({
             <ThemeWrapper>
               <CartProvider>
                 <WishlistProvider>
-                  <Navbar />
-                  {children}
-                  <Footer />
-                  <ChatbotWidget />
+                  <CompanyProvider>
+                    <Navbar />
+                    {children}
+                    <Footer />
+                    <ChatbotWidget />
+                  </CompanyProvider>
                 </WishlistProvider>
               </CartProvider>
             </ThemeWrapper>

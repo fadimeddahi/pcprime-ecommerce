@@ -1,523 +1,200 @@
-// Espace Society API Service - B2B Company Portal
+// Espace Entreprise API Service - User Side Only
+// Based on Backend API Documentation
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://pcprimedz.onrender.com';
+import {
+  Company,
+  CreateCompanyRequest,
+  UpdateCompanyRequest,
+  CompanyOrder,
+  CreateCompanyOrderRequest,
+  CompanyOrderResponse,
+} from '../types/enterprise';
 
-// ==================== TYPES ====================
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.primecomputerdz.dz';
 
-export interface Company {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  taxId: string;
-  registrationNumber?: string;
-  businessType: string;
-  numberOfEmployees: number;
-  website?: string;
-  logo?: string;
-  contactPerson?: string;
-  contactTitle?: string;
-  industry?: string;
-  annualRevenue?: string;
-  createdAt: string;
-  status: 'pending' | 'approved' | 'rejected';
+// API Error Class
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status?: number,
+    public data?: any
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
 }
 
-export interface CompanyRegistrationRequest {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  taxId: string;
-  businessType?: string;
-  numberOfEmployees?: number;
-  website?: string;
-  registrationNumber?: string;
-  contactPerson?: string;
-  contactTitle?: string;
-  industry?: string;
-  employeeCount?: string;
-  annualRevenue?: string;
+// Generic fetch wrapper with error handling
+async function fetchApi<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    });
+
+    if (!response.ok) {
+      let errorData: any = {};
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        errorData = { message: `HTTP Error: ${response.status}` };
+      }
+      
+      console.error(`API Error [${response.status}] ${endpoint}:`, {
+        status: response.status,
+        statusText: response.statusText,
+        body: options.body,
+        response: errorData,
+      });
+
+      throw new ApiError(
+        errorData.error || errorData.message || `HTTP Error: ${response.status}`,
+        response.status,
+        errorData
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    console.error(`Fetch Error ${endpoint}:`, error);
+    throw new ApiError(
+      error instanceof Error ? error.message : 'Network error occurred',
+      undefined,
+      error
+    );
+  }
 }
 
-export interface CompanyResponse {
-  success: boolean;
-  message: string;
-  company?: Company;
-}
-
-export interface TeamMember {
-  id: string;
-  userId: string;
-  companyId: string;
-  name: string;
-  email: string;
-  role: 'admin' | 'manager' | 'buyer' | 'viewer';
-  permissions: string[];
-  status: 'active' | 'inactive';
-  joinedAt: string;
-}
-
-export interface TeamMemberInvite {
-  email: string;
-  role: 'admin' | 'manager' | 'buyer' | 'viewer';
-}
-
-export interface BulkOrder {
-  id: string;
-  companyId: string;
-  orderNumber: string;
-  items: BulkOrderItem[];
-  totalAmount: number;
-  status: 'draft' | 'submitted' | 'processing' | 'shipped' | 'delivered';
-  createdAt: string;
-  updatedAt: string;
-  deliveryDate?: string;
-}
-
-export interface BulkOrderItem {
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-  discount?: number;
-  subtotal: number;
-}
-
-export interface BulkOrderRequest {
-  items: BulkOrderItem[];
-  deliveryAddress?: string;
-  notes?: string;
-}
-
-export interface Invoice {
-  id: string;
-  invoiceNumber: string;
-  companyId: string;
-  orderId: string;
-  issueDate: string;
-  dueDate: string;
-  amount: number;
-  tax: number;
-  total: number;
-  status: 'draft' | 'issued' | 'paid' | 'overdue';
-  items: InvoiceItem[];
-}
-
-export interface InvoiceItem {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  amount: number;
-}
-
-export interface CompanyDashboard {
-  totalOrders: number;
-  totalSpent: number;
-  pendingInvoices: number;
-  teamMembers: number;
-  recentOrders: BulkOrder[];
-}
-
-// ==================== COMPANY SERVICE ====================
+// ==================== COMPANY MANAGEMENT API ====================
+// All company endpoints require authentication
 
 export const companyApi = {
-  // Register new company
-  registerCompany: async (data: CompanyRegistrationRequest): Promise<CompanyResponse> => {
-    const response = await fetch(`${API_BASE_URL}/companies/register`, {
+  // POST /company/companies - Create new company
+  // Requires: JWT token
+  createCompany: async (data: CreateCompanyRequest): Promise<Company> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const company = await fetchApi<Company>('/company/companies', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    
+    return company;
+  },
+
+  // GET /company/GetCompanyByID/:id - Get company by ID
+  // Requires: JWT token
+  // Authorization: User can only access their own company
+  getCompanyById: async (id: string): Promise<Company> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const company = await fetchApi<Company>(`/company/GetCompanyByID/${id}`, {
+      method: 'GET',
+      headers,
+    });
+    
+    return company;
+  },
+
+  // PUT /company/update/:id - Update company
+  // Requires: JWT token
+  updateCompany: async (id: string, data: UpdateCompanyRequest): Promise<Company> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const company = await fetchApi<Company>(`/company/update/${id}`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(data),
+    });
+    
+    return company;
+  },
+
+  // DELETE /company/delete/:id - Delete company
+  // Requires: JWT token
+  deleteCompany: async (id: string): Promise<{ message: string }> => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const result = await fetchApi<{ message: string }>(`/company/delete/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    
+    return result;
+  },
+};
+
+// ==================== COMPANY ORDERS API ====================
+// Company orders are public (no authentication required for creation)
+
+export const companyOrderApi = {
+  // POST /company-orders - Create company order
+  // Public endpoint - No authentication required
+  // Backend validates stock but does NOT reduce it until admin confirms
+  createOrder: async (data: CreateCompanyOrderRequest): Promise<CompanyOrderResponse> => {
+    const order = await fetchApi<CompanyOrderResponse>('/company-orders', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to register company');
-    }
-
-    return response.json();
+    
+    return order;
   },
 
-  // Get company profile
-  getCompanyProfile: async (companyId: string): Promise<Company> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}`, {
+  // GET /company-orders/:id - Get single order by ID
+  // Public endpoint - No authentication required
+  getOrderById: async (id: string): Promise<CompanyOrder> => {
+    const order = await fetchApi<CompanyOrder>(`/company-orders/${id}`, {
       method: 'GET',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch company profile');
-    }
-
-    return response.json();
-  },
-
-  // Update company profile
-  updateCompanyProfile: async (companyId: string, data: Partial<Company>): Promise<Company> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update company profile');
-    }
-
-    return response.json();
-  },
-
-  // Get company dashboard
-  getDashboard: async (companyId: string): Promise<CompanyDashboard> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/dashboard`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch dashboard');
-    }
-
-    return response.json();
+    
+    return order;
   },
 };
 
-// ==================== TEAM SERVICE ====================
-
-export const teamApi = {
-  // Get team members
-  getTeamMembers: async (companyId: string): Promise<TeamMember[]> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/team`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch team members');
-    }
-
-    return response.json();
-  },
-
-  // Invite team member
-  inviteTeamMember: async (companyId: string, invite: TeamMemberInvite): Promise<{ success: boolean }> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/team/invite`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(invite),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to invite team member');
-    }
-
-    return response.json();
-  },
-
-  // Update team member role
-  updateTeamMember: async (companyId: string, memberId: string, role: string): Promise<TeamMember> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/team/${memberId}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify({ role }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update team member');
-    }
-
-    return response.json();
-  },
-
-  // Remove team member
-  removeTeamMember: async (companyId: string, memberId: string): Promise<{ success: boolean }> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/team/${memberId}`, {
-      method: 'DELETE',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to remove team member');
-    }
-
-    return response.json();
-  },
-};
-
-// ==================== BULK ORDER SERVICE ====================
-
-export const bulkOrderApi = {
-  // Create bulk order
-  createOrder: async (companyId: string, data: BulkOrderRequest): Promise<BulkOrder> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/orders`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to create order');
-    }
-
-    return response.json();
-  },
-
-  // Get orders
-  getOrders: async (companyId: string): Promise<BulkOrder[]> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/orders`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch orders');
-    }
-
-    return response.json();
-  },
-
-  // Get single order
-  getOrder: async (companyId: string, orderId: string): Promise<BulkOrder> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/orders/${orderId}`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch order');
-    }
-
-    return response.json();
-  },
-
-  // Update order
-  updateOrder: async (companyId: string, orderId: string, data: Partial<BulkOrder>): Promise<BulkOrder> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/orders/${orderId}`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update order');
-    }
-
-    return response.json();
-  },
-
-  // Submit order
-  submitOrder: async (companyId: string, orderId: string): Promise<BulkOrder> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/orders/${orderId}/submit`, {
-      method: 'POST',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to submit order');
-    }
-
-    return response.json();
-  },
-};
-
-// ==================== INVOICE SERVICE ====================
-
-export const invoiceApi = {
-  // Get invoices
-  getInvoices: async (companyId: string): Promise<Invoice[]> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/invoices`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch invoices');
-    }
-
-    return response.json();
-  },
-
-  // Get single invoice
-  getInvoice: async (companyId: string, invoiceId: string): Promise<Invoice> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/invoices/${invoiceId}`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch invoice');
-    }
-
-    return response.json();
-  },
-
-  // Download invoice PDF
-  downloadInvoice: async (companyId: string, invoiceId: string): Promise<Blob> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/invoices/${invoiceId}/download`, {
-      method: 'GET',
-      headers,
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to download invoice');
-    }
-
-    return response.blob();
-  },
-
-  // Pay invoice
-  payInvoice: async (companyId: string, invoiceId: string, paymentMethod: string): Promise<Invoice> => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_BASE_URL}/companies/${companyId}/invoices/${invoiceId}/pay`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ paymentMethod }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to process payment');
-    }
-
-    return response.json();
-  },
-};
+// Export for backward compatibility
+export type { Company, CreateCompanyRequest, CompanyOrder, CreateCompanyOrderRequest };
 
 export default {
   companyApi,
-  teamApi,
-  bulkOrderApi,
-  invoiceApi,
+  companyOrderApi,
 };
