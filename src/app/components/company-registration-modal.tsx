@@ -83,21 +83,22 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 overflow-y-auto">
-      <div className={`absolute inset-0 backdrop-blur-lg ${theme === 'light' ? 'bg-black/60' : 'bg-black/90'}`} onClick={onClose} />
+    <div className="fixed inset-0 z-[99999] overflow-y-auto">
+      <div className="flex min-h-screen items-center justify-center p-4 pt-20 pb-20">
+        <div className={`absolute inset-0 backdrop-blur-lg ${theme === 'light' ? 'bg-black/60' : 'bg-black/90'}`} onClick={onClose} />
 
-      <div className={`relative z-[100000] w-full max-w-xs my-8 rounded-xl border-3 border-[#fe8002] shadow-lg shadow-[#fe8002]/50 ${
+        <div className={`relative z-[100000] w-full max-w-xs rounded-xl border-3 border-[#fe8002] shadow-lg shadow-[#fe8002]/50 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
       }`}>
-        {/* Header */}
-        <div className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] p-3">
-          <div className="flex items-center gap-1.5 justify-center">
-            <FaBuilding className="text-white text-lg" />
-            <h1 className="text-white font-bold text-sm uppercase">Espace Entreprise</h1>
+          {/* Header */}
+          <div className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] p-3">
+            <div className="flex items-center gap-1.5 justify-center">
+              <FaBuilding className="text-white text-lg" />
+              <h1 className="text-white font-bold text-sm uppercase">Espace Entreprise</h1>
+            </div>
           </div>
-        </div>
 
-        <button onClick={onClose} className={`absolute top-2 right-2 z-10 text-sm ${theme === 'light' ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'}`}>
+          <button onClick={onClose} className={`absolute top-2 right-2 z-10 text-sm ${theme === 'light' ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'}`}>
           <FaTimes />
         </button>
 
@@ -355,6 +356,7 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
               </div>
             </form>
           )}
+        </div>
         </div>
       </div>
     </div>
