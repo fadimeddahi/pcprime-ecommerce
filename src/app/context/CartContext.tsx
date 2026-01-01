@@ -19,7 +19,7 @@ export interface CartToast {
 
 interface CartContextType {
   cartItems: CartItem[];
-  addToCart: (item: Omit<CartItem, "quantity">, quantity: number) => void;
+  addToCart: (item: Omit<CartItem, "quantity">, quantity: number, isEnterprise?: boolean) => void;
   removeFromCart: (id: number | string) => void;
   updateQuantity: (id: number | string, quantity: number) => void;
   clearCart: () => void;
@@ -30,6 +30,7 @@ interface CartContextType {
   hideToast: () => void;
   shouldOpenCart: boolean;
   setShouldOpenCart: (value: boolean) => void;
+  isEnterprise: boolean;  // Track if cart is in enterprise mode
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -60,16 +61,43 @@ const saveCartToStorage = (cart: CartItem[]) => {
   }
 };
 
+// Helper function to get enterprise mode from localStorage
+const getEnterpriseModeFromStorage = (): boolean => {
+  if (typeof window !== "undefined") {
+    try {
+      const isEnterprise = localStorage.getItem("primeComputerCartIsEnterprise");
+      return isEnterprise === "true";
+    } catch (error) {
+      console.error("Error loading enterprise mode from localStorage:", error);
+    }
+  }
+  return false;
+};
+
+// Helper function to save enterprise mode to localStorage
+const saveEnterpriseModeToStorage = (isEnterprise: boolean) => {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("primeComputerCartIsEnterprise", String(isEnterprise));
+    } catch (error) {
+      console.error("Error saving enterprise mode to localStorage:", error);
+    }
+  }
+};
+
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [toast, setToast] = useState<CartToast>({ show: false, item: null });
   const [shouldOpenCart, setShouldOpenCart] = useState(false);
+  const [isEnterprise, setIsEnterprise] = useState(false);
 
-  // Load cart from localStorage on mount
+  // Load cart and enterprise mode from localStorage on mount
   useEffect(() => {
     const savedCart = getCartFromStorage();
+    const savedIsEnterprise = getEnterpriseModeFromStorage();
     setCartItems(savedCart);
+    setIsEnterprise(savedIsEnterprise);
     setIsInitialized(true);
   }, []);
 
@@ -79,6 +107,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       saveCartToStorage(cartItems);
     }
   }, [cartItems, isInitialized]);
+
+  // Save enterprise mode to localStorage whenever it changes
+  useEffect(() => {
+    if (isInitialized) {
+      saveEnterpriseModeToStorage(isEnterprise);
+    }
+  }, [isEnterprise, isInitialized]);
 
   // Auto-hide toast after 3 seconds
   useEffect(() => {
@@ -97,9 +132,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   // Helper to normalize ID for comparison (convert to string for consistent comparison)
   const normalizeId = (id: number | string): string => String(id);
 
-  const addToCart = (item: Omit<CartItem, "quantity">, quantity: number) => {
+  const addToCart = (item: Omit<CartItem, "quantity">, quantity: number, enterpriseMode: boolean = false) => {
     const normalizedItemId = normalizeId(item.id);
     const cartItem: CartItem = { ...item, quantity };
+    
+    // Set enterprise mode when adding first item or if specified
+    if (cartItems.length === 0 || enterpriseMode !== isEnterprise) {
+      setIsEnterprise(enterpriseMode);
+    }
     
     setCartItems((prevItems) => {
       const existingItemIndex = prevItems.findIndex((i) => normalizeId(i.id) === normalizedItemId);
@@ -138,6 +178,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const clearCart = () => {
     setCartItems([]);
+    setIsEnterprise(false);  // Reset enterprise mode when clearing cart
   };
 
   const getCartTotal = () => {
@@ -168,6 +209,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         hideToast,
         shouldOpenCart,
         setShouldOpenCart,
+        isEnterprise,  // Expose enterprise mode
       }}
     >
       {children}

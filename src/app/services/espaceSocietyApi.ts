@@ -165,7 +165,7 @@ export const companyOrderApi = {
   // POST /company-orders - Create company order
   // Public endpoint - No authentication required
   // Backend validates stock but does NOT reduce it until admin confirms
-  createOrder: async (data: CreateCompanyOrderRequest): Promise<CompanyOrderResponse> => {
+  createOrder: async (data: any): Promise<CompanyOrderResponse> => {
     const order = await fetchApi<CompanyOrderResponse>('/company-orders', {
       method: 'POST',
       headers: {

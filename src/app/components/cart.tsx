@@ -17,7 +17,7 @@ interface CartProps {
 const Cart = ({ isOpen, onClose }: CartProps) => {
   const router = useRouter();
   const { theme } = useTheme();
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, getCartItemsCount, isEnterprise } = useCart();
   
   // Get recommendations based on cart items
   const cartItemsForRec = cartItems.map(item => ({ id: item.id, category: item.category }));
@@ -25,7 +25,9 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
 
   const handleCheckoutClick = () => {
     onClose();
-    router.push("/checkout");
+    // Route to appropriate checkout based on enterprise mode
+    const checkoutUrl = isEnterprise ? '/checkout-enterprise' : '/checkout';
+    router.push(checkoutUrl);
   };
 
   return (
@@ -71,7 +73,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                 : 'from-white via-[#fe8002] to-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]'
             }`}>
               <FaShoppingCart className="text-[#fe8002] text-2xl md:text-3xl" />
-              Mon Panier
+              {isEnterprise ? 'Panier Entreprise' : 'Mon Panier'}
               {getCartItemsCount() > 0 && (
                 <span className="text-sm md:text-lg bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white px-3 py-1 rounded-full shadow-xl shadow-[#fe8002]/60 border-2 border-white/30 animate-pulse">
                   {getCartItemsCount()}
@@ -361,6 +363,13 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                       <span className="text-lg">✓</span> Gratuite
                     </span>
                   </div>
+                  {isEnterprise && (
+                    <div className={`text-[10px] md:text-xs p-2 rounded-lg border ${
+                      theme === 'light' ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-orange-900/20 text-orange-300 border-orange-500/30'
+                    }`}>
+                      🏢 Commande entreprise - Livraison gratuite incluse
+                    </div>
+                  )}
                   <div className="h-0.5 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent my-2 rounded-full" />
                   <div className="flex justify-between items-center">
                     <span className={`font-extrabold text-sm md:text-base ${

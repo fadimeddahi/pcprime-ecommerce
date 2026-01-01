@@ -9,7 +9,12 @@ import { useTheme } from "../context/ThemeContext";
 import { useAllProducts, useAllCategories } from "../hooks/useProducts";
 import type { Product } from "../types/product";
 
-const ProductCard = ({ product }: { product: Product }) => {
+interface ProductCardProps {
+  product: Product;
+  isEnterprise?: boolean;
+}
+
+const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { theme } = useTheme();
@@ -26,7 +31,8 @@ const ProductCard = ({ product }: { product: Product }) => {
         image: product.image,
         category: product.category,
       },
-      1
+      1,
+      isEnterprise  // Pass enterprise mode flag
     );
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
@@ -193,7 +199,11 @@ const ProductCard = ({ product }: { product: Product }) => {
   );
 };
 
-const Products = () => {
+interface ProductsProps {
+  isEnterprise?: boolean;
+}
+
+const Products = ({ isEnterprise = false }: ProductsProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedCondition, setSelectedCondition] = useState<string>("all");
   const [showPromoOnly, setShowPromoOnly] = useState(false);
@@ -553,7 +563,7 @@ const Products = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-6">
             {paginatedProducts.length > 0 ? (
               paginatedProducts.map((product: Product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} isEnterprise={isEnterprise} />
               ))
             ) : (
               <div className="col-span-full text-center py-20">

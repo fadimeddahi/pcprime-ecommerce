@@ -1,89 +1,51 @@
 "use client";
 
-import { useState } from "react";
-import CompanyRegistrationModal from "../components/company-registration-modal";
-import CompanyDashboard from "../components/company-dashboard";
 import { useTheme } from "../context/ThemeContext";
-import { useCompany } from "../context/CompanyContext";
-import { FaSpinner } from "react-icons/fa";
+import { FaBuilding } from "react-icons/fa";
+import Products from "../components/products";
 
 export default function EspaceEntreprisePage() {
   const { theme } = useTheme();
-  const { companyId, loading: companyLoading } = useCompany();
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Show loading while loading company
-  if (companyLoading) {
-    return (
-      <div className={`min-h-screen flex items-center justify-center ${
-        theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
-      }`}>
-        <div className="text-center">
-          <FaSpinner className="text-5xl text-[#fe8002] animate-spin mx-auto mb-4" />
-          <p className={`text-lg font-bold ${
-            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
-          }`}>
-            Chargement...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // If user has a company, show dashboard
-  if (companyId) {
-    return <CompanyDashboard companyId={companyId} />;
-  }
-
-  // Otherwise show registration page
   return (
-    <div className={`min-h-screen py-12 px-4 relative overflow-hidden transition-all duration-300 ${
-      theme === 'light' ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100' : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'
+    <div className={`min-h-screen ${
+      theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
     }`}>
-      {/* Background Pattern */}
-      <div className={`absolute inset-0 ${theme === 'light' ? 'opacity-[0.03]' : 'opacity-[0.02]'}`}>
-        <div className="absolute inset-0" style={{
-          backgroundImage: 'radial-gradient(circle at 2px 2px, #fe8002 1px, transparent 0)',
-          backgroundSize: '40px 40px'
-        }} />
+      {/* Enterprise Header Banner */}
+      <div className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] py-6 px-4 shadow-lg">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-4">
+            <div className="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
+              <FaBuilding className="text-white text-3xl" />
+            </div>
+            <div>
+              <h1 className="text-white font-extrabold text-3xl uppercase tracking-wider">
+                Espace Entreprise
+              </h1>
+              <p className="text-white/90 text-sm font-medium mt-1">
+                Commandes en gros • Prix préférentiels • Livraison prioritaire
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      
-      {/* Subtle orange accent gradients */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
 
-      <div className="container mx-auto max-w-2xl relative z-10">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent tracking-tight mb-4">
-            Espace Entreprise
-          </h1>
-          <div className="w-24 h-1.5 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] mx-auto mb-6 shadow-lg shadow-[#fe8002]/50" />
-          <p className={`text-lg md:text-xl font-bold ${
-            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+      {/* Info Banner */}
+      <div className={`border-b-2 border-[#fe8002]/20 ${
+        theme === 'light' ? 'bg-blue-50' : 'bg-blue-900/10'
+      }`}>
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <p className={`text-sm font-bold ${
+            theme === 'light' ? 'text-blue-900' : 'text-blue-300'
           }`}>
-            Inscrivez votre entreprise pour accéder à nos services B2B
+            ℹ️ Lors de votre commande, vous fournirez vos informations d'entreprise (NIF, RC, etc.) pour bénéficier de nos tarifs professionnels
           </p>
         </div>
+      </div>
 
-        {/* Registration Section */}
-        <div className="text-center">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold py-4 px-12 text-lg rounded-2xl hover:scale-110 transition-all duration-300 shadow-2xl shadow-[#fe8002]/60 uppercase tracking-wide border-2 border-white/30"
-          >
-            S'inscrire Maintenant
-          </button>
-        </div>
-
-        {/* Modal */}
-        <CompanyRegistrationModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSuccess={() => {
-            setIsModalOpen(false);
-            // Component will auto-redirect to dashboard via useEffect
-          }}
-        />
+      {/* Products Section */}
+      <div className="max-w-7xl mx-auto">
+        <Products isEnterprise={true} />
       </div>
     </div>
   );
