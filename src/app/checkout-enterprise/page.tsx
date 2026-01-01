@@ -123,27 +123,29 @@ const EnterpriseCheckoutPage = () => {
       }));
 
       // Prepare order data according to backend API documentation
-      const orderData = {
+      const orderData: any = {
         company_name: formData.company_name,
         person_name: formData.person_name,
         tax_id: formData.tax_id,
         nif: formData.nif,
-        rc: formData.rc || undefined,
-        art: formData.art || undefined,
-        nic: formData.nic || undefined,
         contact_person: formData.contact_person,
         contact_title: formData.contact_title,
         phone: formData.phone,
         email: formData.email,
         address: formData.address,
         city: formData.city,
-        postal_code: formData.postal_code || undefined,
         country: formData.country || "Algeria",
-        website: formData.website || undefined,
-        registration_number: formData.registration_number || undefined,
-        industry: formData.industry || undefined,
         cart_items: items
       };
+
+      // Only add optional fields if they have values
+      if (formData.rc) orderData.rc = formData.rc;
+      if (formData.art) orderData.art = formData.art;
+      if (formData.nic) orderData.nic = formData.nic;
+      if (formData.postal_code) orderData.postal_code = formData.postal_code;
+      if (formData.website) orderData.website = formData.website;
+      if (formData.registration_number) orderData.registration_number = formData.registration_number;
+      if (formData.industry) orderData.industry = formData.industry;
 
       console.log('[Enterprise Order] Submitting order with data:', orderData);
       
