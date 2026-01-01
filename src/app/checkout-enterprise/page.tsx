@@ -142,7 +142,7 @@ const EnterpriseCheckoutPage = () => {
         website: formData.website || undefined,
         registration_number: formData.registration_number || undefined,
         industry: formData.industry || undefined,
-        items: items
+        CartItems: items
       };
 
       console.log('[Enterprise Order] Submitting order with data:', orderData);
