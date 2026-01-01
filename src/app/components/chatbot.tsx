@@ -110,7 +110,7 @@ const Chatbot = ({ isOpen, onClose }: ChatbotProps) => {
   return (
     <div className={`fixed bottom-4 right-4 z-[9999] flex flex-col ${
       theme === 'light' ? 'shadow-2xl' : 'shadow-2xl shadow-[#fe8002]/20'
-    } rounded-2xl border-2 border-[#fe8002] overflow-hidden max-w-md w-[calc(100vw-2rem)] h-[600px] transform transition-all duration-300`}
+    } rounded-2xl border-2 border-[#fe8002] overflow-hidden w-[90vw] sm:w-96 max-w-md h-[70vh] sm:h-[600px] max-h-[600px] transform transition-all duration-300`}
     style={{
       background: theme === 'light' 
         ? 'white' 
