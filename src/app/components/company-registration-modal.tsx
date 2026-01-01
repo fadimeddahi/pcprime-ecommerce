@@ -83,10 +83,10 @@ const CompanyRegistrationModal = ({ isOpen, onClose, onSuccess }: CompanyRegistr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-2">
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 overflow-y-auto">
       <div className={`absolute inset-0 backdrop-blur-lg ${theme === 'light' ? 'bg-black/60' : 'bg-black/90'}`} onClick={onClose} />
 
-      <div className={`relative z-10 w-full max-w-xs rounded-xl border-3 border-[#fe8002] shadow-lg shadow-[#fe8002]/50 ${
+      <div className={`relative z-[100000] w-full max-w-xs my-8 rounded-xl border-3 border-[#fe8002] shadow-lg shadow-[#fe8002]/50 ${
         theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
       }`}>
         {/* Header */}
