@@ -335,7 +335,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                   >
                     −
                   </button>
-                  <span className="text-white font-extrabold text-2xl w-16 text-center bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">{quantity}</span>
+                  <span className={`font-extrabold text-2xl w-16 text-center ${theme === 'light' ? 'text-[#fe8002]' : 'text-white'}`}>{quantity}</span>
                   <button
                     onClick={incrementQuantity}
                     className="w-12 h-12 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-xl rounded-xl hover:shadow-xl hover:shadow-[#fe8002]/50 transition-all duration-300 hover:scale-110 border border-white/20"
