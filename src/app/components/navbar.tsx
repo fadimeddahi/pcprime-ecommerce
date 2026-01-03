@@ -388,6 +388,18 @@ const Navbar = () => {
               PC Builder
             </span>
           </a>
+          <a
+            href="/espace-society"
+            onClick={toggleSidebar}
+            className={`font-bold transition-all py-3 px-5 rounded-xl hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:text-white hover:shadow-lg hover:shadow-[#fe8002]/50 group ${
+              theme === 'light' ? 'text-gray-800' : 'text-[#fe8002]'
+            }`}
+          >
+            <span className="flex items-center gap-3">
+              <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full group-hover:h-8 transition-all" />
+              Espace Entreprise
+            </span>
+          </a>
         
           <a
             href="/contact"
