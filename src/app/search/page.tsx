@@ -1,11 +1,14 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAllProducts } from '../hooks/useProducts';
 import { useTheme } from '../context/ThemeContext';
 import Image from 'next/image';
 import { FaSearch, FaSpinner, FaExclamationTriangle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 const SearchPage = () => {
   const { theme } = useTheme();
