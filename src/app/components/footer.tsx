@@ -93,6 +93,14 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="/conditions-de-garantie" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
+                  Conditions de Garantie
+                </a>
+              </li>
+              <li>
                 <button 
                   onClick={() => setIsFeedbackOpen(true)}
                   className={`hover:text-[#fe8002] transition-all text-sm flex items-center group w-full text-left ${
