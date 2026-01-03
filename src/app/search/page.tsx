@@ -10,7 +10,7 @@ import { FaSearch, FaSpinner, FaExclamationTriangle, FaChevronLeft, FaChevronRig
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
 
-const SearchPage = () => {
+const SearchContent = () => {
   const { theme } = useTheme();
   const searchParams = useSearchParams();
   const queryParam = searchParams.get('q') || '';
@@ -316,6 +316,18 @@ const SearchPage = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const SearchPage = () => {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <FaSpinner className="text-[#fe8002] text-4xl animate-spin" />
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 };
 
