@@ -57,11 +57,14 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
   };
 
   return (
-    <div className={`group rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border hover:-translate-y-2 backdrop-blur-sm ${
-      theme === 'light'
-        ? 'bg-gradient-to-br from-white to-gray-50 border-gray-200 hover:border-[#fe8002] hover:shadow-[#fe8002]/30'
-        : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a] hover:border-[#fe8002] hover:shadow-[#fe8002]/50'
-    }`}>
+    <a
+      href={`/product/${product.id}`}
+      className={`group rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border hover:-translate-y-2 backdrop-blur-sm ${
+        theme === 'light'
+          ? 'bg-gradient-to-br from-white to-gray-50 border-gray-200 hover:border-[#fe8002] hover:shadow-[#fe8002]/30'
+          : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a] hover:border-[#fe8002] hover:shadow-[#fe8002]/50'
+      }`}
+    >
       <div className={`relative h-72 w-full overflow-hidden ${
         theme === 'light' 
           ? 'bg-gradient-to-br from-gray-100 to-gray-50'
@@ -89,7 +92,11 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
         
         {/* Wishlist Button */}
         <button
-          onClick={handleWishlistToggle}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleWishlistToggle();
+          }}
           className={`absolute top-3 right-3 p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-2xl z-10 ${
             isInWishlist(Number(product.id))
               ? "bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white border-2 border-white/30"
@@ -172,30 +179,23 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
           )}
         </div>
         
-        <div className="flex gap-2">
-          <button
-            onClick={handleAddToCart}
-            className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 text-sm uppercase tracking-wide ${
-              addedToCart
-                ? "bg-gradient-to-r from-green-600 to-green-700 text-white border border-white/20 shadow-lg shadow-green-500/50"
-                : "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white hover:from-[#ff4500] hover:to-[#fe8002] hover:scale-105 shadow-lg shadow-[#fe8002]/50 border border-white/20"
-            }`}
-          >
-            <FaShoppingCart className="text-base" />
-            {addedToCart ? "✓" : "Panier"}
-          </button>
-          <a href={`/product?id=${product.id}`} className="flex-1">
-            <button className={`w-full font-bold py-3 px-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm ${
-              theme === 'light'
-                ? 'bg-white text-[#fe8002] border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30'
-                : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30'
-            }`}>
-              Détails
-            </button>
-          </a>
-        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleAddToCart();
+          }}
+          className={`w-full py-3 px-4 rounded-xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 text-sm uppercase tracking-wide ${
+            addedToCart
+              ? "bg-gradient-to-r from-green-600 to-green-700 text-white border border-white/20 shadow-lg shadow-green-500/50"
+              : "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white hover:from-[#ff4500] hover:to-[#fe8002] hover:scale-105 shadow-lg shadow-[#fe8002]/50 border border-white/20"
+          }`}
+        >
+          <FaShoppingCart className="text-base" />
+          {addedToCart ? "✓ Ajouté" : "Ajouter au Panier"}
+        </button>
       </div>
-    </div>
+    </a>
   );
 };
 

@@ -124,9 +124,10 @@ const ProductSearch = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {data.products.map((product) => (
-                <div
+                <a
                   key={product.id}
-                  className={`rounded-2xl p-6 border-2 border-[#fe8002]/30 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 shadow-xl ${
+                  href={`/product/${product.id}`}
+                  className={`rounded-2xl p-6 border-2 border-[#fe8002]/30 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 shadow-xl cursor-pointer ${
                     theme === 'light'
                       ? 'bg-white'
                       : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
@@ -180,7 +181,7 @@ const ProductSearch = () => {
                       {product.condition}
                     </span>
                   )}
-                </div>
+                </a>
               ))}
             </div>
 

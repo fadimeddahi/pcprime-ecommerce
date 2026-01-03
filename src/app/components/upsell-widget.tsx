@@ -74,9 +74,10 @@ const UpsellWidget = ({
           const alreadyInCart = isInCart(product.id);
 
           return (
-            <div
+            <a
               key={product.id}
-              className={`rounded-xl border-2 overflow-hidden transition-all hover:scale-105 ${
+              href={`/product/${product.id}`}
+              className={`rounded-xl border-2 overflow-hidden transition-all hover:scale-105 cursor-pointer ${
                 theme === 'light'
                   ? 'bg-white border-gray-200 hover:border-[#fe8002]/50 shadow-lg'
                   : 'bg-[#1a1a1a] border-gray-800 hover:border-[#fe8002]/50'
@@ -134,7 +135,11 @@ const UpsellWidget = ({
 
                 {/* Add Button */}
                 <button
-                  onClick={() => handleAddToCart(product)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
                   disabled={alreadyInCart || isAdded}
                   className={`w-full py-1 px-2 rounded-lg font-bold text-[10px] transition-all flex items-center justify-center gap-1 ${
                     alreadyInCart
@@ -161,7 +166,7 @@ const UpsellWidget = ({
                   )}
                 </button>
               </div>
-            </div>
+            </a>
           );
         })}
       </div>
