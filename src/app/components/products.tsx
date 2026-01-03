@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { FaShoppingCart, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -204,6 +205,9 @@ interface ProductsProps {
 }
 
 const Products = ({ isEnterprise = false }: ProductsProps) => {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams?.get('category') || null;
+  
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedCondition, setSelectedCondition] = useState<string>("all");
   const [showPromoOnly, setShowPromoOnly] = useState(false);
@@ -214,6 +218,15 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
   // Fetch all products and categories from API
   const { data: productsData, isLoading, isError, error } = useAllProducts();
   const { data: categoriesData = [] } = useAllCategories();
+  
+  // Update selected category when URL parameter changes
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory("all");
+    }
+  }, [categoryParam]);
   
   const allProducts = productsData || [];
   const categories = categoriesData || [];

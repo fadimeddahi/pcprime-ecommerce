@@ -442,6 +442,13 @@ const Navbar = () => {
                   : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] text-[#fe8002] shadow-[#fe8002]/20'
               }`}
               defaultValue=""
+              onChange={(e) => {
+                const categoryName = categories.find(c => c.id === Number(e.target.value))?.name;
+                if (categoryName) {
+                  setIsSidebarOpen(false);
+                  router.push(`/?category=${encodeURIComponent(categoryName)}#products`);
+                }
+              }}
             >
               <option value="" disabled hidden className={theme === 'light' ? 'bg-white text-gray-800' : 'bg-[#1a1a1a] text-[#fe8002]'}>CATÉGORIES</option>
               {categories.map((category) => (
