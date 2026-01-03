@@ -311,7 +311,7 @@ const HotSalesPage = () => {
             <h1
               className={`text-4xl md:text-5xl font-extrabold uppercase tracking-wider bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent animate-pulse`}
             >
-              HOT SALES
+              PROMOTIONS
             </h1>
             
             {/* Professional Fire Icon Right */}

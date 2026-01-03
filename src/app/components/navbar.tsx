@@ -184,7 +184,7 @@ const Navbar = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-sm opacity-60 group-hover:opacity-100 transition-all" />
                 <FaFire className="text-lg relative z-10 group-hover:scale-110 transition-transform" />
               </div>
-              Hot Sales
+              Promotions
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#fe8002] to-[#ff4500] group-hover:w-full transition-all duration-300" />
             </a>
             <a href="/pc-builder" className={`relative font-bold transition-colors group ${
@@ -373,7 +373,7 @@ const Navbar = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-sm opacity-50" />
                 <FaFire className="relative z-10" />
               </div>
-              Hot Sales
+              Promotions
             </span>
           </a>
           <a
