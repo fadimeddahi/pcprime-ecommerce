@@ -1,6 +1,6 @@
 "use client";
 
-import { FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTiktok, FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useAllCategories } from "../hooks/useProducts";
@@ -139,13 +139,19 @@ const Footer = () => {
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
               }`}>
                 <FaMapMarkerAlt className="text-[#fe8002] mt-1 mr-3 flex-shrink-0 group-hover:scale-125 transition-transform" />
-                <span>123 Rue Didouche Mourad, Alger, Algérie</span>
+                <a href="https://www.google.com/maps/place/PC+DZ+%E2%80%98Prime+Computer+Dz%E2%80%99,+Rte+de+Bab+Ezzouar,+Bab+Ezzouar+16042/@36.72324,3.1845743,16z" target="_blank" rel="noopener noreferrer">Rte de Bab Ezzouar, Bab Ezzouar 16042, Algérie</a>
               </li>
               <li className={`flex items-center text-sm hover:text-[#fe8002] transition-colors group ${
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
               }`}>
                 <FaPhone className="text-[#fe8002] mr-3 group-hover:scale-125 transition-transform" />
-                <span>+213 21 123 456</span>
+                <a href="tel:+213560452679">0560 45 26 79</a>
+              </li>
+              <li className={`flex items-center text-sm hover:text-[#fe8002] transition-colors group ${
+                theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+              }`}>
+                <FaWhatsapp className="text-[#fe8002] mr-3 group-hover:scale-125 transition-transform" />
+                <a href="https://wa.me/213562068587" target="_blank" rel="noopener noreferrer">0562 06 85 87</a>
               </li>
               <li className={`flex items-center text-sm hover:text-[#fe8002] transition-colors group ${
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
@@ -161,25 +167,20 @@ const Footer = () => {
                 theme === 'light' ? 'text-gray-800' : 'text-white'
               }`}>Suivez-nous</h5>
               <div className="flex space-x-4">
-                <a href="#" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
+                <a href="https://www.facebook.com/prime.computer.dz.bbz16" target="_blank" rel="noopener noreferrer" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
                   theme === 'light' ? 'bg-gray-100' : 'bg-[#1a1a1a]'
                 }`}>
                   <FaFacebook size={20} />
                 </a>
-                <a href="#" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
+                <a href="https://www.instagram.com/pcdz16bbz" target="_blank" rel="noopener noreferrer" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
                   theme === 'light' ? 'bg-gray-100' : 'bg-[#1a1a1a]'
                 }`}>
                   <FaInstagram size={20} />
                 </a>
-                <a href="#" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
+                <a href="https://www.tiktok.com/@primecomputerdz" target="_blank" rel="noopener noreferrer" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
                   theme === 'light' ? 'bg-gray-100' : 'bg-[#1a1a1a]'
                 }`}>
-                  <FaLinkedin size={20} />
-                </a>
-                <a href="#" className={`text-[#fe8002] hover:text-white transition-all p-2 rounded-lg hover:bg-gradient-to-r hover:from-[#fe8002] hover:to-[#ff4500] hover:scale-110 transform duration-300 shadow-lg ${
-                  theme === 'light' ? 'bg-gray-100' : 'bg-[#1a1a1a]'
-                }`}>
-                  <FaTwitter size={20} />
+                  <FaTiktok size={20} />
                 </a>
               </div>
             </div>

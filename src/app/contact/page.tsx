@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
-import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebook, FaInstagram, FaLinkedin, FaTwitter, FaPaperPlane } from "react-icons/fa";
+import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaFacebook, FaInstagram, FaTiktok, FaPaperPlane, FaWhatsapp } from "react-icons/fa";
 
 const ContactPage = () => {
   const { theme } = useTheme();
@@ -101,8 +101,17 @@ const ContactPage = () => {
                 <FaPhone className="text-white text-2xl" />
               </div>
               <h3 className="text-[#fe8002] font-extrabold text-lg mb-2 uppercase tracking-wide">TÉLÉPHONE</h3>
-              <p className={`font-semibold mb-1 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>+213 XX XXX XXXX</p>
-              <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Lun - Sam: 9h - 18h</p>
+              <p className={`font-semibold mb-1 ${
+                theme === 'light' ? 'text-gray-800' : 'text-white'
+              }`}>
+                <a href="tel:+213560452679">0560 45 26 79</a>
+              </p>
+              <p className={`text-sm mb-2 ${
+                theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+              }`}>Lun - Sam: 9h - 18h</p>
+              <p className={`text-xs font-bold ${
+                theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+              }`}>Espace Entreprise</p>
             </div>
 
             {/* Email */}
@@ -125,8 +134,8 @@ const ContactPage = () => {
                 <FaMapMarkerAlt className="text-white text-2xl" />
               </div>
               <h3 className="text-[#fe8002] font-extrabold text-lg mb-2 uppercase tracking-wide">ADRESSE</h3>
-              <p className={`font-semibold mb-1 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Alger, Algérie</p>
-              <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Visitez notre showroom</p>
+              <p className={`font-semibold mb-1 ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>Rte de Bab Ezzouar</p>
+              <p className={`text-sm ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Bab Ezzouar 16042, Algérie</p>
             </div>
 
             {/* Hours */}
@@ -304,7 +313,7 @@ const ContactPage = () => {
                 </div>
                 <div className="w-full h-[calc(100%-60px)] rounded-xl border-2 border-[#fe8002]/40 overflow-hidden">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3197.2471747415983!2d3.0874999999999997!3d36.75389999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128fb267e72fffff%3A0x7a7a7a7a7a7a7a7a!2sAlgiers%2C%20Algeria!5e0!3m2!1sen!2s!4v1234567890123!5m2!1sen!2s"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3196.4732088776906!2d3.1823853!3d36.7232400!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x128e519ace5517db%3A0xd0302c3c915b1710!2sPC%20DZ%20%E2%80%98Prime%20Computer%20Dz%E2%80%99!5e0!3m2!1sen!2sdz!4v1704297600000!5m2!1sen!2sdz"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
@@ -326,7 +335,9 @@ const ContactPage = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <a
-                    href="#"
+                    href="https://www.facebook.com/prime.computer.dz.bbz16"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`rounded-xl p-4 border-2 border-[#fe8002]/40 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 group flex items-center gap-3 ${
                       theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
                     }`}
@@ -335,7 +346,9 @@ const ContactPage = () => {
                     <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>FACEBOOK</span>
                   </a>
                   <a
-                    href="#"
+                    href="https://www.instagram.com/pcdz16bbz"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`rounded-xl p-4 border-2 border-[#fe8002]/40 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 group flex items-center gap-3 ${
                       theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
                     }`}
@@ -344,20 +357,28 @@ const ContactPage = () => {
                     <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>INSTAGRAM</span>
                   </a>
                   <a
-                    href="#"
+                    href="https://www.tiktok.com/@primecomputerdz"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`rounded-xl p-4 border-2 border-[#fe8002]/40 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 group flex items-center gap-3 ${
                       theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
                     }`}
                   >
-                    <FaLinkedin className="text-[#fe8002] text-3xl group-hover:scale-125 transition-transform" />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>LINKEDIN</span>
+                    <FaTiktok className="text-[#fe8002] text-3xl group-hover:scale-125 transition-transform" />
+                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>TIKTOK</span>
                   </a>
                   <a
-                    href="#"
+                    href="https://wa.me/213562068587"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className={`rounded-xl p-4 border-2 border-[#fe8002]/40 hover:border-[#fe8002] transition-all duration-300 hover:scale-105 group flex items-center gap-3 ${
                       theme === 'light' ? 'bg-gray-50' : 'bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a]'
                     }`}
                   >
+                    <FaWhatsapp className="text-[#fe8002] text-3xl group-hover:scale-125 transition-transform" />
+                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>WHATSAPP</span>
+                  </a>
+                </div>
                     <FaTwitter className="text-[#fe8002] text-3xl group-hover:scale-125 transition-transform" />
                     <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>TWITTER</span>
                   </a>
