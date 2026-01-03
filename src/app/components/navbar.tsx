@@ -21,6 +21,7 @@ const Navbar = () => {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
   const { getCartItemsCount, shouldOpenCart, setShouldOpenCart } = useCart();
   const { getWishlistItemsCount } = useWishlist();
@@ -54,6 +55,21 @@ const Navbar = () => {
 
   const handleContinueAsGuest = () => {
     setShowLoginModal(false);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/product?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
+  };
+
+  const handleSearchIconClick = () => {
+    if (searchQuery.trim()) {
+      router.push(`/product?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery("");
+    }
   };
 
   // Refs to track touch/swipe on the page to prevent opening sidebar on swipes
@@ -208,7 +224,7 @@ const Navbar = () => {
           </div>
 
           {/* Search Bar (desktop only) */}
-          <div className={`hidden md:flex items-center border-2 rounded-xl px-4 py-2.5 flex-1 max-w-md shadow-lg transition-all ${
+          <form onSubmit={handleSearch} className={`hidden md:flex items-center border-2 rounded-xl px-4 py-2.5 flex-1 max-w-md shadow-lg transition-all ${
             theme === 'light'
               ? 'border-[#fe8002]/40 hover:border-[#fe8002]/70 bg-white'
               : 'border-[#fe8002]/30 hover:border-[#fe8002]/50 bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f]'
@@ -216,12 +232,16 @@ const Navbar = () => {
             <input
               type="text"
               placeholder="Rechercher..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className={`outline-none bg-transparent w-full text-sm ${
                 theme === 'light' ? 'text-gray-800 placeholder-gray-500' : 'text-white placeholder-gray-400'
               }`}
             />
-            <FaSearch className="text-[#fe8002] ml-2 text-lg hover:scale-125 transition-transform cursor-pointer" />
-          </div>
+            <button type="button" onClick={handleSearchIconClick}>
+              <FaSearch className="text-[#fe8002] ml-2 text-lg hover:scale-125 transition-transform cursor-pointer" />
+            </button>
+          </form>
 
           {/* Categories Dropdown (desktop only) */}
           <select 
