@@ -134,6 +134,7 @@ const EnterpriseCheckoutPage = () => {
         email: formData.email,
         address: formData.address,
         city: formData.city,
+        postal_code: formData.postal_code || "",
         country: formData.country || "Algeria",
       };
 

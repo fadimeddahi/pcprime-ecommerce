@@ -53,6 +53,22 @@ const Footer = () => {
                 </a>
               </li>
               <li>
+                <a href="/hot-sales" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
+                  Hot Sales
+                </a>
+              </li>
+              <li>
+                <a href="/zone-docassion" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                  theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
+                  Zone d'Occasion
+                </a>
+              </li>
+              <li>
                 <a href="/pc-builder" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
@@ -99,7 +115,7 @@ const Footer = () => {
               {categories.slice(0, 5).map((category) => (
                 <li key={category.id}>
                   <a 
-                    href={`/category/${category.id}`} 
+                    href="/#products" 
                     className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                       theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                     }`}
@@ -181,13 +197,13 @@ const Footer = () => {
               © 2025 <span className="text-[#fe8002] font-bold">Prime Computer</span>. Tous droits réservés.
             </p>
             <div className="flex flex-wrap justify-center gap-6">
-              <a href="/privacy" className={`hover:text-[#fe8002] transition-colors text-sm font-medium relative group ${
+              <a href="/contact" className={`hover:text-[#fe8002] transition-colors text-sm font-medium relative group ${
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
               }`}>
                 Politique de confidentialité
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#fe8002] group-hover:w-full transition-all duration-300" />
               </a>
-              <a href="/terms" className={`hover:text-[#fe8002] transition-colors text-sm font-medium relative group ${
+              <a href="/contact" className={`hover:text-[#fe8002] transition-colors text-sm font-medium relative group ${
                 theme === 'light' ? 'text-gray-600' : 'text-gray-400'
               }`}>
                 Conditions d'utilisation

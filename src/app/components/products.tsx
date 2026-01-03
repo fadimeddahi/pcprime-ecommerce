@@ -268,7 +268,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
       
       <div className="container mx-auto relative z-10">
         {/* Filters Section */}
-        <div className={`rounded-xl p-4 md:p-6 mb-6 md:mb-8 border shadow-lg backdrop-blur-xl transition-all duration-300 ${
+        <div className={`rounded-xl p-2 md:p-3 mb-4 md:mb-6 border shadow-lg backdrop-blur-xl transition-all duration-300 ${
           theme === 'light'
             ? 'bg-white border-gray-200 shadow-gray-200/50'
             : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-[#fe8002]/30 shadow-[#fe8002]/10'
@@ -276,7 +276,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
           
           {/* Mobile Compact Layout */}
           <div className="md:hidden">
-            <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="grid grid-cols-2 gap-1.5 mb-2">
               {/* Category & Condition in compact selects */}
               <select
                 value={selectedCategory}
@@ -314,7 +314,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
             </div>
 
             {/* Toggle buttons in single row */}
-            <div className="flex gap-1">
+            <div className="flex gap-0.5">
               <button
                 onClick={() => setShowPromoOnly(!showPromoOnly)}
                 className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-bold transition-all ${
@@ -364,17 +364,17 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
 
           {/* Desktop Layout - Hidden on mobile */}
           <div className="hidden md:block">
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-2 mb-4">
               <div className="w-1 h-8 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
               <h3 className={`font-bold text-xl uppercase tracking-wide ${
                 theme === 'light' ? 'text-[#fe8002]' : 'text-[#fe8002]'
               }`}>Filtres</h3>
             </div>
             
-            <div className="flex flex-row gap-6 flex-wrap items-end">
+            <div className="flex flex-row gap-4 flex-wrap items-end">
               {/* Category Filter */}
               <div className="flex-1 min-w-[240px]">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
                   theme === 'light' ? 'text-gray-700' : 'text-white'
                 }`}>
                   <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">Catégorie</span>
@@ -407,7 +407,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
 
               {/* Condition Filter */}
               <div className="flex-1 min-w-[240px]">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
                   theme === 'light' ? 'text-gray-700' : 'text-white'
                 }`}>
                   <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">État</span>

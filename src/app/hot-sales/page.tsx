@@ -279,7 +279,7 @@ const HotSalesPage = () => {
 
   return (
     <main
-      className={`min-h-screen py-20 px-4 transition-all duration-300 ${
+      className={`min-h-screen py-10 px-4 transition-all duration-300 ${
         theme === "light"
           ? "bg-gradient-to-br from-gray-50 via-white to-gray-100"
           : "bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]"
@@ -300,28 +300,28 @@ const HotSalesPage = () => {
 
       <div className="container mx-auto relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-4 md:gap-6 mb-4">
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-4 md:gap-6 mb-3">
             {/* Professional Fire Icon Left */}
-            <div className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+            <div className="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-lg opacity-75 animate-pulse" />
-              <FaFire className="text-5xl md:text-6xl text-white drop-shadow-2xl relative z-10 animate-bounce" />
+              <FaFire className="text-4xl md:text-5xl text-white drop-shadow-2xl relative z-10 animate-bounce" />
             </div>
             
             <h1
-              className={`text-5xl md:text-6xl font-extrabold uppercase tracking-wider bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent animate-pulse`}
+              className={`text-4xl md:text-5xl font-extrabold uppercase tracking-wider bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent animate-pulse`}
             >
               HOT SALES
             </h1>
             
             {/* Professional Fire Icon Right */}
-            <div className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center" style={{ animationDelay: "0.2s" }}>
+            <div className="relative w-12 h-12 md:w-16 md:h-16 flex items-center justify-center" style={{ animationDelay: "0.2s" }}>
               <div className="absolute inset-0 bg-gradient-to-t from-[#ff4500] via-[#fe8002] to-[#ffa500] rounded-full blur-lg opacity-75 animate-pulse" style={{ animationDelay: "0.2s" }} />
-              <FaFire className="text-5xl md:text-6xl text-white drop-shadow-2xl relative z-10 animate-bounce" style={{ animationDelay: "0.2s" }} />
+              <FaFire className="text-4xl md:text-5xl text-white drop-shadow-2xl relative z-10 animate-bounce" style={{ animationDelay: "0.2s" }} />
             </div>
           </div>
           <p
-            className={`text-xl md:text-2xl font-bold mb-2 ${
+            className={`text-lg md:text-xl font-bold mb-2 ${
               theme === "light" ? "text-gray-700" : "text-gray-300"
             }`}
           >
@@ -342,7 +342,7 @@ const HotSalesPage = () => {
 
         {/* Hot Sales Carousel - Only show if sales are scheduled */}
         {hotSales.length > 0 && (
-        <div className="mb-12">
+        <div className="mb-6">
           <div
             className={`rounded-2xl p-6 md:p-8 border backdrop-blur-xl shadow-2xl transition-all duration-300 ${
               theme === "light"

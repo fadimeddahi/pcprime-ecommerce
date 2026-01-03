@@ -174,18 +174,18 @@ const ZoneDocassion = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-[#fe8002]/10 via-transparent to-[#ff4500]/10 pointer-events-none" />
 
       {/* Hero Section */}
-      <section className="relative z-10 py-16 md:py-20 px-4">
+      <section className="relative z-10 py-8 md:py-10 px-4">
         <div className="container mx-auto text-center">
-          <div className="inline-block mb-6">
-            <span className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white text-sm font-extrabold px-8 py-3 rounded-full shadow-2xl shadow-[#fe8002]/60 border-2 border-white/20 animate-pulse uppercase tracking-wider hover:scale-105 transition-all">
+          <div className="inline-block mb-4">
+            <span className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white text-xs font-extrabold px-6 py-2 rounded-full shadow-2xl shadow-[#fe8002]/60 border-2 border-white/20 animate-pulse uppercase tracking-wider hover:scale-105 transition-all">
               BONNES AFFAIRES
             </span>
           </div>
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent mb-6 tracking-tight drop-shadow-sm">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] bg-clip-text text-transparent mb-4 tracking-tight drop-shadow-sm">
             Zone d'Occasion
           </h1>
-          <div className="w-32 h-1 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent mx-auto mb-6 shadow-sm" />
-          <p className={`text-lg md:text-xl max-w-3xl mx-auto leading-relaxed font-semibold ${
+          <div className="w-24 h-1 bg-gradient-to-r from-transparent via-[#fe8002] to-transparent mx-auto mb-4 shadow-sm" />
+          <p className={`text-base md:text-lg max-w-3xl mx-auto leading-relaxed font-semibold ${
             theme === 'light' ? 'text-gray-600' : 'text-gray-400'
           }`}>
             Découvrez nos produits d'occasion certifiés et testés.{" "}
@@ -194,38 +194,38 @@ const ZoneDocassion = () => {
           </p>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto">
-            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/40 shadow-xl ${
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-8 max-w-4xl mx-auto">
+            <div className={`rounded-xl p-4 border-2 border-[#fe8002]/40 shadow-xl ${
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
-              <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-2">
+              <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
                 60%
               </div>
-              <div className={`text-sm font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Économie Max</div>
+              <div className={`text-xs font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>Économie Max</div>
             </div>
-            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/40 shadow-xl ${
+            <div className={`rounded-xl p-4 border-2 border-[#fe8002]/40 shadow-xl ${
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
-              <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-2">
+              <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
                 6 mois
               </div>
-              <div className="text-gray-400 text-sm font-semibold">Garantie</div>
+              <div className="text-gray-400 text-xs font-semibold">Garantie</div>
             </div>
-            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/40 shadow-xl ${
+            <div className={`rounded-xl p-4 border-2 border-[#fe8002]/40 shadow-xl ${
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
-              <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-2">
+              <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
                 ✓
               </div>
-              <div className="text-gray-400 text-sm font-semibold">Testé & Certifié</div>
+              <div className="text-gray-400 text-xs font-semibold">Testé & Certifié</div>
             </div>
-            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/40 shadow-xl ${
+            <div className={`rounded-xl p-4 border-2 border-[#fe8002]/40 shadow-xl ${
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
-              <div className="text-3xl md:text-4xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-2">
+              <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
                 24/7
               </div>
-              <div className="text-gray-400 text-sm font-semibold">Support</div>
+              <div className="text-gray-400 text-xs font-semibold">Support</div>
             </div>
           </div>
         </div>
@@ -234,18 +234,18 @@ const ZoneDocassion = () => {
       {/* Filters Section */}
       <section className="relative z-10 py-8 px-4">
         <div className="container mx-auto">
-          <div className={`rounded-2xl p-6 md:p-8 border border-[#fe8002]/30 shadow-2xl shadow-[#fe8002]/10 backdrop-blur-xl ${
+          <div className={`rounded-2xl p-3 md:p-4 border border-[#fe8002]/30 shadow-2xl shadow-[#fe8002]/10 backdrop-blur-xl ${
             theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
           }`}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
-              <h3 className="text-[#fe8002] font-bold text-xl">Filtrer les Produits</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-1 h-5 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
+              <h3 className="text-[#fe8002] font-bold text-lg">Filtrer les Produits</h3>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex flex-col md:flex-row gap-4">
               {/* Category Filter */}
               <div className="flex-1">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
                   theme === 'light' ? 'text-gray-800' : 'text-white'
                 }`}>
                   <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
@@ -287,7 +287,7 @@ const ZoneDocassion = () => {
 
               {/* Condition Filter */}
               <div className="flex-1">
-                <label className={`text-sm font-bold mb-3 block uppercase tracking-wide flex items-center gap-2 ${
+                <label className={`text-sm font-bold mb-2 block uppercase tracking-wide flex items-center gap-2 ${
                   theme === 'light' ? 'text-gray-800' : 'text-white'
                 }`}>
                   <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
