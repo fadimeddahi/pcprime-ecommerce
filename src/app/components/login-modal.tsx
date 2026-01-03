@@ -265,7 +265,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
       />
       
       {/* Modal Content */}
-      <div className={`relative z-10 w-full max-w-md rounded-3xl border-4 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 overflow-hidden transform transition-all duration-300 scale-100 ${
+      <div className={`relative z-10 w-full max-w-sm max-h-[90vh] overflow-y-auto rounded-2xl border-2 border-[#fe8002] shadow-2xl shadow-[#fe8002]/50 transform transition-all duration-300 scale-100 ${
         theme === 'light'
           ? 'bg-white' 
           : 'bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f]'
@@ -281,28 +281,28 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
         </button>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] p-6 text-center relative">
+        <div className="bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] p-4 text-center relative">
           <div className="absolute inset-0 bg-black/20" />
           <div className="relative z-10">
-            <h2 className="text-3xl font-extrabold text-white mb-2">
+            <h2 className="text-xl font-extrabold text-white mb-1">
               {isLogin ? "CONNEXION" : "INSCRIPTION"}
             </h2>
-            <p className="text-white/90 text-sm font-semibold">
-              {isLogin ? "Connectez-vous pour bénéficier de la livraison gratuite" : "Créez un compte pour profiter de nos avantages"}
+            <p className="text-white/90 text-xs font-semibold">
+              {isLogin ? "Connectez-vous pour la livraison gratuite" : "Créez un compte pour profiter de nos avantages"}
             </p>
           </div>
         </div>
 
         {/* Free Delivery Banner */}
-        <div className="bg-gradient-to-r from-green-600 to-green-500 p-4 flex items-center justify-center gap-3">
-          <FaTruck className="text-white text-2xl" />
-          <p className="text-white font-bold text-lg">
+        <div className="bg-gradient-to-r from-green-600 to-green-500 p-3 flex items-center justify-center gap-2">
+          <FaTruck className="text-white text-lg" />
+          <p className="text-white font-bold text-sm">
             Livraison GRATUITE pour les membres
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Error Message */}
           {error && (
             <div className="bg-red-500/10 border-2 border-red-500 text-red-500 px-4 py-3 rounded-xl font-bold text-center">
@@ -312,7 +312,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
 
           {!isLogin && (
             <div>
-              <label className={`block font-bold mb-2 flex items-center gap-2 ${
+              <label className={`block font-bold mb-1 text-sm flex items-center gap-2 ${
                 theme === 'light' ? 'text-gray-700' : 'text-gray-300'
               }`}>
                 <FaUser className="text-[#fe8002]" />
@@ -324,7 +324,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
                 value={formData.username}
                 onChange={handleInputChange}
                 required={!isLogin}
-                className={`w-full px-4 py-3 border-2 rounded-xl focus:border-[#fe8002] focus:outline-none transition-all ${
+                className={`w-full px-3 py-2 border-2 rounded-lg text-sm focus:border-[#fe8002] focus:outline-none transition-all ${
                   theme === 'light'
                     ? 'bg-gray-50 border-gray-300 text-gray-900' 
                     : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'
@@ -335,7 +335,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           )}
 
           <div>
-            <label className={`block font-bold mb-2 flex items-center gap-2 ${
+            <label className={`block font-bold mb-1 text-sm flex items-center gap-2 ${
               theme === 'light' ? 'text-gray-700' : 'text-gray-300'
             }`}>
               <FaEnvelope className="text-[#fe8002]" />
@@ -347,7 +347,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
               value={formData.email}
               onChange={handleInputChange}
               required
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:border-[#fe8002] focus:outline-none transition-all ${
+              className={`w-full px-3 py-2 border-2 rounded-lg text-sm focus:border-[#fe8002] focus:outline-none transition-all ${
                 theme === 'light'
                   ? 'bg-gray-50 border-gray-300 text-gray-900' 
                   : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'
@@ -357,7 +357,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           </div>
 
           <div>
-            <label className={`block font-bold mb-2 flex items-center gap-2 ${
+            <label className={`block font-bold mb-1 text-sm flex items-center gap-2 ${
               theme === 'light' ? 'text-gray-700' : 'text-gray-300'
             }`}>
               <FaLock className="text-[#fe8002]" />
@@ -369,7 +369,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
               value={formData.password}
               onChange={handleInputChange}
               required
-              className={`w-full px-4 py-3 border-2 rounded-xl focus:border-[#fe8002] focus:outline-none transition-all ${
+              className={`w-full px-3 py-2 border-2 rounded-lg text-sm focus:border-[#fe8002] focus:outline-none transition-all ${
                 theme === 'light'
                   ? 'bg-gray-50 border-gray-300 text-gray-900' 
                   : 'bg-[#0f0f0f] border-[#2a2a2a] text-white'
@@ -394,7 +394,7 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold py-4 rounded-xl shadow-2xl shadow-[#fe8002]/50 hover:shadow-[#fe8002]/70 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide flex items-center justify-center gap-3 ${
+            className={`w-full bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold py-3 rounded-xl shadow-xl shadow-[#fe8002]/50 hover:shadow-[#fe8002]/70 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm flex items-center justify-center gap-2 ${
               isLoading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >

@@ -203,11 +203,103 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           </div>
 
           {/* Right Column - Details */}
-          <div className={`space-y-6 rounded-3xl p-8 border-2 border-[#fe8002]/30 shadow-2xl ${
-            theme === 'light'
-              ? 'bg-white shadow-[#fe8002]/20'
-              : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
-          }`}>
+          <div className="space-y-6">
+            {/* Sticky Add to Cart Section */}
+            <div className={`sticky top-20 z-30 rounded-2xl p-6 border-2 border-[#fe8002] shadow-2xl backdrop-blur-lg ${
+              theme === 'light'
+                ? 'bg-white/95'
+                : 'bg-[#0f0f0f]/95'
+            }`}>
+              {/* Price & Quantity */}
+              <div className="mb-4">
+                <div className="flex items-baseline gap-2 mb-4">
+                  <p className="text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                    {product.price.toLocaleString('fr-DZ')}
+                  </p>
+                  <span className={`text-lg font-semibold ${
+                    theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+                  }`}>DZD</span>
+                  {product.oldPrice && (
+                    <span className="bg-gradient-to-r from-red-600 to-red-500 text-white px-3 py-1 rounded-lg text-sm font-bold ml-2">
+                      -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
+                    </span>
+                  )}
+                </div>
+
+                {/* Quantity Selector */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className={`font-bold text-sm ${
+                    theme === 'light' ? 'text-gray-900' : 'text-white'
+                  }`}>Quantité</span>
+                  <div className={`flex items-center gap-3 rounded-lg border-2 border-[#fe8002]/40 p-1 ${
+                    theme === 'light' ? 'bg-gray-50' : 'bg-[#0f0f0f]'
+                  }`}>
+                    <button
+                      onClick={decrementQuantity}
+                      className="w-10 h-10 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white font-bold rounded-lg hover:scale-110 transition-all"
+                    >
+                      −
+                    </button>
+                    <span className={`font-extrabold text-xl w-12 text-center ${
+                      theme === 'light' ? 'text-[#fe8002]' : 'text-white'
+                    }`}>{quantity}</span>
+                    <button
+                      onClick={incrementQuantity}
+                      className="w-10 h-10 bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white font-bold rounded-lg hover:scale-110 transition-all"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Add to Cart Button */}
+              <button
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+                className={`w-full py-4 rounded-xl font-extrabold text-lg uppercase tracking-wide transition-all duration-300 transform flex items-center justify-center gap-3 ${
+                  addedToCart
+                    ? "bg-gradient-to-r from-green-600 to-green-500 text-white border-2 border-white/30 shadow-xl"
+                    : product.inStock
+                    ? "bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white hover:scale-105 shadow-xl shadow-[#fe8002]/50 hover:shadow-[#fe8002]/70 border-2 border-white/20"
+                    : "bg-gray-400 text-gray-600 cursor-not-allowed"
+                }`}
+              >
+                {addedToCart ? (
+                  <>
+                    <FaCheckCircle className="text-2xl" />
+                    Ajouté au panier
+                  </>
+                ) : (
+                  <>
+                    <FaShoppingCart className="text-2xl" />
+                    Ajouter au panier
+                  </>
+                )}
+              </button>
+
+              {/* Wishlist Button */}
+              <button
+                onClick={toggleFavorite}
+                className={`w-full mt-3 py-3 rounded-xl font-bold transition-all duration-300 border-2 flex items-center justify-center gap-2 ${
+                  isFavorite
+                    ? 'bg-red-500 text-white border-red-500'
+                    : theme === 'light'
+                      ? 'bg-white text-[#fe8002] border-[#fe8002] hover:bg-[#fe8002] hover:text-white'
+                      : 'bg-[#0f0f0f] text-[#fe8002] border-[#fe8002] hover:bg-[#fe8002] hover:text-white'
+                }`}
+              >
+                <FaHeart className="text-xl" />
+                {isFavorite ? 'Retirer des favoris' : 'Ajouter aux favoris'}
+              </button>
+            </div>
+
+            {/* Product Info Container */}
+            <div className={`rounded-3xl p-8 border-2 border-[#fe8002]/30 shadow-2xl space-y-6 ${
+              theme === 'light'
+                ? 'bg-white shadow-[#fe8002]/20'
+                : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
+            }`}>
             {/* Category Badge */}
             <div className="inline-block">
               <span className={`text-xs font-bold text-[#fe8002] px-4 py-2 rounded-full border border-[#fe8002]/40 shadow-md shadow-[#fe8002]/20 uppercase tracking-wider ${
@@ -313,65 +405,6 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               <p className={`leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{product.description}</p>
             </div>
 
-            {/* Quantity Selector */}
-            <div className={`rounded-2xl p-6 border-2 border-[#fe8002]/30 shadow-xl ${
-              theme === 'light'
-                ? 'bg-gradient-to-br from-white to-gray-50'
-                : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="w-1 h-8 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
-                  <span className={`font-extrabold text-lg ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>Quantité</span>
-                </div>
-                <div className={`flex items-center gap-4 rounded-xl border-2 border-[#fe8002]/40 p-2 shadow-lg ${
-                  theme === 'light'
-                    ? 'bg-gradient-to-r from-gray-50 to-gray-100'
-                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-                }`}>
-                  <button
-                    onClick={decrementQuantity}
-                    className="w-12 h-12 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-xl rounded-xl hover:shadow-xl hover:shadow-[#fe8002]/50 transition-all duration-300 hover:scale-110 border border-white/20"
-                  >
-                    −
-                  </button>
-                  <span className={`font-extrabold text-2xl w-16 text-center ${theme === 'light' ? 'text-[#fe8002]' : 'text-white'}`}>{quantity}</span>
-                  <button
-                    onClick={incrementQuantity}
-                    className="w-12 h-12 bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-extrabold text-xl rounded-xl hover:shadow-xl hover:shadow-[#fe8002]/50 transition-all duration-300 hover:scale-110 border border-white/20"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Add to Cart Button */}
-            <button
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-              className={`w-full py-6 rounded-2xl font-extrabold text-xl uppercase tracking-wider transition-all duration-300 transform flex items-center justify-center gap-4 relative overflow-hidden ${
-                addedToCart
-                  ? "bg-gradient-to-r from-green-600 via-green-500 to-green-600 text-white border-2 border-white/30 shadow-2xl shadow-green-500/50"
-                  : product.inStock
-                  ? "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:from-white hover:to-gray-200 hover:scale-105 shadow-2xl shadow-[#fe8002]/60 hover:shadow-[#fe8002]/80 border-2 border-white/30 backdrop-blur-sm"
-                  : "bg-gradient-to-r from-gray-700 to-gray-800 text-gray-400 cursor-not-allowed border-2 border-gray-600"
-              }`}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-              {addedToCart ? (
-                <>
-                  <FaCheckCircle className="text-3xl animate-bounce" />
-                  <span>✓ Ajouté au panier</span>
-                </>
-              ) : (
-                <>
-                  <FaShoppingCart className="text-3xl animate-pulse" />
-                  <span>🛒 Ajouter au panier</span>
-                </>
-              )}
-            </button>
-
             {/* Feedback Button */}
             <button
               onClick={() => setIsFeedbackOpen(true)}
@@ -419,6 +452,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                   <p className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{product.return_policy || "Retour sous 15 jours"}</p>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
