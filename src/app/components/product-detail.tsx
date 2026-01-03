@@ -125,7 +125,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
             theme === 'light' ? 'text-gray-600' : 'text-gray-400'
           }`}>Accueil</a>
           <span className={theme === 'light' ? 'text-gray-400' : 'text-gray-600'}>/</span>
-          <a href="/products" className={`hover:text-[#fe8002] transition-colors font-semibold ${
+          <a href="/#products" className={`hover:text-[#fe8002] transition-colors font-semibold ${
             theme === 'light' ? 'text-gray-600' : 'text-gray-400'
           }`}>Produits</a>
           <span className={theme === 'light' ? 'text-gray-400' : 'text-gray-600'}>/</span>
