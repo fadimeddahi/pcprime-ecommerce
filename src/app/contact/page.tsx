@@ -379,10 +379,6 @@ const ContactPage = () => {
                     <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>WHATSAPP</span>
                   </a>
                 </div>
-                    <FaTwitter className="text-[#fe8002] text-3xl group-hover:scale-125 transition-transform" />
-                    <span className={`font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>TWITTER</span>
-                  </a>
-                </div>
               </div>
             </div>
           </div>
