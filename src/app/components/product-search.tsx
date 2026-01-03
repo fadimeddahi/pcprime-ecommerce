@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { useSearchProducts } from '../hooks/useProducts';
+import { useState, useMemo } from 'react';
+import { useAllProducts } from '../hooks/useProducts';
 import { useTheme } from '../context/ThemeContext';
 import { Product } from '../types/product';
 import Image from 'next/image';
@@ -10,28 +10,44 @@ import { FaSearch, FaSpinner, FaExclamationTriangle, FaChevronLeft, FaChevronRig
 const ProductSearch = () => {
   const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const ITEMS_PER_PAGE = 10;
 
-  // Debounce search input
+  // Fetch all products
+  const { data: allProducts, isLoading, isError, error } = useAllProducts();
+
+  // Client-side search and pagination
+  const { filteredProducts, totalPages } = useMemo(() => {
+    if (!allProducts || !searchQuery.trim()) {
+      return { filteredProducts: [], totalPages: 0 };
+    }
+
+    const query = searchQuery.toLowerCase().trim();
+    const filtered = allProducts.filter((product) => {
+      const nameMatch = product.name.toLowerCase().includes(query);
+      const categoryMatch = product.category?.toLowerCase().includes(query);
+      const descriptionMatch = product.description?.toLowerCase().includes(query);
+      const conditionMatch = product.condition?.toLowerCase().includes(query);
+      
+      return nameMatch || categoryMatch || descriptionMatch || conditionMatch;
+    });
+
+    const pages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
+    return { filteredProducts: filtered, totalPages: pages };
+  }, [allProducts, searchQuery]);
+
+  // Get products for current page
+  const paginatedProducts = useMemo(() => {
+    const startIndex = currentPage * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage]);
+
+  // Handle search change
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
-    const timer = setTimeout(() => {
-      setDebouncedQuery(value);
-      setCurrentPage(0); // Reset to first page on new search
-    }, 500);
-    return () => clearTimeout(timer);
+    setCurrentPage(0); // Reset to first page on new search
   };
-
-  // Fetch products with React Query
-  const { data, isLoading, isError, error } = useSearchProducts(
-    debouncedQuery,
-    ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const totalPages = data ? Math.ceil((data.total || 0) / ITEMS_PER_PAGE) : 0;
 
   return (
     <div className={`py-12 px-4 min-h-screen transition-all duration-300 ${
@@ -72,11 +88,11 @@ const ProductSearch = () => {
         </div>
 
         {/* Loading State */}
-        {isLoading && debouncedQuery && (
+        {isLoading && (
           <div className="flex flex-col items-center justify-center py-20">
             <FaSpinner className="text-[#fe8002] text-6xl animate-spin mb-6" />
             <p className={`text-2xl font-bold ${theme === 'light' ? 'text-gray-800' : 'text-white'}`}>
-              Recherche en cours...
+              Chargement des produits...
             </p>
           </div>
         )}
@@ -97,7 +113,7 @@ const ProductSearch = () => {
         )}
 
         {/* Empty State */}
-        {!isLoading && !isError && debouncedQuery && data?.products.length === 0 && (
+        {!isLoading && !isError && searchQuery && filteredProducts.length === 0 && (
           <div className={`rounded-2xl p-12 border-2 border-[#fe8002]/30 text-center ${
             theme === 'light'
               ? 'bg-white'
@@ -114,16 +130,16 @@ const ProductSearch = () => {
         )}
 
         {/* Results */}
-        {!isLoading && !isError && data && data.products.length > 0 && (
+        {!isLoading && !isError && searchQuery && filteredProducts.length > 0 && (
           <>
             <div className="mb-6">
               <p className={`text-lg font-semibold ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
-                <span className="text-[#fe8002] font-extrabold">{data.total}</span> produit(s) trouvé(s)
+                <span className="text-[#fe8002] font-extrabold">{filteredProducts.length}</span> produit(s) trouvé(s)
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {data.products.map((product) => (
+              {paginatedProducts.map((product) => (
                 <a
                   key={product.id}
                   href={`/product/${product.id}`}
@@ -227,7 +243,7 @@ const ProductSearch = () => {
         )}
 
         {/* Initial State */}
-        {!debouncedQuery && (
+        {!isLoading && !searchQuery && (
           <div className={`text-center py-20 rounded-2xl border-2 border-dashed ${
             theme === 'light'
               ? 'bg-gray-50 border-gray-300'
