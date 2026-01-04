@@ -286,7 +286,7 @@ const HotSalesPage = () => {
       }`}
     >
       {/* Background Pattern */}
-      <div className={`fixed inset-0 ${theme === "light" ? "opacity-[0.03]" : "opacity-[0.02]"}`}>
+      <div className={`fixed inset-0 pointer-events-none ${theme === "light" ? "opacity-[0.03]" : "opacity-[0.02]"}`}>
         <div
           className="absolute inset-0"
           style={{
