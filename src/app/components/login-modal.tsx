@@ -272,9 +272,12 @@ const LoginModal = ({ isOpen, onClose, onContinueAsGuest, onLoginSuccess }: Logi
       }`}>
         {/* Close Button */}
         <button
-          onClick={onClose}
-          className={`absolute top-4 right-4 transition-colors z-10 ${
-            theme === 'light' ? 'text-gray-600 hover:text-gray-900' : 'text-gray-400 hover:text-white'
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className={`absolute top-4 right-4 transition-colors z-50 p-2 rounded-lg hover:bg-opacity-10 ${
+            theme === 'light' ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-900' : 'text-gray-400 hover:text-white hover:bg-white'
           }`}
         >
           <FaTimes className="text-2xl" />
