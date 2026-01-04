@@ -202,7 +202,7 @@ const ProductCardItem = ({ product }: { product: Product }) => {
           }`}
         >
           <FaShoppingCart size={16} />
-          Add to Cart
+          Ajouter au Panier
         </button>
       </div>
     </a>
@@ -325,7 +325,7 @@ const HotSalesPage = () => {
               theme === "light" ? "text-gray-700" : "text-gray-300"
             }`}
           >
-            Limited Time Offers - Don't Miss Out! 🚀
+            Offres à Durée Limitée - Ne Ratez Pas! 🚀
           </p>
           <div
             className={`inline-block px-6 py-2 rounded-full border-2 ${
@@ -335,7 +335,7 @@ const HotSalesPage = () => {
             }`}
           >
             <span className="font-bold">
-              {hotSales.length > 0 ? "Flash Sales Update Every Hour" : "Browse Our Latest Deals"}
+              {hotSales.length > 0 ? "Ventes Flash Mises à Jour Toutes les Heures" : "Parcourez Nos Dernières Offres"}
             </span>
           </div>
         </div>
@@ -486,7 +486,7 @@ const HotSalesPage = () => {
                         <div className={`text-xs font-bold ${
                           theme === "light" ? "text-gray-600" : "text-gray-400"
                         }`}>
-                          Hours
+                          Heures
                         </div>
                       </div>
                       <div
@@ -548,7 +548,7 @@ const HotSalesPage = () => {
                       <p className={`font-bold ${
                         theme === "light" ? "text-gray-700" : "text-gray-300"
                       }`}>
-                        Products Available
+                        Produits Disponibles
                       </p>
                       <div
                         className={`mt-4 px-6 py-2 rounded-lg font-bold inline-block ${
@@ -586,8 +586,8 @@ const HotSalesPage = () => {
               }`}
             >
               {hotSales.length > 0 
-                ? `${filteredProducts.length} products matching this flash sale`
-                : `${filteredProducts.length} promotional and top-selling products available`
+                ? `${filteredProducts.length} produits correspondant à cette vente flash`
+                : `${filteredProducts.length} produits promotionnels et meilleures ventes disponibles`
               }
             </p>
           </div>
@@ -659,14 +659,14 @@ const HotSalesPage = () => {
               <p
                 className={`text-3xl font-extrabold mb-3 bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent`}
               >
-                No Products Found
+                Aucun Produit Trouvé
               </p>
               <p
                 className={`mb-8 text-lg ${
                   theme === "light" ? "text-gray-600" : "text-gray-400"
                 }`}
               >
-                Check back soon for more hot deals!
+                Revenez bientôt pour plus d'offres exceptionnelles!
               </p>
             </div>
           )}
