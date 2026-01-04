@@ -207,7 +207,7 @@ const ZoneDocassion = () => {
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
               <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
-                6 mois
+                3 mois
               </div>
               <div className="text-gray-400 text-xs font-semibold">Garantie</div>
             </div>
@@ -223,7 +223,7 @@ const ZoneDocassion = () => {
               theme === 'light' ? 'bg-white' : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
               <div className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent mb-1">
-                24/7
+                7/7
               </div>
               <div className="text-gray-400 text-xs font-semibold">Support</div>
             </div>
