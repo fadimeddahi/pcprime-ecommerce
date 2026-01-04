@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { FaBuilding } from "react-icons/fa";
 import Products from "../components/products";
@@ -45,7 +46,9 @@ export default function EspaceEntreprisePage() {
 
       {/* Products Section */}
       <div className="max-w-7xl mx-auto">
-        <Products isEnterprise={true} />
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-[#fe8002]">Loading...</div></div>}>
+          <Products isEnterprise={true} />
+        </Suspense>
       </div>
     </div>
   );
