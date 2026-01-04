@@ -38,14 +38,6 @@ const banners = [
     cta: "Discover",
     ctaLink: "#products",
   },
-  {
-    id: 4,
-    title: "Tech Accessories",
-    subtitle: "Complete your setup",
-    image: "https://images.unsplash.com/photo-1612810806563-dffd9ecf6b88?auto=format&fit=crop&w=1600&q=80",
-    cta: "Browse",
-    ctaLink: "#products",
-  },
 ];
 
 const HeroProductCarousel = () => {
