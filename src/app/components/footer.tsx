@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FaFacebook, FaInstagram, FaTiktok, FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp } from "react-icons/fa";
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
@@ -45,60 +46,60 @@ const Footer = () => {
             </div>
             <ul className="space-y-3">
               <li>
-                <a href="/" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Accueil
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/hot-sales" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/hot-sales" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Promotions
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/zone-docassion" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/zone-docassion" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Zone d'Occasion
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/pc-builder" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/pc-builder" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   PC Builder
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/espace-society" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/espace-society" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Espace Entreprise
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/contact" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Contact
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/conditions-de-garantie" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
+                <Link href="/conditions-de-garantie" className={`hover:text-[#fe8002] transition-all text-sm flex items-center group ${
                   theme === 'light' ? 'text-gray-600' : 'text-gray-400'
                 }`}>
                   <span className="w-0 h-0.5 bg-[#fe8002] mr-0 group-hover:w-4 group-hover:mr-2 transition-all duration-300" />
                   Conditions de Garantie
-                </a>
+                </Link>
               </li>
               <li>
                 <button 
