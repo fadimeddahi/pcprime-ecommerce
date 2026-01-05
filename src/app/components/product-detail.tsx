@@ -206,6 +206,83 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 ? 'bg-white/95'
                 : 'bg-[#0f0f0f]/95'
             }`}>
+              {/* Category Badge */}
+              <div className="inline-block mb-3">
+                <span className={`text-xs font-bold text-[#fe8002] px-4 py-2 rounded-full border border-[#fe8002]/40 shadow-md shadow-[#fe8002]/20 uppercase tracking-wider ${
+                  theme === 'light'
+                    ? 'bg-gradient-to-r from-gray-50 to-gray-100'
+                    : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
+                }`}>
+                  {product.category}
+                </span>
+              </div>
+
+              {/* Product Name */}
+              <h1 className={`text-2xl md:text-3xl font-extrabold leading-tight mb-4 ${
+                theme === 'light' ? 'text-gray-900' : 'text-white'
+              }`}>
+                {product.name}
+              </h1>
+
+              {/* Rating and Sales */}
+              {(typeof product.rating !== 'undefined' || (product.number_sold && product.number_sold > 0)) && (
+                <div className="flex items-center gap-4 mb-4">
+                  {typeof product.rating !== 'undefined' && (
+                    <>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <FaStar
+                            key={i}
+                            className={`text-sm ${
+                              i < Math.floor(product.rating || 0) ? "text-[#fe8002]" : "text-gray-600"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[#fe8002] font-bold text-sm">
+                        {Number(product.rating).toFixed(1)}
+                      </span>
+                      <span className={`text-xs ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>
+                        ({product.reviews || 0} avis)
+                      </span>
+                    </>
+                  )}
+                  {product.number_sold && product.number_sold > 0 && (
+                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
+                      theme === 'light' ? 'bg-green-100 text-green-700' : 'bg-green-900/30 text-green-400'
+                    }`}>
+                      {product.number_sold} vendus
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Description */}
+              <div className={`rounded-xl p-4 mb-4 border ${
+                theme === 'light'
+                  ? 'bg-gradient-to-br from-gray-50/80 to-white/80 border-gray-300/40'
+                  : 'bg-gradient-to-br from-[#1a1a1a]/50 to-[#0f0f0f]/50 border-[#fe8002]/20'
+              }`}>
+                <p className={`leading-relaxed text-sm ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>
+                  {product.description}
+                </p>
+              </div>
+
+              {/* Stock Status */}
+              <div className="flex items-center gap-2 mb-4">
+                {product.inStock ? (
+                  <>
+                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-green-400 font-bold text-sm">En stock</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-3 h-3 bg-red-500 rounded-full" />
+                    <span className="text-red-400 font-bold text-sm">Rupture de stock</span>
+                  </>
+                )}
+              </div>
+
               {/* Price & Quantity */}
               <div className="mb-4">
                 <div className="flex items-baseline gap-2 mb-4">
@@ -296,111 +373,6 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 ? 'bg-white shadow-[#fe8002]/20'
                 : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f]'
             }`}>
-            {/* Category Badge */}
-            <div className="inline-block">
-              <span className={`text-xs font-bold text-[#fe8002] px-4 py-2 rounded-full border border-[#fe8002]/40 shadow-md shadow-[#fe8002]/20 uppercase tracking-wider ${
-                theme === 'light'
-                  ? 'bg-gradient-to-r from-gray-50 to-gray-100'
-                  : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a]'
-              }`}>
-                {product.category}
-              </span>
-            </div>
-
-            {/* Product Name */}
-            <h1 className={`text-4xl md:text-5xl font-extrabold leading-tight ${
-              theme === 'light' ? 'text-gray-900' : 'text-white'
-            }`}>
-              {product.name}
-            </h1>
-
-            {/* Rating and Sales */}
-            {(typeof product.rating !== 'undefined' || (product.number_sold && product.number_sold > 0)) && (
-              <div className="flex items-center gap-4">
-                {typeof product.rating !== 'undefined' && (
-                  <>
-                    <div className="flex items-center gap-1">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar
-                          key={i}
-                          className={`text-lg ${
-                            i < Math.floor(product.rating || 0) ? "text-[#fe8002]" : "text-gray-600"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <span className="text-[#fe8002] font-bold">
-                      {Number(product.rating).toFixed(1)}
-                    </span>
-                    <span className={theme === 'light' ? 'text-gray-600' : 'text-gray-400'}>
-                      ({product.reviews || 0} avis)
-                    </span>
-                  </>
-                )}
-                {product.number_sold && product.number_sold > 0 && (
-                  <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                    theme === 'light' ? 'bg-green-100 text-green-700' : 'bg-green-900/30 text-green-400'
-                  }`}>
-                    {product.number_sold} vendus
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Price */}
-            <div className={`rounded-2xl p-6 border-4 shadow-2xl ring-4 ${
-              theme === 'light'
-                ? 'bg-gradient-to-br from-gray-50 to-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
-                : 'bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border-white/20 shadow-white/30 ring-white/10'
-            }`}>
-              <div className="flex items-baseline gap-4">
-                <p className="text-5xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
-                  {product.price.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })}
-                </p>
-                <span className="text-2xl text-gray-400 font-bold">DZD</span>
-              </div>
-              {product.oldPrice && (
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-gray-500 line-through text-xl">
-                    {product.oldPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD
-                  </span>
-                  <span className="bg-[#fe8002] text-white text-xs font-bold px-3 py-1 rounded-full">
-                    -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Stock Status */}
-            <div className="flex items-center gap-2">
-              {product.inStock ? (
-                <>
-                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-green-400 font-bold">En stock</span>
-                </>
-              ) : (
-                <>
-                  <div className="w-3 h-3 bg-red-500 rounded-full" />
-                  <span className="text-red-400 font-bold">Rupture de stock</span>
-                </>
-              )}
-            </div>
-
-            {/* Description */}
-            <div className={`rounded-xl p-6 border backdrop-blur-sm ${
-              theme === 'light'
-                ? 'bg-gradient-to-br from-gray-50/80 to-white/80 border-gray-300/40'
-                : 'bg-gradient-to-br from-[#1a1a1a]/50 to-[#0f0f0f]/50 border-[#fe8002]/20'
-            }`}>
-              <h3 className={`font-bold text-lg mb-3 flex items-center gap-2 ${
-                theme === 'light' ? 'text-gray-900' : 'text-white'
-              }`}>
-                <span className="w-1 h-6 bg-gradient-to-b from-[#fe8002] to-[#ff4500] rounded-full" />
-                Description
-              </h3>
-              <p className={`leading-relaxed ${theme === 'light' ? 'text-gray-700' : 'text-gray-300'}`}>{product.description}</p>
-            </div>
-
             {/* Feedback Button */}
             <button
               onClick={() => setIsFeedbackOpen(true)}
