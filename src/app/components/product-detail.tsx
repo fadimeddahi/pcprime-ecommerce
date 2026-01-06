@@ -21,6 +21,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
   const { addToCart, isEnterprise } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const productIdNum = Number(product.id);
@@ -64,28 +65,44 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   };
 
   const handleShare = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareData = {
       title: product.name,
-      text: `Découvrez ${product.name} - ${product.price.toLocaleString('fr-DZ')} DZD`,
-      url: window.location.href
+      text: `Découvrez ${product.name} - ${product.price.toLocaleString('fr-DZ')} DZD sur Prime Computer`,
+      url: shareUrl
     };
 
     try {
-      // Try to use native share if available
-      if (navigator.share) {
+      // Try to use native share if available (mobile devices)
+      if (typeof navigator !== 'undefined' && navigator.share) {
         await navigator.share(shareData);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
       } else {
-        // Fallback: copy link to clipboard
-        await navigator.clipboard.writeText(window.location.href);
-        alert('Lien copié dans le presse-papiers!');
+        // Fallback: copy link to clipboard (desktop)
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+          await navigator.clipboard.writeText(shareUrl);
+          setShareSuccess(true);
+          setTimeout(() => setShareSuccess(false), 2000);
+        } else {
+          // Older browser fallback
+          const textArea = document.createElement('textarea');
+          textArea.value = shareUrl;
+          textArea.style.position = 'fixed';
+          textArea.style.left = '-999999px';
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          setShareSuccess(true);
+          setTimeout(() => setShareSuccess(false), 2000);
+        }
       }
-    } catch (err) {
-      // If sharing is cancelled or fails, copy to clipboard
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        alert('Lien copié dans le presse-papiers!');
-      } catch (clipboardErr) {
-        console.error('Failed to share:', err);
+    } catch (err: any) {
+      // Only show error if it's not a user cancellation
+      if (err.name !== 'AbortError') {
+        console.error('Error sharing:', err);
+        alert('Erreur lors du partage. Veuillez réessayer.');
       }
     }
   };
@@ -203,7 +220,14 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 </button>
                 <button 
                   onClick={handleShare}
-                  className="p-3 rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110 transition-all duration-300"
+                  className={`p-3 rounded-full backdrop-blur-md border-2 transition-all duration-300 ${
+                    shareSuccess
+                      ? "bg-green-500 border-white/20 text-white"
+                      : theme === 'light'
+                        ? "bg-white/90 border-gray-300 text-[#fe8002] hover:bg-[#fe8002] hover:text-white hover:scale-110"
+                        : "bg-black/50 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110"
+                  }`}
+                  title="Partager ce produit"
                 >
                   <FaShare className="text-lg" />
                 </button>
