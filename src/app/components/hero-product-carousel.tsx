@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -12,41 +12,64 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 
-// Banner data with Unsplash images
-const banners = [
-  {
-    id: 1,
-    title: "Modern Tech Solutions",
-    subtitle: "Discover the latest in computing",
-    image: "https://images.unsplash.com/photo-1603791440384-56cd371ee9a7?auto=format&fit=crop&w=1600&q=80",
-    cta: "Shop Now",
-    ctaLink: "#products",
-  },
-  {
-    id: 2,
-    title: "Premium Laptops",
-    subtitle: "Power meets elegance",
-    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=1600&q=80",
-    cta: "Explore",
-    ctaLink: "#products",
-  },
-  {
-    id: 3,
-    title: "Futuristic Gadgets",
-    subtitle: "Tomorrow's tech, today",
-    image: "https://images.unsplash.com/photo-1593642634367-d91a135587b5?auto=format&fit=crop&w=1600&q=80",
-    cta: "Discover",
-    ctaLink: "#products",
-  },
-];
+interface Slider {
+  id: string;
+  title: string;
+  image_url: string;
+  link: string;
+  order: number;
+  is_active: boolean;
+}
 
 const HeroProductCarousel = () => {
   const { theme } = useTheme();
+  const [sliders, setSliders] = useState<Slider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSliders = async () => {
+      try {
+        const response = await fetch('https://api.primecomputerdz.dz/sliders');
+        if (!response.ok) throw new Error('Failed to fetch sliders');
+        const data = await response.json();
+        // Sort by order field
+        const sortedSliders = data.sort((a: Slider, b: Slider) => a.order - b.order);
+        setSliders(sortedSliders);
+      } catch (err) {
+        console.error('Error fetching sliders:', err);
+        setError('Failed to load sliders');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSliders();
+  }, []);
 
   const plugin = Autoplay({
     delay: 5000,
     stopOnInteraction: false,
   });
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-black to-[#0a0a0a]">
+        <div className="text-[#fe8002] text-xl font-bold animate-pulse">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (error || sliders.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-black to-[#0a0a0a]">
+        <div className="text-center">
+          <h2 className="text-4xl font-extrabold text-[#fe8002] mb-4">Prime Computer</h2>
+          <p className="text-white text-lg">Solutions informatiques premium</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-full">
@@ -59,41 +82,37 @@ const HeroProductCarousel = () => {
         className="w-full h-full"
       >
         <CarouselContent className="h-full">
-          {banners.map((banner) => (
-            <CarouselItem key={banner.id} className="h-full">
-              <div className="relative h-full w-full min-h-[50vh] md:min-h-[60vh] overflow-hidden">
-                {/* Background Image */}
-                <Image
-                  src={banner.image}
-                  alt={banner.title}
-                  fill
-                  className="object-cover"
-                  priority={banner.id === 1}
-                />
-                
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+          {sliders.map((slider, index) => (
+            <CarouselItem key={slider.id} className="h-full">
+              <a href={slider.link} className="block h-full w-full">
+                <div className="relative h-full w-full min-h-[50vh] md:min-h-[60vh] overflow-hidden">
+                  {/* Background Image */}
+                  <Image
+                    src={slider.image_url}
+                    alt={slider.title}
+                    fill
+                    className="object-cover"
+                    priority={index === 0}
+                  />
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
 
-                {/* Content */}
-                <div className="absolute inset-0 flex items-center">
-                  <div className="container mx-auto px-4 md:px-8 lg:px-16">
-                    <div className="max-w-2xl space-y-6">
-                      <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl">
-                        {banner.title}
-                      </h1>
-                      <p className="text-2xl md:text-3xl lg:text-4xl text-gray-100 font-semibold drop-shadow-lg">
-                        {banner.subtitle}
-                      </p>
-                      <a
-                        href={banner.ctaLink}
-                        className="inline-block bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-bold text-lg md:text-xl px-10 py-5 rounded-xl hover:scale-105 transition-all duration-300 shadow-2xl shadow-[#fe8002]/50 hover:shadow-[#fe8002]/70"
-                      >
-                        {banner.cta}
-                      </a>
+                  {/* Content */}
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="container mx-auto px-4 md:px-8 lg:px-16">
+                      <div className="max-w-2xl space-y-6">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-extrabold text-white drop-shadow-2xl">
+                          {slider.title}
+                        </h1>
+                        <div className="inline-block bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-white font-bold text-lg md:text-xl px-10 py-5 rounded-xl hover:scale-105 transition-all duration-300 shadow-2xl shadow-[#fe8002]/50 hover:shadow-[#fe8002]/70">
+                          Découvrir
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </CarouselItem>
           ))}
         </CarouselContent>
