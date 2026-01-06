@@ -7,7 +7,7 @@ const Hero = () => {
   const { theme } = useTheme();
   
   return (
-    <section className={`relative w-full h-full flex items-center justify-center overflow-hidden transition-all duration-300 ${
+    <section className={`relative w-full h-full min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden transition-all duration-300 ${
       theme === 'light'
         ? 'bg-gradient-to-b from-gray-50 to-white'
         : 'bg-gradient-to-b from-[#0a0a0a] to-black'
