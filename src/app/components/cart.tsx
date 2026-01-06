@@ -96,7 +96,7 @@ const Cart = ({ isOpen, onClose }: CartProps) => {
                 className={`text-[#fe8002] text-2xl md:text-3xl hover:scale-125 hover:rotate-90 transition-all duration-300 p-2 rounded-full ${
                   theme === 'light' ? 'hover:bg-[#fe8002]/10' : 'hover:bg-[#fe8002]/20'
                 }`}
-                aria-label="Close cart"
+                aria-label="Fermer le panier"
               >
                 <FaTimes />
               </button>

@@ -25,7 +25,7 @@ const Footer = () => {
             <div className="flex items-center mb-6">
               <img
                 src={theme === 'light' ? '/logo_white.png' : '/logo.png'}
-                alt="Prime Computer Logo"
+                alt="Logo Prime Computer"
                 className="w-20 h-20 rounded-full border-2 border-[#fe8002]/50 shadow-lg shadow-[#fe8002]/30 hover:border-[#fe8002] hover:scale-110 transition-all duration-300"
               />
               <h3 className="ml-4 text-2xl font-extrabold bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">Prime Computer</h3>

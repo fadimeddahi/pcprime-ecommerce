@@ -46,7 +46,7 @@ export default function EspaceEntreprisePage() {
 
       {/* Products Section */}
       <div className="max-w-7xl mx-auto">
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-[#fe8002]">Loading...</div></div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-[#fe8002]">Chargement...</div></div>}>
           <Products isEnterprise={true} />
         </Suspense>
       </div>

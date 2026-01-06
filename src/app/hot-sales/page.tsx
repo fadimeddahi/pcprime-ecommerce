@@ -578,7 +578,7 @@ const HotSalesPage = () => {
               }`}
             >
               <FaFire className="text-[#fe8002] animate-pulse" />
-              {hotSales.length > 0 ? "Hot Deal Products" : "Promotional Products"}
+              {hotSales.length > 0 ? "Produits en Promotion Flash" : "Produits Promotionnels"}
             </h2>
             <p
               className={`${

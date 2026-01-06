@@ -251,6 +251,12 @@ const Navbar = () => {
                 : 'bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] text-[#fe8002] border-[#fe8002]/40 hover:border-[#fe8002] focus:border-[#fe8002] shadow-[#fe8002]/10'
             }`}
             defaultValue=""
+            onChange={(e) => {
+              const categoryName = categories.find(c => c.id === Number(e.target.value))?.name;
+              if (categoryName) {
+                router.push(`/?category=${encodeURIComponent(categoryName)}#products`);
+              }
+            }}
           >
             <option value="" disabled hidden>CATÉGORIES</option>
             {categories.map((category) => (

@@ -10,7 +10,7 @@ export default function Home() {
         <HeroProductCarousel />
       </div>
       {/* Products with filters appear immediately below hero */}
-      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-[#fe8002]">Loading...</div></div>}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-[#fe8002]">Chargement...</div></div>}>
         <Products />
       </Suspense>
     </main>

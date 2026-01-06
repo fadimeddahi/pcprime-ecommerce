@@ -14,7 +14,7 @@ const Hero = () => {
     }`}>
       <Image
         src={theme === 'light' ? '/white_hero.jpeg' : '/hero.png'}
-        alt="Hero Image"
+        alt="Image Principale"
         layout="fill"
         objectFit="cover"
         className={theme === 'light' ? 'opacity-20' : 'opacity-40'}
