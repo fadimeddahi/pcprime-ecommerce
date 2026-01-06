@@ -1,4 +1,7 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
@@ -21,20 +24,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "PCPrimeDZ - Matériel Informatique en Algérie",
-    template: "%s | PCPrimeDZ"
-  },
-  description: "Votre destination pour le matériel informatique en Algérie. PC gaming, composants, périphériques et solutions professionnelles.",
-  keywords: ["ordinateur", "gaming", "PC", "composants", "Algérie", "informatique", "matériel"],
-  authors: [{ name: "PCPrimeDZ" }],
-  openGraph: {
-    type: "website",
-    locale: "fr_DZ",
-    siteName: "PCPrimeDZ",
-  },
-};
+function ScrollToTop() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [pathname]);
+
+  return null;
+}
 
 export default function RootLayout({
   children,
@@ -45,6 +43,8 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <title>PCPrimeDZ - Matériel Informatique en Algérie</title>
+        <meta name="description" content="Votre destination pour le matériel informatique en Algérie. PC gaming, composants, périphériques et solutions professionnelles." />
         <link rel="icon" href="/favicon-new.ico" type="image/x-icon" />
         <link rel="shortcut icon" href="/favicon-new.ico" type="image/x-icon" />
         <link rel="apple-touch-icon" href="/favicon-new.ico" />
@@ -79,6 +79,7 @@ export default function RootLayout({
               <CartProvider>
                 <WishlistProvider>
                   <CompanyProvider>
+                    <ScrollToTop />
                     <Navbar />
                     {children}
                     <Footer />

@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAllProducts } from '../hooks/useProducts';
 import { useTheme } from '../context/ThemeContext';
+import { useScrollToTop } from '../hooks/useScrollToTop';
 import Image from 'next/image';
 import { FaSearch, FaSpinner, FaExclamationTriangle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -96,6 +97,9 @@ const SearchContent = () => {
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return filteredProducts.slice(startIndex, endIndex);
   }, [filteredProducts, currentPage]);
+
+  // Scroll to top when page changes
+  useScrollToTop(currentPage, undefined, 'smooth');
 
   // Handle search form submission
   const handleSearch = (e: React.FormEvent) => {

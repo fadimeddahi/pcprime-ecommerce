@@ -8,6 +8,7 @@ import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAllProducts, useAllCategories } from "../hooks/useProducts";
+import { useScrollToTop } from "../hooks/useScrollToTop";
 import type { Product } from "../types/product";
 
 interface ProductCardProps {
@@ -262,8 +263,11 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
     setCurrentPage(1);
   }, [selectedCategory, selectedCondition, showPromoOnly, showTopSellersOnly]);
 
+  // Scroll to products section when page changes
+  useScrollToTop(currentPage, 'products', 'smooth');
+
   return (
-    <section id="products" className={`py-20 px-4 relative overflow-hidden transition-all duration-300 ${
+    <section id="products" className={`pt-8 pb-20 px-4 relative overflow-hidden transition-all duration-300 ${
       theme === 'light'
         ? 'bg-gradient-to-br from-gray-50 via-white to-gray-100'
         : 'bg-gradient-to-br from-black via-[#0a0a0a] to-[#1a1a1a]'

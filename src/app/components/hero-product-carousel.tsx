@@ -49,20 +49,19 @@ const HeroProductCarousel = () => {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       <Carousel
         opts={{
           align: "start",
           loop: true,
         }}
         plugins={[plugin]}
-        className="w-full"
+        className="w-full h-full"
       >
-        <CarouselContent>
+        <CarouselContent className="h-full">
           {banners.map((banner) => (
-            <CarouselItem key={banner.id}>
-              <div className="relative h-[350px] md:h-[400px] lg:h-[450px] w-full overflow-hidden">
-                {/* Background Image */}
+            <CarouselItem key={banner.id} className="h-full">
+              <div className="relative h-full w-full overflow-hidden">\n                {/* Background Image */}
                 <Image
                   src={banner.image}
                   alt={banner.title}
