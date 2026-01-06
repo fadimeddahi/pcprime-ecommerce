@@ -301,13 +301,6 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                       </span>
                     </>
                   )}
-                  {product.number_sold && product.number_sold > 0 && (
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                      theme === 'light' ? 'bg-green-100 text-green-700' : 'bg-green-900/30 text-green-400'
-                    }`}>
-                      {product.number_sold} vendus
-                    </span>
-                  )}
                 </div>
               )}
 
