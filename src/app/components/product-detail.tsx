@@ -63,6 +63,33 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
     setIsFavorite(!isFavorite);
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Découvrez ${product.name} - ${product.price.toLocaleString('fr-DZ')} DZD`,
+      url: window.location.href
+    };
+
+    try {
+      // Try to use native share if available
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy link to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Lien copié dans le presse-papiers!');
+      }
+    } catch (err) {
+      // If sharing is cancelled or fails, copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Lien copié dans le presse-papiers!');
+      } catch (clipboardErr) {
+        console.error('Failed to share:', err);
+      }
+    }
+  };
+
   const incrementQuantity = () => {
     const maxQty = product.quantity || 999;
     setQuantity(prev => (prev < maxQty ? prev + 1 : prev));
@@ -174,7 +201,10 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 >
                   <FaHeart className="text-lg" />
                 </button>
-                <button className="p-3 rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110 transition-all duration-300">
+                <button 
+                  onClick={handleShare}
+                  className="p-3 rounded-full bg-black/50 backdrop-blur-md border-2 border-white/20 text-white hover:bg-[#fe8002] hover:scale-110 transition-all duration-300"
+                >
                   <FaShare className="text-lg" />
                 </button>
               </div>
