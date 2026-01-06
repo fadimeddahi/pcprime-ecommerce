@@ -207,7 +207,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               {/* Action Buttons */}
               <div className="absolute top-4 right-4 flex flex-col gap-3 z-10">
                 <button
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={toggleFavorite}
                   className={`p-3 rounded-full backdrop-blur-md border-2 transition-all duration-300 ${
                     isFavorite
                       ? "bg-[#fe8002] border-white/20 text-white"
