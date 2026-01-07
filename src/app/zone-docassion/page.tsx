@@ -1,124 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useTheme } from "../context/ThemeContext";
+import { useAllProducts, useAllCategories } from "../hooks/useProducts";
+import { Product } from "../types/product";
 import { FaShoppingCart, FaHeart, FaStar, FaCheckCircle, FaCertificate, FaClock } from "react-icons/fa";
-
-interface UsedProduct {
-  id: number;
-  name: string;
-  category: string;
-  image: string;
-  price: number;
-  originalPrice: number;
-  condition: "Excellent" | "Très bon" | "Bon" | "Acceptable";
-  discount: number;
-  inStock: boolean;
-  rating: number;
-  reviews: number;
-  warrantyMonths: number;
-}
 
 const ZoneDocassion = () => {
   const { addToCart } = useCart();
   const { theme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedCondition, setSelectedCondition] = useState<string>("all");
-  const [addedToCart, setAddedToCart] = useState<number | null>(null);
+  const [addedToCart, setAddedToCart] = useState<number | string | null>(null);
 
-  const usedProducts: UsedProduct[] = [
-    {
-      id: 101,
-      name: "PC Gamer RTX 3070 - Occasion",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 5999.99,
-      originalPrice: 9999.99,
-      condition: "Excellent",
-      discount: 40,
-      inStock: true,
-      rating: 4.8,
-      reviews: 12,
-      warrantyMonths: 6,
-    },
-    {
-      id: 102,
-      name: "Laptop Dell XPS 15 - Occasion",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 3299.99,
-      originalPrice: 5999.99,
-      condition: "Très bon",
-      discount: 45,
-      inStock: true,
-      rating: 4.6,
-      reviews: 8,
-      warrantyMonths: 3,
-    },
-    {
-      id: 103,
-      name: "RTX 3060 Ti - Occasion",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 1399.99,
-      originalPrice: 2499.99,
-      condition: "Excellent",
-      discount: 44,
-      inStock: true,
-      rating: 4.9,
-      reviews: 15,
-      warrantyMonths: 6,
-    },
-    {
-      id: 104,
-      name: "PC Gaming RGB - Occasion",
-      category: "PC Bureau",
-      image: "/pc gamer.jpeg",
-      price: 4599.99,
-      originalPrice: 7999.99,
-      condition: "Bon",
-      discount: 42,
-      inStock: true,
-      rating: 4.5,
-      reviews: 6,
-      warrantyMonths: 3,
-    },
-    {
-      id: 105,
-      name: "MacBook Pro 2020 - Occasion",
-      category: "PC Portable",
-      image: "/laptob.jpeg",
-      price: 4999.99,
-      originalPrice: 8999.99,
-      condition: "Très bon",
-      discount: 44,
-      inStock: false,
-      rating: 4.7,
-      reviews: 10,
-      warrantyMonths: 6,
-    },
-    {
-      id: 106,
-      name: "RTX 2080 Super - Occasion",
-      category: "Composants",
-      image: "/rtx.jpeg",
-      price: 999.99,
-      originalPrice: 2199.99,
-      condition: "Bon",
-      discount: 55,
-      inStock: true,
-      rating: 4.4,
-      reviews: 7,
-      warrantyMonths: 3,
-    },
-  ];
+  // Fetch all products and categories from API
+  const { data: allProducts = [], isLoading, isError } = useAllProducts();
+  const { data: categoriesData = [] } = useAllCategories();
 
-  const handleAddToCart = (product: UsedProduct) => {
+  // Filter only used products (products with condition field)
+  const usedProducts = useMemo(() => {
+    return allProducts.filter((product: Product) => 
+      product.condition || product.etat
+    );
+  }, [allProducts]);
+
+  // Get unique categories from used products
+  const categories = useMemo(() => {
+    const categorySet = new Set<string>();
+    usedProducts.forEach((product: Product) => {
+      if (product.category) {
+        categorySet.add(product.category);
+      }
+    });
+    return Array.from(categorySet).sort();
+  }, [usedProducts]);
+
+  const handleAddToCart = (product: Product) => {
+    const productId = typeof product.id === 'number' ? product.id : parseInt(product.id as string, 10);
     addToCart(
       {
-        id: product.id,
+        id: productId,
+        uuid: product.uuid,
         name: product.name,
         price: product.price,
         image: product.image,
@@ -130,11 +54,12 @@ const ZoneDocassion = () => {
     setTimeout(() => setAddedToCart(null), 2000);
   };
 
-  const filteredProducts = usedProducts.filter((product) => {
+  const filteredProducts = usedProducts.filter((product: Product) => {
     if (selectedCategory !== "all" && product.category !== selectedCategory) {
       return false;
     }
-    if (selectedCondition !== "all" && product.condition !== selectedCondition) {
+    const productCondition = product.condition || product.etat;
+    if (selectedCondition !== "all" && productCondition !== selectedCondition) {
       return false;
     }
     return true;
@@ -261,27 +186,16 @@ const ZoneDocassion = () => {
                   <option value="all" className={theme === 'light' ? 'bg-white text-[#fe8002]' : 'bg-[#1a1a1a] text-[#fe8002]'} style={{ fontWeight: 'bold', padding: '12px' }}>
                     TOUTES LES CATÉGORIES
                   </option>
-                  <option
-                    value="PC Bureau"
-                    className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'}
-                    style={{ fontWeight: '500', padding: '12px' }}
-                  >
-                    PC BUREAU
-                  </option>
-                  <option
-                    value="PC Portable"
-                    className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'}
-                    style={{ fontWeight: '500', padding: '12px' }}
-                  >
-                    PC PORTABLE
-                  </option>
-                  <option
-                    value="Composants"
-                    className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'}
-                    style={{ fontWeight: '500', padding: '12px' }}
-                  >
-                    COMPOSANTS
-                  </option>
+                  {categories.map((category) => (
+                    <option
+                      key={category}
+                      value={category}
+                      className={theme === 'light' ? 'bg-gray-50 text-gray-800' : 'bg-[#0f0f0f] text-white'}
+                      style={{ fontWeight: '500', padding: '12px' }}
+                    >
+                      {category.toUpperCase()}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -367,7 +281,31 @@ const ZoneDocassion = () => {
       {/* Products Grid */}
       <section className="relative z-10 py-12 px-4">
         <div className="container mx-auto">
-          {filteredProducts.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-20">
+              <div className="inline-block p-10 bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] rounded-3xl border-2 border-[#fe8002]/40 shadow-2xl shadow-[#fe8002]/20 backdrop-blur-xl">
+                <div className="text-7xl mb-6 animate-spin">⌛</div>
+                <p className="text-white text-3xl font-extrabold mb-3 bg-gradient-to-r from-[#fe8002] to-[#ff4500] bg-clip-text text-transparent">
+                  Chargement...
+                </p>
+                <p className="text-gray-400 text-lg">
+                  Chargement des produits d'occasion
+                </p>
+              </div>
+            </div>
+          ) : isError ? (
+            <div className="text-center py-20">
+              <div className="inline-block p-10 bg-gradient-to-br from-[#1a1a1a] via-[#181818] to-[#0f0f0f] rounded-3xl border-2 border-red-500/40 shadow-2xl shadow-red-500/20 backdrop-blur-xl">
+                <div className="text-7xl mb-6">⚠️</div>
+                <p className="text-white text-3xl font-extrabold mb-3 bg-gradient-to-r from-red-500 to-red-700 bg-clip-text text-transparent">
+                  Erreur de chargement
+                </p>
+                <p className="text-gray-400 text-lg">
+                  Impossible de charger les produits
+                </p>
+              </div>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product) => (
                 <a
@@ -392,21 +330,25 @@ const ZoneDocassion = () => {
 
                     {/* Badges */}
                     <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
-                      <span
-                        className={`bg-gradient-to-r ${getConditionColor(
-                          product.condition
-                        )} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-md border border-white/20`}
-                      >
-                        {product.condition}
-                      </span>
-                      <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-2xl shadow-[#fe8002]/60 backdrop-blur-md border border-white/20 animate-pulse">
-                        -{product.discount}% 🔥
-                      </span>
+                      {(product.condition || product.etat) && (
+                        <span
+                          className={`bg-gradient-to-r ${getConditionColor(
+                            product.condition || product.etat || ''
+                          )} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-md border border-white/20`}
+                        >
+                          {product.condition || product.etat}
+                        </span>
+                      )}
+                      {product.discount && (
+                        <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-2xl shadow-[#fe8002]/60 backdrop-blur-md border border-white/20 animate-pulse">
+                          -{product.discount}% 🔥
+                        </span>
+                      )}
                     </div>
 
                     {/* Stock Status */}
                     <div className="absolute top-3 right-3">
-                      {product.inStock ? (
+                      {(product.quantity === undefined || product.quantity > 0) ? (
                         <span className="bg-green-600 text-white text-xs font-extrabold px-3 py-1.5 rounded-full shadow-2xl backdrop-blur-md border border-white/20 flex items-center gap-1">
                           <FaCheckCircle className="text-xs" />
                           En stock
@@ -424,15 +366,17 @@ const ZoneDocassion = () => {
                       <span className="text-xs font-bold text-[#fe8002] bg-gradient-to-r from-[#1a1a1a] to-[#0f0f0f] px-4 py-1.5 rounded-full border border-[#fe8002]/40 shadow-md shadow-[#fe8002]/20 uppercase tracking-wider">
                         {product.category}
                       </span>
-                      <div className="flex items-center gap-1">
-                        <FaStar className="text-yellow-400 text-sm" />
-                        <span className={`font-bold text-sm ${
-                          theme === 'light' ? 'text-gray-800' : 'text-white'
-                        }`}>
-                          {product.rating}
-                        </span>
-                        <span className="text-gray-400 text-xs">({product.reviews})</span>
-                      </div>
+                      {(product.rating || product.reviews) && (
+                        <div className="flex items-center gap-1">
+                          <FaStar className="text-yellow-400 text-sm" />
+                          <span className={`font-bold text-sm ${
+                            theme === 'light' ? 'text-gray-800' : 'text-white'
+                          }`}>
+                            {product.rating || 4.5}
+                          </span>
+                          <span className="text-gray-400 text-xs">({product.reviews || 0})</span>
+                        </div>
+                      )}
                     </div>
 
                     <h3 className={`font-bold text-xl leading-tight group-hover:text-[#fe8002] transition-colors duration-300 line-clamp-2 ${
@@ -450,33 +394,37 @@ const ZoneDocassion = () => {
                         </p>
                         <span className="text-gray-400 text-sm font-semibold">DZD</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-gray-500 text-sm line-through">
-                          {product.originalPrice.toLocaleString("fr-DZ", {
-                            minimumFractionDigits: 2,
-                          })}{" "}
-                          DZD
-                        </span>
-                        <span className="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                          Économisez{" "}
-                          {(product.originalPrice - product.price).toLocaleString("fr-DZ", {
-                            minimumFractionDigits: 0,
-                          })}{" "}
-                          DZD
-                        </span>
-                      </div>
+                      {(product.originalPrice || product.old_price || product.oldPrice) && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-500 text-sm line-through">
+                            {(product.originalPrice || product.old_price || product.oldPrice || 0).toLocaleString("fr-DZ", {
+                              minimumFractionDigits: 2,
+                            })}{" "}
+                            DZD
+                          </span>
+                          <span className="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                            Économisez{" "}
+                            {((product.originalPrice || product.old_price || product.oldPrice || 0) - product.price).toLocaleString("fr-DZ", {
+                              minimumFractionDigits: 0,
+                            })}{" "}
+                            DZD
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Warranty */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <FaClock className="text-[#fe8002]" />
-                      <span className="text-gray-300">
-                        <span className="text-[#fe8002] font-bold">
-                          {product.warrantyMonths} mois
-                        </span>{" "}
-                        de garantie
-                      </span>
-                    </div>
+                    {(product.warrantyMonths || product.warranty_months) && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <FaClock className="text-[#fe8002]" />
+                        <span className="text-gray-300">
+                          <span className="text-[#fe8002] font-bold">
+                            {product.warrantyMonths || product.warranty_months} mois
+                          </span>{" "}
+                          de garantie
+                        </span>
+                      </div>
+                    )}
 
                     <div className="flex gap-2">
                       <button
@@ -485,9 +433,9 @@ const ZoneDocassion = () => {
                           e.stopPropagation();
                           handleAddToCart(product);
                         }}
-                        disabled={!product.inStock}
+                        disabled={product.quantity !== undefined && product.quantity === 0}
                         className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 text-sm uppercase tracking-wide ${
-                          !product.inStock
+                          product.quantity !== undefined && product.quantity === 0
                             ? "bg-gray-700 text-gray-400 cursor-not-allowed"
                             : addedToCart === product.id
                             ? "bg-gradient-to-r from-green-600 to-green-700 text-white border border-white/20 shadow-lg shadow-green-500/50"
@@ -495,7 +443,7 @@ const ZoneDocassion = () => {
                         }`}
                       >
                         <FaShoppingCart className="text-base" />
-                        {!product.inStock
+                        {product.quantity !== undefined && product.quantity === 0
                           ? "Épuisé"
                           : addedToCart === product.id
                           ? "✓ Ajouté"
