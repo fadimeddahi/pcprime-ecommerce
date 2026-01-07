@@ -65,6 +65,31 @@ const ZoneDocassion = () => {
     return true;
   });
 
+  // Calculate statistics from used products
+  const stats = useMemo(() => {
+    if (usedProducts.length === 0) {
+      return { maxWarranty: 6, maxDiscount: 60, productsCount: 0 };
+    }
+
+    // Find max warranty months
+    const warranties = usedProducts
+      .map((p: Product) => p.warrantyMonths || p.warranty_months || 0)
+      .filter((w) => w > 0);
+    const maxWarranty = warranties.length > 0 ? Math.max(...warranties) : 6;
+
+    // Find max discount percentage
+    const discounts = usedProducts
+      .map((p: Product) => p.discount || 0)
+      .filter((d) => d > 0);
+    const maxDiscount = discounts.length > 0 ? Math.max(...discounts) : 60;
+
+    return {
+      maxWarranty,
+      maxDiscount,
+      productsCount: usedProducts.length,
+    };
+  }, [usedProducts]);
+
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "Excellent":
@@ -502,14 +527,17 @@ const ZoneDocassion = () => {
                 <div className="text-5xl mb-4">🛡️</div>
                 <h3 className="text-[#fe8002] font-bold text-xl mb-3">Garantie Incluse</h3>
                 <p className="text-gray-400 leading-relaxed">
-                  Tous nos produits d'occasion bénéficient d'une garantie jusqu'à 6 mois
+                  Tous nos produits d'occasion bénéficient d'une garantie jusqu'à{" "}
+                  <span className="text-[#fe8002] font-bold">{stats.maxWarranty} mois</span>
                 </p>
               </div>
               <div className="text-center">
                 <div className="text-5xl mb-4">💰</div>
                 <h3 className="text-[#fe8002] font-bold text-xl mb-3">Prix Imbattables</h3>
                 <p className="text-gray-400 leading-relaxed">
-                  Économisez jusqu'à 60% sur des équipements de qualité professionnelle
+                  Économisez jusqu'à{" "}
+                  <span className="text-[#fe8002] font-bold">{stats.maxDiscount}%</span> sur des
+                  équipements de qualité professionnelle
                 </p>
               </div>
             </div>
