@@ -365,6 +365,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
                     setShowTopSellersOnly(false);
                   }}
                   className="px-2 py-1.5 rounded-lg text-xs font-bold bg-[#fe8002] text-white"
+                  title="Réinitialiser"
                 >
                   ↺
                 </button>

@@ -173,7 +173,7 @@ const ProductCardItem = ({ product }: { product: Product }) => {
         <div className="mb-4">
           <div className="flex items-baseline gap-2 mb-1">
             <span className="text-2xl font-extrabold text-[#fe8002]">
-              ${product.price?.toFixed(2)}
+              {product.price?.toLocaleString('fr-DZ')} DZD
             </span>
             {discount > 0 && (
               <span
@@ -469,7 +469,7 @@ const HotSalesPage = () => {
                       <span className={`font-bold ${
                         theme === "light" ? "text-gray-700" : "text-gray-300"
                       }`}>
-                        Time Left
+                        Temps Restant
                       </span>
                     </div>
                     <div className="grid grid-cols-4 gap-2 md:gap-3">
@@ -502,7 +502,7 @@ const HotSalesPage = () => {
                         <div className={`text-xs font-bold ${
                           theme === "light" ? "text-gray-600" : "text-gray-400"
                         }`}>
-                          Mins
+                          Min
                         </div>
                       </div>
                       <div
@@ -518,7 +518,7 @@ const HotSalesPage = () => {
                         <div className={`text-xs font-bold ${
                           theme === "light" ? "text-gray-600" : "text-gray-400"
                         }`}>
-                          Secs
+                          Sec
                         </div>
                       </div>
                       <div
@@ -533,7 +533,7 @@ const HotSalesPage = () => {
                         }`}
                       >
                         <span className="font-bold text-xs text-center">
-                          {currentTimeLeft.isEnded ? "ENDED" : "LIVE"}
+                          {currentTimeLeft.isEnded ? "TERMINÉ" : "EN COURS"}
                         </span>
                       </div>
                     </div>
@@ -558,7 +558,7 @@ const HotSalesPage = () => {
                         }`}
                       >
                         <FaPercent className="inline mr-2" />
-                        Save up to {currentSale.discount}%
+                        Économisez jusqu'à {currentSale.discount}%
                       </div>
                     </div>
                   </div>
@@ -616,7 +616,7 @@ const HotSalesPage = () => {
                           : "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105"
                     }`}
                   >
-                    ← Previous
+                    ← Précédent
                   </button>
 
                   <div
@@ -626,7 +626,7 @@ const HotSalesPage = () => {
                         : "bg-[#1a1a1a] text-white border border-[#fe8002]/30"
                     }`}
                   >
-                    Page {currentPage} of {totalPages}
+                    Page {currentPage} sur {totalPages}
                   </div>
 
                   <button
@@ -642,7 +642,7 @@ const HotSalesPage = () => {
                           : "bg-gradient-to-r from-[#fe8002] via-[#ff4500] to-[#fe8002] text-black hover:shadow-lg hover:shadow-[#fe8002]/30 hover:scale-105"
                     }`}
                   >
-                    Next →
+                    Suivant →
                   </button>
                 </div>
               )}
