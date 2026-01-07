@@ -19,11 +19,12 @@ const ZoneDocassion = () => {
   const { data: allProducts = [], isLoading, isError } = useAllProducts();
   const { data: categoriesData = [] } = useAllCategories();
 
-  // Filter only used products (products with condition field)
+  // Filter only used products (products with condition field, excluding "neuf")
   const usedProducts = useMemo(() => {
-    return allProducts.filter((product: Product) => 
-      product.condition || product.etat
-    );
+    return allProducts.filter((product: Product) => {
+      const condition = product.condition || product.etat;
+      return condition && condition.toLowerCase() !== "neuf";
+    });
   }, [allProducts]);
 
   // Get unique categories from used products
