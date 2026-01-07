@@ -370,9 +370,10 @@ const ZoneDocassion = () => {
           {filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProducts.map((product) => (
-                <div
+                <a
                   key={product.id}
-                  className={`group rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-[#fe8002]/50 transition-all duration-500 border hover:border-[#fe8002] hover:-translate-y-2 backdrop-blur-sm ${
+                  href={`/product/${product.id}`}
+                  className={`group rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-[#fe8002]/50 transition-all duration-500 border hover:border-[#fe8002] hover:-translate-y-2 backdrop-blur-sm block cursor-pointer ${
                     theme === 'light'
                       ? 'bg-white border-gray-300'
                       : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a]'
@@ -479,7 +480,11 @@ const ZoneDocassion = () => {
 
                     <div className="flex gap-2">
                       <button
-                        onClick={() => handleAddToCart(product)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleAddToCart(product);
+                        }}
                         disabled={!product.inStock}
                         className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all duration-300 transform flex items-center justify-center gap-2 text-sm uppercase tracking-wide ${
                           !product.inStock
@@ -496,14 +501,12 @@ const ZoneDocassion = () => {
                           ? "✓ Ajouté"
                           : "Ajouter"}
                       </button>
-                      <a href={`/product/${product.id}`} className="flex-1">
-                        <button className="w-full bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] font-bold py-3 px-4 rounded-xl border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm">
-                          Détails
-                        </button>
-                      </a>
+                      <button className="flex-1 bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] text-[#fe8002] font-bold py-3 px-4 rounded-xl border-2 border-[#fe8002]/40 hover:border-[#fe8002] hover:shadow-lg hover:shadow-[#fe8002]/30 transition-all duration-300 transform hover:scale-105 uppercase tracking-wide text-sm">
+                        Détails
+                      </button>
                     </div>
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           ) : (
