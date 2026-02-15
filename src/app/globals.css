@@ -8,9 +8,8 @@
 }
 
 html {
-  overflow-x: hidden;
+  overflow-y: scroll;
   width: 100%;
-  overscroll-behavior-x: none;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -89,10 +88,10 @@ html {
 
 body {
   overflow-x: hidden;
+  overflow-y: auto;
   width: 100%;
   min-height: 100vh;
   position: relative;
-  overscroll-behavior-x: none;
   -webkit-overflow-scrolling: touch;
 }
 

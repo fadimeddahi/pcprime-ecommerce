@@ -90,10 +90,10 @@ const Navbar = () => {
 
   // Prevent sidebar from opening on page swipes (especially on mobile)
   useEffect(() => {
-    // Disable overscroll behavior on mobile to prevent gesture navigation
+    // Disable horizontal overscroll on mobile to prevent gesture navigation
     if (typeof window !== 'undefined') {
-      document.body.style.overscrollBehavior = 'none';
-      document.documentElement.style.overscrollBehavior = 'none';
+      document.body.style.overscrollBehaviorX = 'none';
+      document.documentElement.style.overscrollBehaviorX = 'none';
       // Prevent zoom on mobile
       const viewport = document.querySelector('meta[name="viewport"]');
       if (viewport) {
