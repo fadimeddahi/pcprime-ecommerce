@@ -114,8 +114,10 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
   
   const decrementQuantity = () => setQuantity(prev => (prev > 1 ? prev - 1 : 1));
 
-  // Use product image
-  const images = [product.image];
+  // Use multiple product images when available, fallback to single image
+  const images = product.images && product.images.length > 0
+    ? product.images
+    : product.image ? [product.image] : ['/placeholder.png'];
   
   // Calculate discount percentage
   const discountPercentage = product.oldPrice || product.old_price
@@ -234,22 +236,26 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               </div>
             </div>
 
-            {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* Thumbnail Gallery - only show when there are multiple images */}
+            {images.length > 1 && (
+            <div className="flex gap-3 overflow-x-auto pb-2">
               {images.map((img, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`relative h-32 rounded-xl overflow-hidden transition-all duration-300 ${
+                  className={`relative h-24 w-24 min-w-[6rem] rounded-xl overflow-hidden transition-all duration-300 ${
                     selectedImage === index
-                      ? "border-4 border-[#fe8002] shadow-lg shadow-[#fe8002]/50"
-                      : "border-2 border-[#2a2a2a] hover:border-[#fe8002]/50"
+                      ? "border-4 border-[#fe8002] shadow-lg shadow-[#fe8002]/50 ring-2 ring-[#fe8002]/30"
+                      : theme === 'light'
+                        ? "border-2 border-gray-300 hover:border-[#fe8002]/50"
+                        : "border-2 border-[#2a2a2a] hover:border-[#fe8002]/50"
                   }`}
                 >
-                  <Image src={img} alt={`${product.name} ${index + 1}`} fill sizes="128px" className="object-cover" />
+                  <Image src={img} alt={`${product.name} ${index + 1}`} fill sizes="96px" className="object-cover" />
                 </button>
               ))}
             </div>
+            )}
           </div>
 
           {/* Right Column - Details */}

@@ -26,6 +26,7 @@ export interface BackendProduct {
   category_id?: number;
   image?: string;
   image_url?: string;
+  image_urls?: string[]; // Multi-image support: ordered array of all image URLs
   price: number;
   old_price?: number;
   etat?: string;

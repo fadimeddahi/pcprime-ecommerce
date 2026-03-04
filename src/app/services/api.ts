@@ -92,10 +92,12 @@ function normalizeProduct(product: BackendProduct | any): Product {
     id: product.id !== undefined && product.id !== null ? product.id : product.uuid || undefined,
     // UUID field for API requests
     uuid: product.uuid || (typeof product.id === 'string' && product.id.length === 36 ? product.id : undefined),
-    // Use image_url from backend as image
-    image: product.image_url || product.image || '',
-    // Handle multiple images (fallback to single image array if not provided)
-    images: product.images || (product.image_url ? [product.image_url] : product.image ? [product.image] : []),
+    // Use image_url from backend as image (image_url always equals image_urls[0])
+    image: product.image_url || (product.image_urls && product.image_urls.length > 0 ? product.image_urls[0] : '') || product.image || '',
+    // Handle multiple images: prefer image_urls array from backend, fallback to single image
+    images: (product.image_urls && product.image_urls.length > 0)
+      ? product.image_urls
+      : product.images || (product.image_url ? [product.image_url] : product.image ? [product.image] : []),
     // Extract category name if category is an object
     category: typeof product.category === 'object' && product.category !== null 
       ? product.category.name 
