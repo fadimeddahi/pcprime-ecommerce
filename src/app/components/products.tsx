@@ -67,7 +67,7 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
           : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a] hover:border-[#fe8002] hover:shadow-[#fe8002]/50'
       }`}
     >
-      <div className={`relative h-72 w-full overflow-hidden ${
+      <div className={`relative aspect-square w-full overflow-hidden ${
         theme === 'light' 
           ? 'bg-gradient-to-br from-gray-100 to-gray-50'
           : 'bg-gradient-to-br from-[#181818] to-[#000000]'
@@ -77,7 +77,7 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            className="object-contain group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -123,7 +123,7 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
               {product.condition.toUpperCase()}
             </span>
           )}
-          {product.discount && (
+          {product.discount != null && product.discount > 0 && (
             <span className="bg-gradient-to-r from-[#fe8002] to-[#ff4500] text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-2xl shadow-[#fe8002]/60 backdrop-blur-md border border-white/20 animate-pulse">
               -{product.discount}%
             </span>
@@ -172,7 +172,7 @@ const ProductCard = ({ product, isEnterprise = false }: ProductCardProps) => {
               <span className="text-gray-500 text-sm line-through">
                 {product.originalPrice.toLocaleString('fr-DZ', { minimumFractionDigits: 2 })} DZD
               </span>
-              {product.discount && (
+              {product.discount != null && product.discount > 0 && (
                 <span className="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded-full">
                   -{product.discount}%
                 </span>
@@ -532,7 +532,7 @@ const Products = ({ isEnterprise = false }: ProductsProps) => {
                     : 'bg-gradient-to-br from-[#1f1f1f] to-[#0f0f0f] border-[#2a2a2a]'
                 }`}
               >
-                <div className={`h-72 w-full ${
+                <div className={`aspect-square w-full ${
                   theme === 'light' ? 'bg-gray-200' : 'bg-[#181818]'
                 }`} />
                 <div className="p-6 space-y-4">

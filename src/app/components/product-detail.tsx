@@ -178,7 +178,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
           {/* Left Column - Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className={`relative h-[500px] w-full rounded-3xl overflow-hidden border-4 shadow-2xl ring-4 ${
+            <div className={`relative aspect-square w-full rounded-3xl overflow-hidden border-4 shadow-2xl ring-4 ${
               theme === 'light'
                 ? 'bg-gradient-to-br from-gray-100 to-white border-gray-300/50 shadow-gray-300/50 ring-gray-200/30'
                 : 'bg-gradient-to-br from-[#181818] to-[#000000] border-white/20 shadow-white/30 ring-white/10'
@@ -188,7 +188,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
                 alt={product.name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 600px"
-                className="object-cover"
+                className="object-contain"
                 priority
               />
               
@@ -285,7 +285,7 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               </h1>
 
               {/* Rating and Sales */}
-              {(typeof product.rating !== 'undefined' || (product.number_sold && product.number_sold > 0)) && (
+              {(typeof product.rating !== 'undefined' || (product.number_sold != null && product.number_sold > 0)) && (
                 <div className="flex items-center gap-4 mb-4">
                   {typeof product.rating !== 'undefined' && (
                     <>
@@ -503,14 +503,14 @@ const ProductDetail = ({ product }: ProductDetailProps) => {
               {specs.map((spec, index) => (
                 <div
                   key={index}
-                  className={`flex justify-between items-center p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
+                  className={`flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4 p-4 rounded-xl border hover:border-[#fe8002]/40 transition-all ${
                     theme === 'light'
                       ? 'bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300/40'
                       : 'bg-gradient-to-r from-[#0f0f0f] to-[#1a1a1a] border-[#fe8002]/20'
                   }`}
                 >
-                  <span className={`font-semibold ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
-                  <span className={`font-bold ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
+                  <span className={`font-semibold text-sm shrink-0 ${theme === 'light' ? 'text-gray-600' : 'text-gray-400'}`}>{spec.label}</span>
+                  <span className={`font-bold text-sm break-words text-left sm:text-right ${theme === 'light' ? 'text-gray-900' : 'text-white'}`}>{spec.value}</span>
                 </div>
               ))}
             </div>
